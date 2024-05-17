@@ -11,5 +11,6 @@ crate-type = ["cdylib"]
 [dependencies]
 anyhow = "1"
 spin-sdk = { git = "https://github.com/fermyon/spin-rust-sdk.git", branch = "wasi-observe-prototype" }
-opentelemetry = "0.22.0"
+opentelemetry = "0.23.0"
+opentelemetry_sdk = "0.23.0"
 opentelemetry-wasi = { path = "../.." }

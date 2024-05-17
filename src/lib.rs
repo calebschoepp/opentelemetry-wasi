@@ -1,3 +1,4 @@
+pub mod exporter;
 pub mod provider;
 pub mod span;
 pub mod tracer;
