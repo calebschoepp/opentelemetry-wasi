@@ -25,6 +25,10 @@ impl WasiExporter {
             .unwrap();
         observe::emit_span(&observe::ReadOnlySpan {
             name: span_data.name.to_string(),
+            span_context: observe::SpanContext {
+                span_id: u64::from_be_bytes(span_data.span_context.span_id().to_bytes()),
+                trace_id: span_data.span_context.trace_id().to_bytes().to_vec(),
+            },
             span_kind: observe::SpanKind::Internal, // TODO
             start_time: Datetime {
                 seconds: start_since_the_epoch.as_secs(),

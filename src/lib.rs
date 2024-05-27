@@ -1,7 +1,6 @@
 pub mod exporter;
-pub mod provider;
-pub mod span;
-pub mod tracer;
+pub mod processor;
+pub mod propagation;
 
 #[doc(hidden)]
 /// Module containing wit bindgen generated code.
