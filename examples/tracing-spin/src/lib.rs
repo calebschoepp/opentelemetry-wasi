@@ -1,4 +1,5 @@
 use opentelemetry::trace::TracerProvider as _;
+use opentelemetry::ContextGuard;
 use opentelemetry_wasi::propagation::extract_trace_context;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
@@ -7,37 +8,38 @@ use tracing::instrument;
 use tracing_subscriber::prelude::*;
 use tracing_subscriber::registry;
 
-/// A simple Spin HTTP component.
 #[http_component]
-fn handle_tracing_spin(_req: Request) -> anyhow::Result<impl IntoResponse> {
+fn spin_guest_function(_req: Request) -> anyhow::Result<impl IntoResponse> {
     let _otel_guard = init_otel();
-    let _trace_context_guard = extract_trace_context();
-    let span = tracing::info_span!("ooga booga");
-    let _guard = span.enter();
-    do_nothing();
-    do_kv_work();
-    // std::thread::sleep(std::time::Duration::from_secs(10));
-    Ok(Response::builder()
-        .status(200)
-        .header("content-type", "text/plain")
-        .body("Hello, Fermyon")
-        .build())
+
+    let span = tracing::info_span!("spin_guest_function");
+    let _span_guard = span.enter();
+
+    compute_something();
+    use_kv_store();
+
+    Ok(Response::builder().status(200).build())
 }
 
 #[instrument]
-fn do_nothing() {
-    println!("Doing nothing");
+fn compute_something() {
+    println!("Computing something...");
+    let _x = 5 + 2;
 }
 
 #[instrument]
-fn do_kv_work() {
+fn use_kv_store() {
     let store = Store::open_default().unwrap();
-    store.set("foo", String::from("bar").as_bytes()).unwrap();
+    compute_something();
+    store.get("foo").unwrap();
     store.set("foo", String::from("bar").as_bytes()).unwrap();
 }
 
 fn init_otel() -> ShutdownGuard {
+    // Build a WASI exporter that knows how to export traces outside of the Wasm guest
     let exporter = opentelemetry_wasi::exporter::WasiExporter::new();
+
+    // Build and register the rust-tracing layer
     let provider_builder =
         opentelemetry_sdk::trace::TracerProvider::builder().with_simple_exporter(exporter);
     let provider = provider_builder.build();
@@ -46,17 +48,16 @@ fn init_otel() -> ShutdownGuard {
     let otel_tracing_layer = tracing_opentelemetry::layer()
         .with_tracer(tracer)
         .with_threads(false);
-
     registry().with(otel_tracing_layer).init();
 
-    ShutdownGuard
+    // Propagate the parent trace context into the current context
+    let trace_context_guard = extract_trace_context().unwrap();
+
+    ShutdownGuard(trace_context_guard)
 }
 
-/// An RAII implementation for connection to open telemetry services.
-///
-/// Shutdown of the open telemetry services will happen on `Drop`.
 #[must_use]
-pub struct ShutdownGuard;
+pub struct ShutdownGuard(ContextGuard);
 
 impl Drop for ShutdownGuard {
     fn drop(&mut self) {
