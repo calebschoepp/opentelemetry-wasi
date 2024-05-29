@@ -1,27 +1,22 @@
+use crate::wit::v2::observe::get_parent_span_context;
 use opentelemetry::{
-    trace::{SpanContext as OtelSpanContext, TraceContextExt, TraceFlags, TraceState},
+    trace::{
+        SpanContext as OtelSpanContext, SpanId, TraceContextExt, TraceFlags, TraceId, TraceState,
+    },
     Context, ContextGuard,
 };
+use std::str::FromStr;
 
-use crate::wit::v2::observe::get_parent;
-
-pub fn extract_trace_context() -> ContextGuard {
-    let other_sc = get_parent();
-
-    let trace_id_array: [u8; 16] = other_sc
-        .trace_id
-        .into_iter()
-        .collect::<Vec<u8>>()
-        .try_into()
-        .unwrap();
+pub fn extract_trace_context() -> anyhow::Result<ContextGuard> {
+    let other_sc = get_parent_span_context();
 
     let sc = OtelSpanContext::new(
-        u128::from_be_bytes(trace_id_array).into(),
-        other_sc.span_id.into(),
+        TraceId::from_hex(&other_sc.trace_id)?,
+        SpanId::from_hex(&other_sc.span_id)?,
         TraceFlags::SAMPLED,
-        false, // TODO: Is this correct?
-        TraceState::default(),
+        other_sc.is_remote,
+        TraceState::from_str(&other_sc.trace_state)?,
     );
 
-    Context::current().with_remote_span_context(sc).attach()
+    Ok(Context::current().with_remote_span_context(sc).attach())
 }

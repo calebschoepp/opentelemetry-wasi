@@ -7,8 +7,8 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.84"
-opentelemetry = "0.22.0"
-opentelemetry_sdk = "0.22.0"
+opentelemetry = "0.23.0"
+opentelemetry_sdk = "0.23.0"
 wit-bindgen = "0.24.0"
 futures-core = "0.3"
 futures-executor = "0.3"

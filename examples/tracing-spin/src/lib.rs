@@ -1,5 +1,4 @@
 use opentelemetry::trace::TracerProvider as _;
-use opentelemetry_wasi::processor::SimpleSpanProcessor;
 use opentelemetry_wasi::propagation::extract_trace_context;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
@@ -39,8 +38,8 @@ fn do_kv_work() {
 
 fn init_otel() -> ShutdownGuard {
     let exporter = opentelemetry_wasi::exporter::WasiExporter::new();
-    let provider_builder = opentelemetry_sdk::trace::TracerProvider::builder()
-        .with_span_processor(SimpleSpanProcessor::new(Box::new(exporter)));
+    let provider_builder =
+        opentelemetry_sdk::trace::TracerProvider::builder().with_simple_exporter(exporter);
     let provider = provider_builder.build();
     let _ = opentelemetry::global::set_tracer_provider(provider.clone());
     let tracer = provider.tracer("spin-app-tracing-opentelemetry");

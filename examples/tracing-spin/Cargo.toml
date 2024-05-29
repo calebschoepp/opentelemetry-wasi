@@ -11,9 +11,9 @@ crate-type = ["cdylib"]
 [dependencies]
 anyhow = "1"
 spin-sdk = { path = "/Users/caleb/src/fermyon/spin-rust-sdk" }
-opentelemetry = "0.22.0"
-opentelemetry_sdk = "0.22.0"
+opentelemetry = "0.23.0"
+opentelemetry_sdk = "0.23.0"
 opentelemetry-wasi = { path = "../.." }
 tracing = { version = "0.1.40", default-features = false, features = ["attributes"]}
-tracing-opentelemetry = { path = "/Users/caleb/src/tokio-rs/tracing-opentelemetry" }
+tracing-opentelemetry = "0.24.0"
 tracing-subscriber = "0.3.18"

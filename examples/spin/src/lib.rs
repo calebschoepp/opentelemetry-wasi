@@ -3,7 +3,6 @@ use opentelemetry::global;
 use opentelemetry::trace::TraceContextExt;
 use opentelemetry::trace::Tracer as _;
 use opentelemetry::Context;
-use opentelemetry_wasi::processor::SimpleSpanProcessor;
 use opentelemetry_wasi::propagation::extract_trace_context;
 // use opentelemetry_wasi::processor::WasiProcessor;
 use spin_sdk::http::{IntoResponse, Request, Response};
@@ -32,8 +31,8 @@ fn handle_spin(_req: Request) -> Result<impl IntoResponse> {
 
 fn configure_o11y() {
     let exporter = opentelemetry_wasi::exporter::WasiExporter::new();
-    let provider_builder = opentelemetry_sdk::trace::TracerProvider::builder()
-        .with_span_processor(SimpleSpanProcessor::new(Box::new(exporter)));
+    let provider_builder =
+        opentelemetry_sdk::trace::TracerProvider::builder().with_simple_exporter(exporter);
     let provider = provider_builder.build();
 
     let _ = global::set_tracer_provider(provider);

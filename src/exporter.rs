@@ -4,7 +4,7 @@ use futures_core::future::BoxFuture;
 use opentelemetry::trace::TraceError;
 use opentelemetry_sdk::export::trace::{ExportResult, SpanData, SpanExporter};
 
-use crate::wit::v2::observe::{self, Datetime};
+use crate::wit::v2::observe::{self, Datetime, OtelResource};
 
 #[derive(Debug)]
 pub struct WasiExporter {}
@@ -26,9 +26,13 @@ impl WasiExporter {
         observe::emit_span(&observe::ReadOnlySpan {
             name: span_data.name.to_string(),
             span_context: observe::SpanContext {
-                span_id: u64::from_be_bytes(span_data.span_context.span_id().to_bytes()),
-                trace_id: span_data.span_context.trace_id().to_bytes().to_vec(),
+                span_id: span_data.span_context.span_id().to_string(),
+                trace_id: span_data.span_context.trace_id().to_string(),
+                trace_flags: format!("{:x}", span_data.span_context.trace_flags()),
+                is_remote: span_data.span_context.is_remote(),
+                trace_state: "".to_string(), // TODO
             },
+            parent_span_id: span_data.parent_span_id.to_string(),
             span_kind: observe::SpanKind::Internal, // TODO
             start_time: Datetime {
                 seconds: start_since_the_epoch.as_secs(),
@@ -38,7 +42,13 @@ impl WasiExporter {
                 seconds: end_since_the_epoch.as_secs(),
                 nanoseconds: end_since_the_epoch.subsec_nanos(),
             },
-        });
+            attributes: vec![],
+            otel_resource: OtelResource {
+                attrs: vec![],
+                schema_url: None,
+            },
+        })
+        .unwrap();
         Ok(())
     }
 }

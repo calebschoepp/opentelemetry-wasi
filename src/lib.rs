@@ -1,5 +1,4 @@
 pub mod exporter;
-pub mod processor;
 pub mod propagation;
 
 #[doc(hidden)]
