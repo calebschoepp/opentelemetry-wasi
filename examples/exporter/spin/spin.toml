@@ -11,7 +11,7 @@ route = "/..."
 component = "spin"
 
 [component.spin]
-source = "../../target/wasm32-wasi/release/spin.wasm"
+source = "../../../target/wasm32-wasi/release/spin.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
 [component.spin.build]

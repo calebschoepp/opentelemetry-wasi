@@ -1,19 +1,19 @@
 spin_manifest_version = 2
 
 [application]
-name = "tracing-spin"
+name = "tracing"
 version = "0.1.0"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = ""
 
 [[trigger.http]]
 route = "/..."
-component = "tracing-spin"
+component = "tracing"
 
-[component.tracing-spin]
-source = "../../../target/wasm32-wasi/release/tracing_spin.wasm"
+[component.tracing]
+source = "../../../target/wasm32-wasi/release/tracing.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
-[component.tracing-spin.build]
+[component.tracing.build]
 command = "cargo build --target wasm32-wasi --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

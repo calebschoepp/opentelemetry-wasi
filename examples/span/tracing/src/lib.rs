@@ -1,15 +1,14 @@
 use anyhow::Result;
 use opentelemetry::trace::{TraceContextExt as _, Tracer as _};
-use opentelemetry::ContextGuard;
 use opentelemetry::{global, Context};
-use opentelemetry_wasi::propagation::extract_trace_context;
+use opentelemetry_wasi::provider::TracerProvider;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use spin_sdk::key_value::Store;
 
 #[http_component]
 fn spin_guest_function(_req: Request) -> Result<impl IntoResponse> {
-    let _otel_guard = init_otel();
+    init_otel();
 
     let _guard =
         Context::current_with_span(global::tracer("spin").start("spin_guest_function")).attach();
@@ -35,13 +34,10 @@ fn use_kv_store() {
     store.set("foo", String::from("bar").as_bytes()).unwrap();
 }
 
-fn init_otel() -> ContextGuard {
-    let exporter = opentelemetry_wasi::exporter::WasiExporter::new();
-    let provider_builder =
-        opentelemetry_sdk::trace::TracerProvider::builder().with_simple_exporter(exporter);
-    let provider = provider_builder.build();
+fn init_otel() {
+    // Get a opentelemetry-wasi tracer provider
+    let tracer_provider = TracerProvider::default();
 
-    let _ = global::set_tracer_provider(provider);
-
-    extract_trace_context().unwrap()
+    // Configure the global singleton tracer provider
+    let _ = global::set_tracer_provider(tracer_provider);
 }

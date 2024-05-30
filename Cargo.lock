@@ -639,6 +639,20 @@ dependencies = [
 
 [[package]]
 name = "tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+ "tracing 0.1.40",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "tracing"
 version = "0.1.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3523ab5a71916ccf420eebdf5521fcef02141234bbc0b8a49f2fdc4544364ef"
@@ -691,7 +705,7 @@ dependencies = [
  "opentelemetry",
  "opentelemetry_sdk",
  "smallvec",
- "tracing",
+ "tracing 0.1.40",
  "tracing-core",
  "tracing-log",
  "tracing-subscriber",
@@ -707,7 +721,7 @@ dependencies = [
  "opentelemetry-wasi",
  "opentelemetry_sdk",
  "spin-sdk",
- "tracing",
+ "tracing 0.1.40",
  "tracing-opentelemetry",
  "tracing-subscriber",
 ]
