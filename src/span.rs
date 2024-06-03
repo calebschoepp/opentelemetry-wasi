@@ -1,13 +1,17 @@
 use std::borrow::Cow;
 
+use opentelemetry::trace::SpanContext;
+
 pub struct Span {
     inner: crate::wit::fermyon::spin2_0_0::observe::Span,
+    span_context: SpanContext,
 }
 
 impl Span {
-    pub(crate) fn new(name: Cow<'static, str>) -> Self {
+    pub(crate) fn new(name: Cow<'static, str>, span_context: SpanContext) -> Self {
         Self {
             inner: crate::wit::fermyon::spin2_0_0::observe::Span::enter(&name),
+            span_context,
         }
     }
 }
@@ -25,7 +29,7 @@ impl opentelemetry::trace::Span for Span {
     }
 
     fn span_context(&self) -> &opentelemetry::trace::SpanContext {
-        todo!()
+        &self.span_context
     }
 
     fn is_recording(&self) -> bool {
@@ -51,6 +55,14 @@ impl opentelemetry::trace::Span for Span {
     fn end_with_timestamp(&mut self, _timestamp: std::time::SystemTime) {
         // Note: This does not respect the timestamp
         self.inner.close();
+    }
+
+    fn add_link(
+        &mut self,
+        _span_context: opentelemetry::trace::SpanContext,
+        _attributes: Vec<opentelemetry::KeyValue>,
+    ) {
+        todo!()
     }
 }
 

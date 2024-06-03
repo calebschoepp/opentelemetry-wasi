@@ -1,0 +1,19 @@
+spin_manifest_version = 2
+
+[application]
+name = "spin"
+version = "0.1.0"
+authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
+description = "A Spin app that uses opentelemetry-wasi"
+
+[[trigger.http]]
+route = "/..."
+component = "spin"
+
+[component.spin]
+source = "../../../target/wasm32-wasi/release/exporter_opentelemetry.wasm"
+allowed_outbound_hosts = []
+key_value_stores = ["default"]
+[component.spin.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

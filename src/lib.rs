@@ -1,3 +1,6 @@
+pub mod exporter;
+pub mod processor;
+pub mod propagation;
 pub mod provider;
 pub mod span;
 pub mod tracer;
