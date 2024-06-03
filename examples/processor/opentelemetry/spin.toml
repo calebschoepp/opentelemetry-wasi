@@ -1,19 +1,19 @@
 spin_manifest_version = 2
 
 [application]
-name = "tracing"
+name = "without-tracing"
 version = "0.1.0"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = ""
 
 [[trigger.http]]
 route = "/..."
-component = "tracing"
+component = "without-tracing"
 
-[component.tracing]
-source = "../../../target/wasm32-wasi/release/span_tracing.wasm"
+[component.without-tracing]
+source = "../../../target/wasm32-wasi/release/processor_opentelemetry.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
-[component.tracing.build]
+[component.without-tracing.build]
 command = "cargo build --target wasm32-wasi --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

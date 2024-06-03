@@ -1,5 +1,5 @@
 [package]
-name = "spin"
+name = "exporter-opentelemetry"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = "A Spin app that uses opentelemetry-wasi"
 version = "0.1.0"
@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1"
-spin-sdk = { path = "/Users/caleb/src/fermyon/spin-rust-sdk" }
+spin-sdk = { git = "https://github.com/fermyon/spin-rust-sdk.git", rev = "88951f6044042b86ee4a475c513eae325e9d7823" }
 opentelemetry = "0.23.0"
 opentelemetry_sdk = "0.23.0"
 opentelemetry-wasi = { path = "../../.." }

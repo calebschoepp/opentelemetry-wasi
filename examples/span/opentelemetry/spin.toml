@@ -1,7 +1,7 @@
 spin_manifest_version = 2
 
 [application]
-name = "tracing"
+name = "span-opentelemetry"
 version = "0.1.0"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = ""
@@ -11,7 +11,7 @@ route = "/..."
 component = "tracing"
 
 [component.tracing]
-source = "../../../target/wasm32-wasi/release/span_tracing.wasm"
+source = "../../../target/wasm32-wasi/release/span_opentelemetry.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
 [component.tracing.build]

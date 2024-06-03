@@ -56,6 +56,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
+name = "exporter-opentelemetry"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+]
+
+[[package]]
+name = "exporter-tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -312,6 +337,7 @@ dependencies = [
  "futures-executor",
  "opentelemetry",
  "opentelemetry_sdk",
+ "tracing-opentelemetry",
  "wit-bindgen 0.24.0",
 ]
 
@@ -381,6 +407,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d1597b0c024618f09a9c3b8655b7e430397a36d23fdafec26d6965e9eec3eba"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "processor-tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "processor_opentelemetry"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
 ]
 
 [[package]]
@@ -520,6 +571,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "span-opentelemetry"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "span-tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry-wasi",
+ "opentelemetry_sdk",
+ "spin-sdk",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "spdx"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -529,19 +608,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "spin"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "opentelemetry",
- "opentelemetry-wasi",
- "opentelemetry_sdk",
- "spin-sdk",
-]
-
-[[package]]
 name = "spin-executor"
 version = "3.0.1"
+source = "git+https://github.com/fermyon/spin-rust-sdk.git?rev=88951f6044042b86ee4a475c513eae325e9d7823#88951f6044042b86ee4a475c513eae325e9d7823"
 dependencies = [
  "futures",
  "once_cell",
@@ -551,6 +620,7 @@ dependencies = [
 [[package]]
 name = "spin-macro"
 version = "3.0.1"
+source = "git+https://github.com/fermyon/spin-rust-sdk.git?rev=88951f6044042b86ee4a475c513eae325e9d7823#88951f6044042b86ee4a475c513eae325e9d7823"
 dependencies = [
  "anyhow",
  "bytes",
@@ -562,6 +632,7 @@ dependencies = [
 [[package]]
 name = "spin-sdk"
 version = "3.0.1"
+source = "git+https://github.com/fermyon/spin-rust-sdk.git?rev=88951f6044042b86ee4a475c513eae325e9d7823#88951f6044042b86ee4a475c513eae325e9d7823"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -639,20 +710,6 @@ dependencies = [
 
 [[package]]
 name = "tracing"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "opentelemetry",
- "opentelemetry-wasi",
- "opentelemetry_sdk",
- "spin-sdk",
- "tracing 0.1.40",
- "tracing-opentelemetry",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "tracing"
 version = "0.1.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3523ab5a71916ccf420eebdf5521fcef02141234bbc0b8a49f2fdc4544364ef"
@@ -705,25 +762,11 @@ dependencies = [
  "opentelemetry",
  "opentelemetry_sdk",
  "smallvec",
- "tracing 0.1.40",
+ "tracing",
  "tracing-core",
  "tracing-log",
  "tracing-subscriber",
  "web-time",
-]
-
-[[package]]
-name = "tracing-spin"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "opentelemetry",
- "opentelemetry-wasi",
- "opentelemetry_sdk",
- "spin-sdk",
- "tracing 0.1.40",
- "tracing-opentelemetry",
- "tracing-subscriber",
 ]
 
 [[package]]

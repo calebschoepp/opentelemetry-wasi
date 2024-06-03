@@ -59,8 +59,8 @@ impl opentelemetry::trace::Span for Span {
 
     fn add_link(
         &mut self,
-        span_context: opentelemetry::trace::SpanContext,
-        attributes: Vec<opentelemetry::KeyValue>,
+        _span_context: opentelemetry::trace::SpanContext,
+        _attributes: Vec<opentelemetry::KeyValue>,
     ) {
         todo!()
     }

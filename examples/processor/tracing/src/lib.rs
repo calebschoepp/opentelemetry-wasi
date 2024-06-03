@@ -1,7 +1,6 @@
 use opentelemetry::trace::TracerProvider as _;
-use opentelemetry::{global, ContextGuard};
+use opentelemetry::ContextGuard;
 use opentelemetry_wasi::propagation::extract_trace_context;
-use opentelemetry_wasi::provider::TracerProvider;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use spin_sdk::key_value::Store;
@@ -37,17 +36,19 @@ fn use_kv_store() {
 }
 
 fn init_otel() -> ShutdownGuard {
-    // Get a opentelemetry-wasi tracer provider
-    let tracer_provider = TracerProvider::default();
+    // Build a WASI processor that knows how to get traces outside of the Wasm guest
+    let processor = opentelemetry_wasi::processor::WasiProcessor::new();
 
-    let tracer = tracer_provider.tracer("spin-app-tracing-opentelemetry");
+    // Build and register the rust-tracing layer
+    let provider_builder =
+        opentelemetry_sdk::trace::TracerProvider::builder().with_span_processor(processor);
+    let provider = provider_builder.build();
+    let _ = opentelemetry::global::set_tracer_provider(provider.clone());
+    let tracer = provider.tracer("spin-app-tracing-opentelemetry");
     let otel_tracing_layer = tracing_opentelemetry::layer()
         .with_tracer(tracer)
         .with_threads(false);
     registry().with(otel_tracing_layer).init();
-
-    // Configure the global singleton tracer provider
-    let _ = global::set_tracer_provider(tracer_provider);
 
     // Propagate the parent trace context into the current context
     let trace_context_guard = extract_trace_context().unwrap();

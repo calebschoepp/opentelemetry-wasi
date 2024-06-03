@@ -53,6 +53,12 @@ impl WasiExporter {
     }
 }
 
+impl Default for WasiExporter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SpanExporter for WasiExporter {
     fn export(&mut self, batch: Vec<SpanData>) -> BoxFuture<'static, ExportResult> {
         Box::pin(async move {

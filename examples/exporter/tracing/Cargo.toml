@@ -1,5 +1,5 @@
 [package]
-name = "span-tracing"
+name = "exporter-tracing"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = ""
 version = "0.1.0"

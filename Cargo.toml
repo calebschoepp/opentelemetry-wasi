@@ -12,6 +12,7 @@ opentelemetry_sdk = "0.23.0"
 wit-bindgen = "0.24.0"
 futures-core = "0.3"
 futures-executor = "0.3"
+tracing-opentelemetry = "0.24.0"
 
 [workspace]
-members = ["examples/exporter/*", "examples/span/*"]
+members = ["examples/exporter/*", "examples/span/*", "examples/processor/*"]
