@@ -1,0 +1,20 @@
+[package]
+name = "spin-tracing"
+authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
+description = "A basic Spin application that uses the opentelemetry-wasi crate along with the very pervasive tracing crate"
+version = "0.1.0"
+rust-version = "1.78"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1"
+opentelemetry = "0.27.0"
+opentelemetry_sdk = "0.27.0"
+opentelemetry-wasi = { path = "../../" }
+spin-sdk = "3.1.0"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
+tracing-opentelemetry = "0.28.0"
