@@ -1,0 +1,16 @@
+[package]
+name = "spin-basic"
+authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
+description = "A basic Spin application that directly consumes the opentelemetry-wasi crate"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1"
+opentelemetry = "0.27.0"
+opentelemetry_sdk = "0.27.0"
+opentelemetry-wasi = { path = "../../" }
+spin-sdk = "3.0.1"

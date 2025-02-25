@@ -1,0 +1,13 @@
+[package]
+name = "opentelemetry-wasi"
+version = "0.27.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.84"
+opentelemetry = "0.27.0"
+opentelemetry_sdk = "0.27.0"
+wit-bindgen = "0.30.0"
+
+[workspace]
+members = ["examples/*"]
