@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "project": {
+    "witPaths": [
+      "/Users/caleb/src/calebschoepp/opentelemetry-wasi/ts/wit"
+    ],
+    "worlds": [
+      "spin-http",
+      "tracingimports"
+    ]
+  },
+  "packages": {
+    "@fermyon/spin-sdk": {
+      "witPath": "../../bin/wit",
+      "world": "spin-imports"
+    }
+  }
+}
