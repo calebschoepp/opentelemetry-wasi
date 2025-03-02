@@ -126,12 +126,12 @@ impl From<opentelemetry::Value> for Value {
         match value {
             opentelemetry::Value::Bool(v) => Self::Bool(v),
             opentelemetry::Value::I64(v) => Self::S64(v),
-            opentelemetry::Value::F64(v) => Self::Float64(v),
+            opentelemetry::Value::F64(v) => Self::F64(v),
             opentelemetry::Value::String(v) => Self::String(v.to_string()),
             opentelemetry::Value::Array(v) => match v {
                 opentelemetry::Array::Bool(items) => Self::BoolArray(items),
                 opentelemetry::Array::I64(items) => Self::S64Array(items),
-                opentelemetry::Array::F64(items) => Self::Float64Array(items),
+                opentelemetry::Array::F64(items) => Self::F64Array(items),
                 opentelemetry::Array::String(items) => {
                     Self::StringArray(items.into_iter().map(Into::into).collect())
                 }
