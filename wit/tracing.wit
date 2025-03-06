@@ -12,33 +12,34 @@ interface tracing {
 
     /// The data associated with a span.
     record span-data {
-        /// Span context
+        /// Span context.
         span-context: span-context,
-        /// Span parent id
-        // TODO: No clue what this is for
+        /// Span parent id.
         parent-span-id: string,
-        /// Span kind
+        /// Span kind.
         span-kind: span-kind,
-        // Span name
+        // Span name.
         name: string,
-        /// Span start time
+        /// Span start time.
         start-time: datetime,
-        /// Span end time
+        /// Span end time.
         end-time: datetime,
-        /// Span attributes
+        /// Span attributes.
         attributes: list<key-value>,
-        /// Span events
+        /// Span events.
         events: list<event>,
-        /// Span Links
+        /// Span Links.
         links: list<link>,
-        /// Span status
+        /// Span status.
         status: status,
-        /// Instrumentation scope that produced this span
+        /// Instrumentation scope that produced this span.
         instrumentation-scope: instrumentation-scope,
-
-        // TODO:
-        // - Dropped counts
-        // - parent span id vs parent span context
+        /// Number of attributes dropped by the span due to limits being reached.
+        dropped-attributes: u32,
+        /// Number of events dropped by the span due to limits being reached.
+        dropped-events: u32,
+        /// Number of links dropped by the span due to limits being reached.
+        dropped-links: u32,
     }
 
     /// Identifying trace information about a span that can be serialized and propagated.
@@ -123,11 +124,11 @@ interface tracing {
 
     /// An event describing a specific moment in time on a span and associated attributes.
     record event {
-        /// Event name
+        /// Event name.
         name: string,
-        /// Event time
+        /// Event time.
         time: datetime,
-        /// Event attributes
+        /// Event attributes.
         attributes: list<key-value>,
     }
 

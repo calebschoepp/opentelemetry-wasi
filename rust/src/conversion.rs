@@ -16,6 +16,9 @@ impl From<opentelemetry_sdk::export::trace::SpanData> for SpanData {
             links: value.links.links.into_iter().map(Into::into).collect(),
             status: value.status.into(),
             instrumentation_scope: value.instrumentation_scope.into(),
+            dropped_attributes: value.dropped_attributes_count,
+            dropped_events: value.events.dropped_count,
+            dropped_links: value.links.dropped_count,
         }
     }
 }
@@ -31,7 +34,6 @@ impl From<opentelemetry::trace::SpanContext> for SpanContext {
                 .trace_state()
                 .header()
                 .split(',')
-                // TODO(Reviewer): Should this be try_from instead an propagate this error out of the WIT?
                 .filter_map(|s| {
                     if let Some((key, value)) = s.split_once('=') {
                         Some((key.to_string(), value.to_string()))
@@ -46,7 +48,6 @@ impl From<opentelemetry::trace::SpanContext> for SpanContext {
 
 impl From<SpanContext> for opentelemetry::trace::SpanContext {
     fn from(value: SpanContext) -> Self {
-        // TODO(Reviewer): Should this be try_from instead an propagate this error out of the WIT?
         let trace_id = opentelemetry::trace::TraceId::from_hex(&value.trace_id)
             .unwrap_or(opentelemetry::trace::TraceId::INVALID);
         let span_id = opentelemetry::trace::SpanId::from_hex(&value.span_id)
