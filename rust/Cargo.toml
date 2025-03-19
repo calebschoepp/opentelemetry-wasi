@@ -4,10 +4,16 @@ version = "0.27.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.84"
-opentelemetry = "0.27.0"
-opentelemetry_sdk = "0.27.0"
+anyhow = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry_sdk = { workspace = true }
 wit-bindgen = "0.30.0"
 
 [workspace]
 members = ["examples/*"]
+
+[workspace.dependencies]
+anyhow = "1"
+opentelemetry = "0.27.0"
+opentelemetry_sdk = "0.27.0"
+spin-sdk = "3.1.0"

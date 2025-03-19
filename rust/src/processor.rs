@@ -1,9 +1,6 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use opentelemetry::{
-    otel_warn,
-    trace::{TraceContextExt, TraceError},
-};
+use opentelemetry::trace::TraceError;
 use opentelemetry_sdk::trace::SpanProcessor;
 
 use crate::wit::wasi::otel::tracing::{on_end, on_start};
@@ -29,25 +26,17 @@ impl Default for WasiProcessor {
 }
 
 impl SpanProcessor for WasiProcessor {
-    fn on_start(&self, span: &mut opentelemetry_sdk::trace::Span, cx: &opentelemetry::Context) {
+    fn on_start(&self, span: &mut opentelemetry_sdk::trace::Span, _: &opentelemetry::Context) {
         if self.is_shutdown.load(Ordering::Relaxed) {
-            // this is a warning, as the user is trying to emit after the processor has been shutdown
-            otel_warn!(
-                name: "WasiProcessor.Emit.ProcessorShutdown",
-            );
             return;
         }
         if let Some(span_data) = span.exported_data() {
-            on_start(&span_data.into(), &cx.span().span_context().clone().into());
+            on_start(&span_data.span_context.into());
         }
     }
 
     fn on_end(&self, span: opentelemetry_sdk::export::trace::SpanData) {
         if self.is_shutdown.load(Ordering::Relaxed) {
-            // this is a warning, as the user is trying to emit after the processor has been shutdown
-            otel_warn!(
-                name: "WasiProcessor.Emit.ProcessorShutdown",
-            );
             return;
         }
         on_end(&span.into());

@@ -9,8 +9,8 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-anyhow = "1"
-opentelemetry = "0.27.0"
-opentelemetry_sdk = "0.27.0"
+anyhow = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry_sdk = { workspace = true }
 opentelemetry-wasi = { path = "../../" }
-spin-sdk = "3.0.1"
+spin-sdk = { workspace = true }
