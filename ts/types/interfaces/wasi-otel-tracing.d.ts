@@ -1,30 +1,27 @@
-declare module "wasi:otel/tracing@0.2.0-draft" {
+/// <reference path="./wasi-clocks-wall-clock.d.ts" />
+declare module 'wasi:otel/tracing@0.2.0-draft' {
   /**
    * Called when a span is started.
    */
-  export function onStart(span: SpanData, parent: SpanContext): void;
+  export function onStart(context: SpanContext): void;
   /**
    * Called when a span is ended.
    */
   export function onEnd(span: SpanData): void;
   /**
-   * Returns the current span context of the host.
+   * Returns the span context of the host.
    */
-  export function currentSpanContext(): SpanContext;
-
-  export interface Datetime {
-    seconds: bigint;
-    nanoseconds: number;
-  }
+  export function outerSpanContext(): SpanContext;
+  export type Datetime = import('wasi:clocks/wall-clock@0.2.0').Datetime;
   /**
    * The trace that this `span-context` belongs to.
-   *
+   * 
    * 16 bytes encoded as a hexadecimal string.
    */
   export type TraceId = string;
   /**
    * The id of this `span-context`.
-   *
+   * 
    * 8 bytes encoded as a hexadecimal string.
    */
   export type SpanId = string;
@@ -35,11 +32,11 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
     /**
      * Whether the `span` should be sampled or not.
      */
-    sampled?: boolean;
+    sampled?: boolean,
   }
   /**
    * Carries system-specific configuration data, represented as a list of key-value pairs. `trace-state` allows multiple tracing systems to participate in the same trace.
-   *
+   * 
    * If any invalid keys or values are provided then the `trace-state` will be treated as an empty list.
    */
   export type TraceState = Array<[string, string]>;
@@ -50,50 +47,45 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
     /**
      * The `trace-id` for this `span-context`.
      */
-    traceId: TraceId;
+    traceId: TraceId,
     /**
      * The `span-id` for this `span-context`.
      */
-    spanId: SpanId;
+    spanId: SpanId,
     /**
      * The `trace-flags` for this `span-context`.
      */
-    traceFlags: TraceFlags;
+    traceFlags: TraceFlags,
     /**
      * Whether this `span-context` was propagated from a remote parent.
      */
-    isRemote: boolean;
+    isRemote: boolean,
     /**
      * The `trace-state` for this `span-context`.
      */
-    traceState: TraceState;
+    traceState: TraceState,
   }
   /**
    * Describes the relationship between the Span, its parents, and its children in a trace.
    * # Variants
-   *
+   * 
    * ## `"client"`
-   *
+   * 
    * Indicates that the span describes a request to some remote service. This span is usually the parent of a remote server span and does not end until the response is received.
    * ## `"server"`
-   *
+   * 
    * Indicates that the span covers server-side handling of a synchronous RPC or other remote request. This span is often the child of a remote client span that was expected to wait for a response.
    * ## `"producer"`
-   *
+   * 
    * Indicates that the span describes the initiators of an asynchronous request. This parent span will often end before the corresponding child consumer span, possibly even before the child span starts. In messaging scenarios with batching, tracing individual messages requires a new producer span per message to be created.
    * ## `"consumer"`
-   *
+   * 
    * Indicates that the span describes a child of an asynchronous consumer request.
    * ## `"internal"`
-   *
+   * 
    * Default value. Indicates that the span represents an internal operation within an application, as opposed to an operations with remote parents or children.
    */
-  export type SpanKind =
-    | "client"
-    | "server"
-    | "producer"
-    | "consumer"
-    | "internal";
+  export type SpanKind = 'client' | 'server' | 'producer' | 'consumer' | 'internal';
   /**
    * The key part of attribute `key-value` pairs.
    */
@@ -101,70 +93,62 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
   /**
    * The value part of attribute `key-value` pairs.
    */
-  export type Value =
-    | ValueString
-    | ValueBool
-    | ValueF64
-    | ValueS64
-    | ValueStringArray
-    | ValueBoolArray
-    | ValueF64Array
-    | ValueS64Array;
+  export type Value = ValueString | ValueBool | ValueF64 | ValueS64 | ValueStringArray | ValueBoolArray | ValueF64Array | ValueS64Array;
   /**
    * A string value.
    */
   export interface ValueString {
-    tag: "string";
-    val: string;
+    tag: 'string',
+    val: string,
   }
   /**
    * A boolean value.
    */
   export interface ValueBool {
-    tag: "bool";
-    val: boolean;
+    tag: 'bool',
+    val: boolean,
   }
   /**
    * A double precision floating point value.
    */
   export interface ValueF64 {
-    tag: "f64";
-    val: number;
+    tag: 'f64',
+    val: number,
   }
   /**
    * A signed 64 bit integer value.
    */
   export interface ValueS64 {
-    tag: "s64";
-    val: bigint;
+    tag: 's64',
+    val: bigint,
   }
   /**
    * A homogeneous array of string values.
    */
   export interface ValueStringArray {
-    tag: "string-array";
-    val: Array<string>;
+    tag: 'string-array',
+    val: Array<string>,
   }
   /**
    * A homogeneous array of boolean values.
    */
   export interface ValueBoolArray {
-    tag: "bool-array";
-    val: Array<boolean>;
+    tag: 'bool-array',
+    val: Array<boolean>,
   }
   /**
    * A homogeneous array of double precision floating point values.
    */
   export interface ValueF64Array {
-    tag: "f64-array";
-    val: Float64Array;
+    tag: 'f64-array',
+    val: Float64Array,
   }
   /**
    * A homogeneous array of 64 bit integer values.
    */
   export interface ValueS64Array {
-    tag: "s64-array";
-    val: BigInt64Array;
+    tag: 's64-array',
+    val: BigInt64Array,
   }
   /**
    * A key-value pair describing an attribute.
@@ -173,28 +157,28 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
     /**
      * The attribute name.
      */
-    key: Key;
+    key: Key,
     /**
      * The attribute value.
      */
-    value: Value;
+    value: Value,
   }
   /**
    * An event describing a specific moment in time on a span and associated attributes.
    */
   export interface Event {
     /**
-     * Event name
+     * Event name.
      */
-    name: string;
+    name: string,
     /**
-     * Event time
+     * Event time.
      */
-    time: Datetime;
+    time: Datetime,
     /**
-     * Event attributes
+     * Event attributes.
      */
-    attributes: Array<KeyValue>;
+    attributes: Array<KeyValue>,
   }
   /**
    * Describes a relationship to another `span`.
@@ -203,11 +187,11 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
     /**
      * Denotes which `span` to link to.
      */
-    spanContext: SpanContext;
+    spanContext: SpanContext,
     /**
      * Attributes describing the link.
      */
-    attributes: Array<KeyValue>;
+    attributes: Array<KeyValue>,
   }
   /**
    * The `status` of a `span`.
@@ -217,20 +201,20 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
    * The default status.
    */
   export interface StatusUnset {
-    tag: "unset";
+    tag: 'unset',
   }
   /**
    * The operation has been validated by an Application developer or Operator to have completed successfully.
    */
   export interface StatusOk {
-    tag: "ok";
+    tag: 'ok',
   }
   /**
    * The operation contains an error with a description.
    */
   export interface StatusError {
-    tag: "error";
-    val: string;
+    tag: 'error',
+    val: string,
   }
   /**
    * Describes the instrumentation scope that produced a span.
@@ -239,69 +223,80 @@ declare module "wasi:otel/tracing@0.2.0-draft" {
     /**
      * Name of the instrumentation scope.
      */
-    name: string;
+    name: string,
     /**
      * The library version.
      */
-    version?: string;
+    version?: string,
     /**
      * Schema URL used by this library.
      * https://github.com/open-telemetry/opentelemetry-specification/blob/v1.9.0/specification/schemas/overview.md#schema-url
      */
-    schemaUrl?: string;
+    schemaUrl?: string,
     /**
      * Specifies the instrumentation scope attributes to associate with emitted telemetry.
      */
-    attributes: Array<KeyValue>;
+    attributes: Array<KeyValue>,
   }
   /**
    * The data associated with a span.
    */
   export interface SpanData {
     /**
-     * Span context
+     * Span context.
      */
-    spanContext: SpanContext;
+    spanContext: SpanContext,
     /**
-     * Span parent id
-     * TODO: No clue what this is for
+     * Span parent id.
      */
-    parentSpanId: string;
+    parentSpanId: string,
     /**
-     * Span kind
+     * Span kind.
      */
-    spanKind: SpanKind;
+    spanKind: SpanKind,
     /**
-     * Span name
+     * Span name.
      */
-    name: string;
+    name: string,
     /**
-     * Span start time
+     * Span start time.
      */
-    startTime: Datetime;
+    startTime: Datetime,
     /**
-     * Span end time
+     * Span end time.
      */
-    endTime: Datetime;
+    endTime: Datetime,
     /**
-     * Span attributes
+     * Span attributes.
      */
-    attributes: Array<KeyValue>;
+    attributes: Array<KeyValue>,
     /**
-     * Span events
+     * Span events.
      */
-    events: Array<Event>;
+    events: Array<Event>,
     /**
-     * Span Links
+     * Span Links.
      */
-    links: Array<Link>;
+    links: Array<Link>,
     /**
-     * Span status
+     * Span status.
      */
-    status: Status;
+    status: Status,
     /**
-     * Instrumentation scope that produced this span
+     * Instrumentation scope that produced this span.
      */
-    instrumentationScope: InstrumentationScope;
+    instrumentationScope: InstrumentationScope,
+    /**
+     * Number of attributes dropped by the span due to limits being reached.
+     */
+    droppedAttributes: number,
+    /**
+     * Number of events dropped by the span due to limits being reached.
+     */
+    droppedEvents: number,
+    /**
+     * Number of links dropped by the span due to limits being reached.
+     */
+    droppedLinks: number,
   }
 }

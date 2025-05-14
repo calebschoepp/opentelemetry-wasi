@@ -11,12 +11,12 @@ provider.register();
 let router = AutoRouter();
 
 router.get("/", () => {
-  let span = trace.getTracer("spin-basic").startSpan("foo");
-  span.end();
-  return new Response("hello universe");
+    let span = trace.getTracer("spin-basic").startSpan("foo");
+    span.end();
+    return new Response("hello universe");
 });
 
 //@ts-ignore
 addEventListener("fetch", (event: FetchEvent) => {
-  event.respondWith(router.fetch(event.request));
+    event.respondWith(router.fetch(event.request));
 });

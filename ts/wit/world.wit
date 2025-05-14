@@ -1,6 +1,6 @@
 package wasi:otel@0.2.0-draft;
 
-world tracingimports {
+world imports {
     import tracing;
 }
 

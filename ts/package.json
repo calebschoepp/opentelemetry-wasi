@@ -22,5 +22,18 @@
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/sdk-trace-base": "^1.30.1"
+  },
+  "files": [
+    "dist",
+    "wit"
+  ],
+  "config": {
+    "witDependencies": [
+      {
+        "witPath": "./wit",
+        "package": "wasi:otel@0.2.0-draft",
+        "world": "imports"
+      }
+    ]
   }
 }
