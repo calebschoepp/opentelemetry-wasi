@@ -21,11 +21,11 @@ declare module 'wasi:clocks/wall-clock@0.2.0' {
    * The nanoseconds field of the output is always less than 1000000000.
    */
   export function resolution(): Datetime;
-}
-/**
- * A time and date in seconds plus nanoseconds.
- */
-export interface Datetime {
-  seconds: bigint,
-  nanoseconds: number,
+  /**
+   * A time and date in seconds plus nanoseconds.
+   */
+  export interface Datetime {
+    seconds: bigint,
+    nanoseconds: number,
+  }
 }

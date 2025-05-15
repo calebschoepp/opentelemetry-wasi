@@ -11,10 +11,13 @@
         "strict": true,
         "esModuleInterop": true,
     },
+    "include": [
+        "src/**/*",
+        "types/**/*"
+    ],
     "exclude": [
         "node_modules",
         "dist",
         "examples",
-        "types"
     ]
 }

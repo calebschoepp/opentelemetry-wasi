@@ -1,18 +1,18 @@
 spin_manifest_version = 2
 
 [application]
-authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
-description = "A basic Spin application that directly consumes the opentelemetry-wasi crate"
-name = "spin-basic"
+authors = ["Karthik Ganeshram <karthik.ganeshram@fermyon.com>"]
+description = ""
+name = "spin-basic-otel"
 version = "0.1.0"
 
 [[trigger.http]]
 route = "/..."
-component = "spin-basic"
+component = "spin-basic-otel"
 
-[component.spin-basic]
-source = "dist/spin-basic.wasm"
+[component.spin-basic-otel]
+source = "dist/spin-basic-otel.wasm"
 exclude_files = ["**/node_modules"]
-[component.spin-basic.build]
+[component.spin-basic-otel.build]
 command = ["npm install", "npm run build"]
 watch = ["src/**/*.ts"]
