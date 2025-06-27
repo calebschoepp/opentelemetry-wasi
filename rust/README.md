@@ -7,11 +7,8 @@ Enables using OpenTelemetry within Rust WebAssembly components backed by [WASI O
 Build a version of [Spin](https://github.com/spinframework/spin) from this [branch](https://github.com/calebschoepp/spin/tree/wasi-otel) and then run the example of your choosing.
 
 ```sh
-git clone https://github.com/calebschoepp/spin
-cd spin
-git fetch origin wasi-otel
-git checkout wasi-otel
-cargo install --path .
+git clone --depth 1 --branch wasi-otel https://github.com/calebschoepp/spin
+cargo install --path spin
 spin plugin update
 spin plugin install otel
 ```
