@@ -13,6 +13,7 @@ component = "spin-basic"
 [component.spin-basic]
 source = "main.wasm"
 allowed_outbound_hosts = []
+key_value_stores = ["default"]
 [component.spin-basic.build]
 command = "tinygo build -target=wasip1 -gc=leaking -buildmode=c-shared -no-debug -o main.wasm ."
 watch = ["**/*.go", "go.mod"]
