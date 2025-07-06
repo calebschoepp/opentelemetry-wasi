@@ -13,8 +13,6 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-const name = "go.opentelemetry.io/otel/example/dice"
-
 func init() {
 	spinhttp.Handle(func(w http.ResponseWriter, r *http.Request) {
 		wasiProcessor := otelWasi.NewWasiProcessor()

@@ -1,7 +1,7 @@
 .phony: build
 build:
-	@wkg wit fetch -d ../wit
-	@wkg wit build -d ../wit
+	@wkg wit fetch
+	@wkg wit build
 
 .phony: generate
 generate:
