@@ -1,0 +1,98 @@
+interface instrument {
+    /// The instrument name is case-insensitive; cannot be null/empty; first character must be alphabetical; other characters must be alphanumeric, `_`, `.`, `-`, and `/`; max length of 255. 
+    type name = string;
+    /// The instrument kind
+    type kind = instrument-kind;
+    /// An optional string provided by the author of the instrument. It MUST be case-sensitive (e.g. kb and kB are different units), ASCII string. It can have a maximum length of 63 characters
+    type unit = option<string>;
+    /// An optional string describing the instrument.
+    type description = option<string>;
+
+    
+    // Per the metrics API docs, there are optional advisory parameters; however, 
+    // they aren't yet stable so I'm electing to ignore them for now. 
+    // See: https://opentelemetry.io/docs/specs/otel/metrics/api/#instrument
+
+
+    // TODO: These are definitely wrong: shouldn't return a number type, but an interface type with associated functions/types
+    variant instrument-kind {
+        // Source: https://github.com/open-telemetry/opentelemetry-rust/blob/eac368a7e4addbee3b68c27a0eafae59928ad4c7/opentelemetry-sdk/src/metrics/instrument.rs#L19
+
+        /// Identifies a group of instruments that record increasing values synchronously
+        /// with the code path they are measuring.
+        counter(unsigned),
+        /// A group of instruments that record increasing values in an asynchronous
+        /// callback.
+        observable-counter(unsigned),
+
+        /// A group of instruments that record increasing and decreasing values
+        /// synchronously with the code path they are measuring.
+        up-down-counter(signed-and-unsigned),
+        /// A group of instruments that record increasing and decreasing values in an
+        /// asynchronous callback.
+        observable-up-down-counter(signed-and-unsigned),
+
+        /// A group of instruments that record a distribution of values synchronously with
+        /// the code path they are measuring.
+        histogram(unsigned),
+
+        /// a group of instruments that record current value synchronously with
+        /// the code path they are measuring.
+        gauge(signed-and-unsigned),
+        /// a group of instruments that record current values in an asynchronous callback.
+        observable-gauge(signed-and-unsigned),
+    }
+
+    variant signed-and-unsigned {
+        %u64(u64),
+        %f64(f64),
+        %s64(s64),
+    }
+
+    variant unsigned {
+        %u64(u64),
+        %f64(f64),
+    }
+}
+
+interface counter {
+    use metric-utils.{any, key-value};
+    // TODO: implement new function in SDK
+    add: func(value: any, attributes: list<key-value>);
+}
+
+interface observable-counter {
+
+}
+
+interface up-down-counter {
+
+}
+
+interface observable-up-down-counter {
+
+}
+
+interface gauge {
+
+}
+
+interface observable-gauge {
+
+}
+
+interface histogram {
+
+}
+
+
+// TODO: not quite sure how these are to be implemented
+interface async-instrument {
+    use metric-utils.{any, key-value};
+    observe: func(measurement: any, attributes: list<key-value>);
+}
+
+interface sync-instrument {
+    use metric-utils.{any, key-value};
+    measure: func(measurement: any, attributes: list<key-value>);
+}

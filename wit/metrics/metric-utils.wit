@@ -1,0 +1,46 @@
+package otel:metrics@0.0.0;
+
+interface metric-utils {
+    variant any {
+        %bool(bool),
+        %s8(s8),
+        %s16(s16),
+        %s32(s32),
+        %s64(s64),
+        %u8(u8),
+        %u16(u16),
+        %u32(u32),
+        %u64(u64),
+        %f32(f32),
+        %f64(f64),
+        %char(char),
+        %string(string),
+    }
+
+    record key-value {
+        key: key,
+        value: value,
+    }
+
+    type key = string;
+
+    /// The value part of attribute `key-value` pairs.
+    variant value {
+        /// A string value.
+        %string(string),
+        /// A boolean value.
+        %bool(bool),
+        /// A double precision floating point value.
+        %f64(f64),
+        /// A signed 64 bit integer value.
+        %s64(s64),
+        /// A homogeneous array of string values.
+        string-array(list<string>),
+        /// A homogeneous array of boolean values.
+        bool-array(list<bool>),
+        /// A homogeneous array of double precision floating point values.
+        f64-array(list<f64>),
+        /// A homogeneous array of 64 bit integer values.
+        s64-array(list<s64>),
+    }
+}
