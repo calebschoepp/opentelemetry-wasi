@@ -1,4 +1,21 @@
 interface instrument {
+    use counter-u64.{counter-u64};
+    use counter-f64.{counter-f64};
+    use observable-counter-u64.{observable-counter-u64};
+    use observable-counter-f64.{observable-counter-f64};
+    use up-down-counter-s64.{up-down-counter-s64};
+    use up-down-counter-f64.{up-down-counter-f64};
+    use observable-up-down-counter-s64.{observable-up-down-counter-s64};
+    use observable-up-down-counter-f64.{observable-up-down-counter-f64};
+    use gauge-u64.{gauge-u64};
+    use gauge-f64.{gauge-f64};
+    use gauge-s64.{gauge-s64};
+    use observable-gauge-u64.{observable-gauge-u64};
+    use observable-gauge-s64.{observable-gauge-s64};
+    use observable-gauge-f64.{observable-gauge-f64};
+    use histogram-f64.{histogram-f64};
+    use histogram-u64.{histogram-u64};
+
     /// The instrument name is case-insensitive; cannot be null/empty; first character must be alphabetical; other characters must be alphanumeric, `_`, `.`, `-`, and `/`; max length of 255. 
     type name = string;
     /// The instrument kind
@@ -13,86 +30,156 @@ interface instrument {
     // they aren't yet stable so I'm electing to ignore them for now. 
     // See: https://opentelemetry.io/docs/specs/otel/metrics/api/#instrument
 
-
-    // TODO: These are definitely wrong: shouldn't return a number type, but an interface type with associated functions/types
     variant instrument-kind {
         // Source: https://github.com/open-telemetry/opentelemetry-rust/blob/eac368a7e4addbee3b68c27a0eafae59928ad4c7/opentelemetry-sdk/src/metrics/instrument.rs#L19
 
         /// Identifies a group of instruments that record increasing values synchronously
         /// with the code path they are measuring.
-        counter(unsigned),
+        counter-u64(counter-u64),
+
+        /// Identifies a group of instruments that record increasing values synchronously
+        /// with the code path they are measuring.
+        counter-f64(counter-f64),
+
         /// A group of instruments that record increasing values in an asynchronous
         /// callback.
-        observable-counter(unsigned),
+        observable-counter-u64(observable-counter-u64),
+
+        /// A group of instruments that record increasing values in an asynchronous
+        /// callback.
+        observable-counter-f64(observable-counter-f64),
+
+        /// A group of instruments that record increasing and decreasing values
+        /// synchronously with the code path they are measuring. This uses a signed 64-bit integer type.
+        up-down-counter-s64(up-down-counter-s64),
 
         /// A group of instruments that record increasing and decreasing values
         /// synchronously with the code path they are measuring.
-        up-down-counter(signed-and-unsigned),
+        up-down-counter-f64(up-down-counter-f64),
+
+        /// A group of instruments that record increasing and decreasing values in an
+        /// asynchronous callback. This uses a signed 64-bit integer type.
+        observable-up-down-counter-s64(observable-up-down-counter-s64),
+
         /// A group of instruments that record increasing and decreasing values in an
         /// asynchronous callback.
-        observable-up-down-counter(signed-and-unsigned),
-
-        /// A group of instruments that record a distribution of values synchronously with
-        /// the code path they are measuring.
-        histogram(unsigned),
+        observable-up-down-counter-f64(observable-up-down-counter-f64),
 
         /// a group of instruments that record current value synchronously with
         /// the code path they are measuring.
-        gauge(signed-and-unsigned),
-        /// a group of instruments that record current values in an asynchronous callback.
-        observable-gauge(signed-and-unsigned),
+        gauge-u64(gauge-u64),
+
+        /// a group of instruments that record current value synchronously with
+        /// the code path they are measuring. This uses a signed 64-bit integer type.
+        gauge-s64(gauge-s64),
+
+        /// a group of instruments that record current value synchronously with
+        /// the code path they are measuring.
+        gauge-f64(gauge-f64),
+
+        /// A group of instruments that record current values in an asynchronous callback.
+        observable-gauge-u64(observable-gauge-u64),
+
+        /// A group of instruments that record current values in an asynchronous callback.
+        /// This uses a signed 64-bit integer type.
+        observable-gauge-s64(observable-gauge-s64),
+
+        /// A group of instruments that record current values in an asynchronous callback.
+        observable-gauge-f64(observable-gauge-f64),
+
+        /// A group of instruments that record a distribution of values synchronously with
+        /// the code path they are measuring.
+        histogram-f64(histogram-f64),
+
+        /// A group of instruments that record a distribution of values synchronously with
+        /// the code path they are measuring.
+        histogram-u64(histogram-u64),
     }
-
-    variant signed-and-unsigned {
-        %u64(u64),
-        %f64(f64),
-        %s64(s64),
-    }
-
-    variant unsigned {
-        %u64(u64),
-        %f64(f64),
-    }
 }
 
-interface counter {
-    use metric-utils.{any, key-value};
-    // TODO: implement new function in SDK
-    add: func(value: any, attributes: list<key-value>);
+interface counter-u64 {
+    use metric-utils.{key-value};
+    add: func(value: u64, attributes: list<key-value>);
 }
 
-interface observable-counter {
-
+interface counter-f64 {
+    use metric-utils.{key-value};
+    add: func(value: f64, attributes: list<key-value>);
 }
 
-interface up-down-counter {
-
+interface observable-counter-u64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/counter.rs
 }
 
-interface observable-up-down-counter {
-
+interface observable-counter-f64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/counter.rs
 }
 
-interface gauge {
-
+interface up-down-counter-s64 {
+    use metric-utils.{key-value};
+    add: func(value: s64, attributes: list<key-value>);
 }
 
-interface observable-gauge {
-
+interface up-down-counter-f64 {
+    use metric-utils.{key-value};   
+    add: func(value: f64, attributes: list<key-value>);
 }
 
-interface histogram {
-
+interface observable-up-down-counter-s64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/up_down_counter.rs
 }
 
-
-// TODO: not quite sure how these are to be implemented
-interface async-instrument {
-    use metric-utils.{any, key-value};
-    observe: func(measurement: any, attributes: list<key-value>);
+interface observable-up-down-counter-f64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/up_down_counter.rs
 }
 
-interface sync-instrument {
-    use metric-utils.{any, key-value};
-    measure: func(measurement: any, attributes: list<key-value>);
+interface gauge-u64 {
+    use metric-utils.{key-value};
+    %record: func(value: u64, attributes: list<key-value>);
+}
+
+interface gauge-f64 {
+    use metric-utils.{key-value};
+    %record: func(value: f64, attributes: list<key-value>);
+}
+
+interface gauge-s64 {
+    use metric-utils.{key-value};
+    %record: func(value: s64, attributes: list<key-value>);
+}
+
+interface observable-gauge-u64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/gauge.rs
+}
+
+interface observable-gauge-s64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/gauge.rs
+}
+
+interface observable-gauge-f64 {
+    use metric-utils.{key-value};
+    // No apparent functions here...
+    // Source opentelemetry-rust/opentelemetry-0.27.1/src/metrics/instruments/gauge.rs
+}
+
+interface histogram-f64 {
+    use metric-utils.{key-value};
+    %record: func(value: f64, attributes: list<key-value>);
+}
+
+interface histogram-u64 {
+    use metric-utils.{key-value};
+    %record: func(value: u64, attributes: list<key-value>);
 }

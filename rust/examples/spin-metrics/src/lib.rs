@@ -30,6 +30,4 @@ fn test() {
         .build();
 
     counter.add(15, &[KeyValue::new("status", "200")]);
-
-    
 }
