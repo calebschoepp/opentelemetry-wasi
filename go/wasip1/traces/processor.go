@@ -12,6 +12,7 @@ import "C"
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 
 	sdkTrace "go.opentelemetry.io/otel/sdk/trace"
 )
@@ -19,24 +20,25 @@ import (
 // Source: https://github.com/open-telemetry/opentelemetry-go/blob/20cd7f871fce8fae83ea35958775043d6e94b925/sdk/trace/span_processor.go#L15
 
 type WasiProcessor struct {
-	IsShutdown bool
+	IsShutdown atomic.Bool
 }
 
 func NewWasiProcessor() *WasiProcessor {
-	return &WasiProcessor{IsShutdown: false}
+	return &WasiProcessor{}
 }
 
 func DefaultWasiProcessor() *WasiProcessor {
 	return NewWasiProcessor()
 }
 
-func (p WasiProcessor) OnStart(parent context.Context, s sdkTrace.ReadWriteSpan) {
-	if p.IsShutdown {
+func (p *WasiProcessor) OnStart(parent context.Context, s sdkTrace.ReadWriteSpan) {
+	if p.IsShutdown.Load() {
 		return
 	}
 
 	spanCx := s.SpanContext()
 
+	fmt.Println("Converting span context to `traces_span_context...`")
 	convertedCx := C.traces_span_context_t{
 		trace_id:    goStringToOtelString(spanCx.TraceID().String()),
 		span_id:     goStringToOtelString(spanCx.SpanID().String()),
@@ -44,15 +46,17 @@ func (p WasiProcessor) OnStart(parent context.Context, s sdkTrace.ReadWriteSpan)
 		is_remote:   C.bool(spanCx.IsRemote()),
 		trace_state: *goTraceStateToOtelTraceState(spanCx.TraceState()),
 	}
+	fmt.Println("Successfully converted to `traces_span_context`")
 
 	C.traces_on_start(&convertedCx)
 }
 
-func (p WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
-	if p.IsShutdown {
+func (p *WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
+	if p.IsShutdown.Load() {
 		return
 	}
 
+	fmt.Println("Calling `traces_on_end`...")
 	C.traces_on_end(&C.traces_span_data_t{
 		span_context: C.traces_span_context_t{
 			trace_id:    goStringToOtelString(s.SpanContext().TraceID().String()),
@@ -72,16 +76,23 @@ func (p WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
 		status:                goStatusToOtelStatus(s.Status()),
 		instrumentation_scope: goInstrumentationScopeToOtelInstrumentationScope(s.InstrumentationScope()),
 	})
+
+	fmt.Println("Success calling `traces_on_end`")
 }
 
-func (p WasiProcessor) ForceFlush(ctx context.Context) error {
-	if p.IsShutdown {
+func (p *WasiProcessor) ForceFlush(ctx context.Context) error {
+	if p.IsShutdown.Load() {
 		return fmt.Errorf("processor already shutdown")
 	}
 
 	return nil
 }
 
-func (p WasiProcessor) Shutdown(ctx context.Context) error {
-	return p.ForceFlush(ctx)
+func (p *WasiProcessor) Shutdown(ctx context.Context) error {
+	err := p.ForceFlush(ctx)
+	if p.IsShutdown.Swap(true) {
+		return err
+	}
+
+	return nil
 }

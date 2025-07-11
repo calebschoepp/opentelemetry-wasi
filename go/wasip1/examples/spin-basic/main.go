@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	otelWasi "github.com/calebschoepp/opentelemetry-wasi"
-	spinhttp "github.com/spinframework/spin-go-sdk/http"
-	spinkv "github.com/spinframework/spin-go-sdk/kv"
+	otelWasi "github.com/calebschoepp/opentelemetry-wasi/traces"
+	spinhttp "github.com/spinframework/spin-go-sdk/v2/http"
+	spinkv "github.com/spinframework/spin-go-sdk/v2/kv"
+
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	sdkTrace "go.opentelemetry.io/otel/sdk/trace"
