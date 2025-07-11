@@ -1,0 +1,19 @@
+spin_manifest_version = 2
+
+[application]
+name = "spin-basic"
+version = "0.1.0"
+authors = ["Andrew Steurer <94206073+asteurer@users.noreply.github.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "spin-basic"
+
+[component.spin-basic]
+source = "main.wasm"
+allowed_outbound_hosts = []
+key_value_stores = ["default"]
+[component.spin-basic.build]
+command = "tinygo build  --wit-package $(go list -mod=readonly -m -f '{{.Dir}}' github.com/calebschoepp/opentelemetry-wasi)/wit --wit-world imports -target=wasip2 -gc=leaking -buildmode=c-shared -no-debug -o main.wasm ."
+watch = ["**/*.go", "go.mod"]

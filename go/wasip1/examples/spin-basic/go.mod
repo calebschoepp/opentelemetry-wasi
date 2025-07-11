@@ -2,8 +2,6 @@ module spin-basic
 
 go 1.24.4
 
-require github.com/fermyon/spin/sdk/go/v2 v2.2.0
-
 require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -17,9 +15,12 @@ require (
 
 require (
 	github.com/calebschoepp/opentelemetry-wasi v0.0.0
+	github.com/spinframework/spin-go-sdk v0.0.0-20250411015808-ee0bd1e7d170
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/sdk v1.37.0
 	go.opentelemetry.io/otel/trace v1.37.0
 )
 
-replace github.com/calebschoepp/opentelemetry-wasi => ../..
+replace github.com/calebschoepp/opentelemetry-wasi => ../../..
+
+replace github.com/spinframework/spin-go-sdk => /home/asteurer/repos/spin-go-sdk
