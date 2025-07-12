@@ -127,7 +127,7 @@ func goListLinkToOtelListLink(links []sdkTrace.Link) *C.traces_list_link_t {
 			trace_id:    goStringToOtelString(link.SpanContext.TraceID().String()),
 			span_id:     goStringToOtelString(link.SpanContext.SpanID().String()),
 			trace_flags: C.traces_trace_flags_t(link.SpanContext.TraceFlags()),
-			is_remote:   C.bool(link.SpanContext.IsRemote()),
+			is_remote:   C._Bool(link.SpanContext.IsRemote()),
 			trace_state: *goTraceStateToOtelTraceState(link.SpanContext.TraceState()),
 		}
 
@@ -178,7 +178,7 @@ func goValueToOtelValue(value attribute.Value) C.traces_value_t {
 		*(*C.traces_string_t)(unsafe.Pointer(&otelValue.val)) = goStringToOtelString(value.AsString())
 	case attribute.BOOL:
 		otelValue.tag = C.TRACES_VALUE_BOOL
-		*(*C.bool)(unsafe.Pointer(&otelValue.val)) = goBoolToCBool(value.AsBool())
+		*(*C._Bool)(unsafe.Pointer(&otelValue.val)) = goBoolToCBool(value.AsBool())
 	case attribute.FLOAT64:
 		otelValue.tag = C.TRACES_VALUE_F64
 		*(*C.double)(unsafe.Pointer(&otelValue.val)) = C.double(value.AsFloat64())

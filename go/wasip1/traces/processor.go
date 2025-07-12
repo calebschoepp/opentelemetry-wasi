@@ -43,7 +43,7 @@ func (p *WasiProcessor) OnStart(parent context.Context, s sdkTrace.ReadWriteSpan
 		trace_id:    goStringToOtelString(spanCx.TraceID().String()),
 		span_id:     goStringToOtelString(spanCx.SpanID().String()),
 		trace_flags: C.uint8_t(spanCx.TraceFlags()),
-		is_remote:   C.bool(spanCx.IsRemote()),
+		is_remote:   C._Bool(spanCx.IsRemote()),
 		trace_state: *goTraceStateToOtelTraceState(spanCx.TraceState()),
 	}
 	fmt.Println("Successfully converted to `traces_span_context`")
@@ -62,7 +62,7 @@ func (p *WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
 			trace_id:    goStringToOtelString(s.SpanContext().TraceID().String()),
 			span_id:     goStringToOtelString(s.SpanContext().SpanID().String()),
 			trace_flags: C.traces_trace_flags_t(s.SpanContext().TraceFlags()),
-			is_remote:   C.bool(s.SpanContext().IsRemote()),
+			is_remote:   C._Bool(s.SpanContext().IsRemote()),
 			trace_state: *goTraceStateToOtelTraceState(s.SpanContext().TraceState()),
 		},
 		parent_span_id:        goStringToOtelString(s.Parent().SpanID().String()),

@@ -71,12 +71,12 @@ func goStringSliceToOtelListString(list []string) C.traces_list_string_t {
 	}
 }
 
-func goBoolToCBool(v bool) C.bool {
+func goBoolToCBool(v bool) C._Bool {
 	if v {
-		return C.bool(true)
+		return C._Bool(true)
 	}
 
-	return C.bool(false)
+	return C._Bool(false)
 }
 
 func goBoolSliceToOtelListBool(list []bool) C.traces_list_bool_t {
@@ -84,9 +84,9 @@ func goBoolSliceToOtelListBool(list []bool) C.traces_list_bool_t {
 		return C.traces_list_bool_t{ptr: nil, len: 0}
 	}
 
-	cArray := (*C.bool)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C.bool(false)))))
+	cArray := (*C._Bool)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C._Bool(false)))))
 	for i, v := range list {
-		*(*C.bool)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C.bool(false)))) = C.bool(v)
+		*(*C._Bool)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C._Bool(false)))) = C._Bool(v)
 	}
 
 	return C.traces_list_bool_t{
