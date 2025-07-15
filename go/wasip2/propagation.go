@@ -3,8 +3,8 @@ package wasi_otel
 import (
 	"context"
 
-	wasmTrace "github.com/calebschoepp/opentelemetry-wasi/internal/wasi/otel/tracing"
-	otelTrace "go.opentelemetry.io/otel/trace"
+	wasiTrace "github.com/calebschoepp/opentelemetry-wasi/internal/wasi/otel/tracing"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type WasiPropagator interface {
@@ -23,27 +23,27 @@ func DefaultTraceContextPropagator() *TraceContextPropagator {
 
 func (t TraceContextPropagator) Extract(cx context.Context) context.Context {
 	// Retrieving span context from the wasm host
-	hostCx := wasmTrace.OuterSpanContext()
+	hostCx := wasiTrace.OuterSpanContext()
 
 	// Converting wasm host TraceState type to otel TraceState type
-	otelTraceState := otelTrace.TraceState{}
-	for _, unit := range hostCx.TraceState.Slice() {
-		traceState, err := otelTraceState.Insert(unit[0], unit[1])
+	var traceState trace.TraceState
+	for _, entry := range hostCx.TraceState.Slice() {
+		ts, err := traceState.Insert(entry[0], entry[1])
 		if err != nil {
 			// TODO: not sure how to handle this error
 		}
-		otelTraceState = traceState
+		traceState = ts
 	}
 
-	cfg := otelTrace.SpanContextConfig{
-		TraceID:    otelTrace.TraceID([]byte(hostCx.TraceID)),
-		SpanID:     otelTrace.SpanID([]byte(hostCx.SpanID)),
-		TraceFlags: otelTrace.TraceFlags(hostCx.TraceFlags),
-		TraceState: otelTraceState,
+	cfg := trace.SpanContextConfig{
+		TraceID:    trace.TraceID([]byte(hostCx.TraceID)),
+		SpanID:     trace.SpanID([]byte(hostCx.SpanID)),
+		TraceFlags: trace.TraceFlags(hostCx.TraceFlags),
+		TraceState: traceState,
 		Remote:     hostCx.IsRemote,
 	}
 
-	convertedCx := otelTrace.NewSpanContext(cfg)
+	convertedCx := trace.NewSpanContext(cfg)
 
-	return otelTrace.ContextWithRemoteSpanContext(cx, convertedCx)
+	return trace.ContextWithRemoteSpanContext(cx, convertedCx)
 }

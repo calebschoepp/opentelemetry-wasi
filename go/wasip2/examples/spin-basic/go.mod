@@ -21,6 +21,4 @@ require (
 	go.opentelemetry.io/otel/trace v1.37.0
 )
 
-replace github.com/calebschoepp/opentelemetry-wasi => ../../..
-
-replace github.com/spinframework/spin-go-sdk => ../spin-go-sdk
+replace github.com/calebschoepp/opentelemetry-wasi => ../..
