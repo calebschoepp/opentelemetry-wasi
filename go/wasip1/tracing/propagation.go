@@ -1,13 +1,9 @@
-//go:build cgo
-// +build cgo
-
 package trace
 
-/*
-#include <stdint.h>
-#include <stdlib.h>
-#include "traces.h"
-*/
+// #cgo CFLAGS: -Wno-unused-parameter -Wno-switch-bool
+// #include<tracing.h>
+// #include<stdlib.h>
+// #include<stdint.h>
 import "C"
 import (
 	"context"
@@ -33,9 +29,9 @@ func DefaultTraceContextPropagator() *TraceContextPropagator {
 func (t TraceContextPropagator) Extract(cx context.Context) context.Context {
 	fmt.Println("Retrieving outer span context...")
 	// Retrieving span context from the wasm host
-	var cSpanContext C.traces_span_context_t
-	C.traces_outer_span_context(&cSpanContext)
-	defer C.traces_span_context_free(&cSpanContext) // TODO: This is wrong, we need to go field-by-field and free things
+	var cSpanContext C.tracing_span_context_t
+	C.outer_span_context(&cSpanContext)
+	defer C.tracing_span_context_free(&cSpanContext)
 	fmt.Println("Outer span context has been retrieved")
 
 	fmt.Println("Converting trace state...")

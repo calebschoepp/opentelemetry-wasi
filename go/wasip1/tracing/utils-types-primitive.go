@@ -1,18 +1,14 @@
-//go:build cgo
-// +build cgo
-
 package trace
 
-/*
-#include <stdint.h>
-#include <stdlib.h>
-#include "traces.h"
-*/
+// #cgo CFLAGS: -Wno-unused-parameter -Wno-switch-bool
+// #include<tracing.h>
+// #include<stdlib.h>
+// #include<stdint.h>
 import "C"
 import "unsafe"
 
-// Translates a `C.traces_string_t` to a byte slice
-func otelStringToGoByteSlice(otelStr C.traces_string_t) []byte {
+// Translates a `C.tracing_string_t` to a byte slice
+func otelStringToGoByteSlice(otelStr C.tracing_string_t) []byte {
 	if otelStr.ptr == nil || otelStr.len == 0 {
 		return nil
 	}
@@ -20,52 +16,52 @@ func otelStringToGoByteSlice(otelStr C.traces_string_t) []byte {
 	return (*[1 << 28]byte)(unsafe.Pointer(otelStr.ptr))[:otelStr.len:otelStr.len] // TODO: figure out what this does
 }
 
-// Translates a `C.traces_string_t` to a string
-func otelStringToGoString(otelStr C.traces_string_t) string {
+// Translates a `C.tracing_string_t` to a string
+func otelStringToGoString(otelStr C.tracing_string_t) string {
 	if otelStr.ptr == nil || otelStr.len == 0 {
 		return ""
 	}
 	return C.GoStringN(otelStr.ptr, C.int(otelStr.len))
 }
 
-// Translates from `string` to `C.traces_string_t`
-func goStringToOtelString(s string) C.traces_string_t {
+// Translates from `string` to `C.tracing_string_t`
+func goStringToOtelString(s string) C.tracing_string_t {
 	if s == "" {
-		return C.traces_string_t{ptr: nil, len: 0}
+		return C.tracing_string_t{ptr: nil, len: 0}
 	}
 
 	cStr := C.CString(s)
-	return C.traces_string_t{
+	return C.tracing_string_t{
 		ptr: cStr,
 		len: C.size_t(len(s)),
 	}
 }
 
-func goStringToOtelOptionString(s string) C.traces_option_string_t {
+func goStringToOtelOptionString(s string) C.tracing_option_string_t {
 	if s == "" {
-		return C.traces_option_string_t{
+		return C.tracing_option_string_t{
 			is_some: false,
 			val:     goStringToOtelString(""),
 		}
 	}
 
-	return C.traces_option_string_t{
+	return C.tracing_option_string_t{
 		is_some: true,
 		val:     goStringToOtelString(s),
 	}
 }
 
-func goStringSliceToOtelListString(list []string) C.traces_list_string_t {
+func goStringSliceToOtelListString(list []string) C.tracing_list_string_t {
 	if len(list) == 0 {
-		return C.traces_list_string_t{ptr: nil, len: 0}
+		return C.tracing_list_string_t{ptr: nil, len: 0}
 	}
 
-	cArray := (*C.traces_string_t)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C.traces_string_t{}))))
+	cArray := (*C.tracing_string_t)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C.tracing_string_t{}))))
 	for i, s := range list {
-		*(*C.traces_string_t)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C.traces_string_t{}))) = goStringToOtelString(s)
+		*(*C.tracing_string_t)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C.tracing_string_t{}))) = goStringToOtelString(s)
 	}
 
-	return C.traces_list_string_t{
+	return C.tracing_list_string_t{
 		ptr: cArray,
 		len: C.size_t(len(list)),
 	}
@@ -79,9 +75,9 @@ func goBoolToCBool(v bool) C._Bool {
 	return C._Bool(false)
 }
 
-func goBoolSliceToOtelListBool(list []bool) C.traces_list_bool_t {
+func goBoolSliceToOtelListBool(list []bool) C.tracing_list_bool_t {
 	if len(list) == 0 {
-		return C.traces_list_bool_t{ptr: nil, len: 0}
+		return C.tracing_list_bool_t{ptr: nil, len: 0}
 	}
 
 	cArray := (*C._Bool)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C._Bool(false)))))
@@ -89,15 +85,15 @@ func goBoolSliceToOtelListBool(list []bool) C.traces_list_bool_t {
 		*(*C._Bool)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C._Bool(false)))) = C._Bool(v)
 	}
 
-	return C.traces_list_bool_t{
+	return C.tracing_list_bool_t{
 		ptr: cArray,
 		len: C.size_t(len(list)),
 	}
 }
 
-func goSliceF64toOtelListF64(list []float64) C.traces_list_float64_t {
+func goSliceF64toOtelListF64(list []float64) C.tracing_list_float64_t {
 	if len(list) == 0 {
-		return C.traces_list_float64_t{ptr: nil, len: 0}
+		return C.tracing_list_float64_t{ptr: nil, len: 0}
 	}
 
 	cArray := (*C.double)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C.double(0)))))
@@ -106,15 +102,15 @@ func goSliceF64toOtelListF64(list []float64) C.traces_list_float64_t {
 		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(num)
 	}
 
-	return C.traces_list_float64_t{
+	return C.tracing_list_float64_t{
 		ptr: cArray,
 		len: C.size_t(len(list)),
 	}
 }
 
-func goSliceS64ToOtelListS64(list []int64) C.traces_list_s64_t {
+func goSliceS64ToOtelListS64(list []int64) C.tracing_list_s64_t {
 	if len(list) == 0 {
-		return C.traces_list_s64_t{ptr: nil, len: 0}
+		return C.tracing_list_s64_t{ptr: nil, len: 0}
 	}
 
 	cArray := (*C.int64_t)(C.malloc(C.size_t(len(list)) * C.size_t(unsafe.Sizeof(C.int64_t(0)))))
@@ -123,7 +119,7 @@ func goSliceS64ToOtelListS64(list []int64) C.traces_list_s64_t {
 		*(*C.int64_t)(unsafe.Pointer(uintptr(unsafe.Pointer(cArray)) + uintptr(i)*unsafe.Sizeof(C.int64_t(0)))) = C.int64_t(num)
 	}
 
-	return C.traces_list_s64_t{
+	return C.tracing_list_s64_t{
 		ptr: cArray,
 		len: C.size_t(len(list)),
 	}

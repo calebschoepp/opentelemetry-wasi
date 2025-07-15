@@ -7,4 +7,4 @@
 generate:
 	wit-bindgen c --import wit/logs.wit --out-dir ./logs
 	wit-bindgen c --import wit/metrics.wit --out-dir ./metrics
-	wit-bindgen c --import wit/traces.wit --out-dir ./traces
+	wit-bindgen c --import wit/tracing.wit --out-dir ./tracing

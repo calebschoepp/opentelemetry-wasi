@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	otelWasi "github.com/calebschoepp/opentelemetry-wasi/traces"
+	otelWasi "github.com/calebschoepp/opentelemetry-wasi/tracing"
 	spinhttp "github.com/spinframework/spin-go-sdk/v2/http"
 	spinkv "github.com/spinframework/spin-go-sdk/v2/kv"
 

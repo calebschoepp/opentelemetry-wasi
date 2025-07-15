@@ -1,13 +1,9 @@
-//go:build cgo
-// +build cgo
-
 package trace
 
-/*
-#include <stdint.h>
-#include <stdlib.h>
-#include "traces.h"
-*/
+// #cgo CFLAGS: -Wno-unused-parameter -Wno-switch-bool
+// #include<tracing.h>
+// #include<stdlib.h>
+// #include<stdint.h>
 import "C"
 import (
 	"context"
@@ -39,16 +35,17 @@ func (p *WasiProcessor) OnStart(parent context.Context, s sdkTrace.ReadWriteSpan
 	spanCx := s.SpanContext()
 
 	fmt.Println("Converting span context to `traces_span_context...`")
-	convertedCx := C.traces_span_context_t{
+	convertedCx := &C.tracing_span_context_t{
 		trace_id:    goStringToOtelString(spanCx.TraceID().String()),
 		span_id:     goStringToOtelString(spanCx.SpanID().String()),
 		trace_flags: C.uint8_t(spanCx.TraceFlags()),
 		is_remote:   C._Bool(spanCx.IsRemote()),
 		trace_state: *goTraceStateToOtelTraceState(spanCx.TraceState()),
 	}
+	defer C.tracing_span_context_free(convertedCx)
 	fmt.Println("Successfully converted to `traces_span_context`")
 
-	C.traces_on_start(&convertedCx)
+	C.on_start(convertedCx)
 }
 
 func (p *WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
@@ -57,11 +54,11 @@ func (p *WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
 	}
 
 	fmt.Println("Calling `traces_on_end`...")
-	C.traces_on_end(&C.traces_span_data_t{
-		span_context: C.traces_span_context_t{
+	data := &C.tracing_span_data_t{
+		span_context: C.tracing_span_context_t{
 			trace_id:    goStringToOtelString(s.SpanContext().TraceID().String()),
 			span_id:     goStringToOtelString(s.SpanContext().SpanID().String()),
-			trace_flags: C.traces_trace_flags_t(s.SpanContext().TraceFlags()),
+			trace_flags: C.tracing_trace_flags_t(s.SpanContext().TraceFlags()),
 			is_remote:   C._Bool(s.SpanContext().IsRemote()),
 			trace_state: *goTraceStateToOtelTraceState(s.SpanContext().TraceState()),
 		},
@@ -75,7 +72,10 @@ func (p *WasiProcessor) OnEnd(s sdkTrace.ReadOnlySpan) {
 		links:                 *goListLinkToOtelListLink(s.Links()),
 		status:                goStatusToOtelStatus(s.Status()),
 		instrumentation_scope: goInstrumentationScopeToOtelInstrumentationScope(s.InstrumentationScope()),
-	})
+	}
+	defer C.tracing_span_data_free(data)
+
+	C.on_end(data)
 
 	fmt.Println("Success calling `traces_on_end`")
 }

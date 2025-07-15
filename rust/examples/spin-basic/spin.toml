@@ -11,9 +11,9 @@ route = "/..."
 component = "spin-basic"
 
 [component.spin-basic]
-source = "../../target/wasm32-wasip1/release/spin_basic.wasm"
+source = "../../target/wasm32-wasip2/release/spin_basic.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
 [component.spin-basic.build]
-command = "cargo build --target wasm32-wasip1 --release"
+command = "cargo build --target wasm32-wasip2 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]
