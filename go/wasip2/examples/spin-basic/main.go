@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	otelWasi "github.com/calebschoepp/opentelemetry-wasi"
-	spinhttp "github.com/fermyon/spin/sdk/go/v2/http"
-	spinkv "github.com/fermyon/spin/sdk/go/v2/kv"
+	spinhttp "github.com/spinframework/spin-go-sdk/v2/http"
+	spinkv "github.com/spinframework/spin-go-sdk/v2/kv"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	sdkTrace "go.opentelemetry.io/otel/sdk/trace"
@@ -42,7 +42,7 @@ func init() {
 		)
 		defer childSpan.End()
 
-		store, err := spinkv.OpenStore("default")
+		store, err := spinkv.OpenDefault()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Failed to open kv store"))

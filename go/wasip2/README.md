@@ -1,15 +1,5 @@
 # OpenTelemetry WASI for Go
 
-## Overview
-Resources I'm using: 
-- https://component-model.bytecodealliance.org/language-support/go.html
-- https://opentelemetry.io/docs/languages/go/getting-started/
-- https://opentelemetry.io/docs/specs/otel/trace/sdk/
-
-Resources I need to look further-into:
-- https://github.com/bytecodealliance/wit-bindgen
-- https://github.com/bytecodealliance/go-modules
-
 ## Requirements
 - [Go](https://go.dev/dl/) version `1.24`
 - [Tinygo](https://github.com/tinygo-org/tinygo/releases/tag/v0.38.0) version `0.38`
@@ -18,6 +8,15 @@ Resources I need to look further-into:
 
 ## Usage
 
+### Additional notes
+
+I'm using the `wasip2` branch of the `spin-go-sdk`:
+```bash
+$ go get github.com/fermyon/spin-go-sdk@wasip2
+```
+
+
+### How to use the SDK
 Build a version of [Spin](https://github.com/spinframework/spin) from this [branch](https://github.com/calebschoepp/spin/tree/wasi-otel) and then run the example of your choosing.
 
 ```sh
