@@ -1,9 +1,10 @@
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
-use opentelemetry::metrics::{Counter, Histogram, Meter, MeterProvider};
+
+use opentelemetry::global;
 use opentelemetry::KeyValue;
-use opentelemetry_sdk::metrics::{SdkMeterProvider, PeriodicReader, MeterProviderBuilder};
-use opentelemetry_sdk::{resource, Resource};
+use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
+use opentelemetry_sdk::{runtime, Resource};
 
 /// A simple Spin HTTP component.
 #[http_component]
@@ -16,18 +17,19 @@ fn handle_spin_metrics(req: Request) -> anyhow::Result<impl IntoResponse> {
         .build())
 }
 
-fn test() {
-    let meter_provider = SdkMeterProvider::builder()
-        .with_resource(Resource::new(vec![KeyValue::new("service.name", "my-service")]))
+fn init_meter_provider() -> opentelemetry_sdk::metrics::SdkMeterProvider {
+    let exporter = opentelemetry_stdout::MetricExporterBuilder::default()
+        // Build exporter using Delta Temporality (Defaults to Temporality::Cumulative)
+        // .with_temporality(opentelemetry_sdk::metrics::Temporality::Delta)
         .build();
-
-    let meter = meter_provider.meter("my-meter");
-
-    let counter= meter
-        .u64_counter("http_requests_total")
-        .with_description("Total number of HTTP requests")
-        .with_unit("requests")
+    let reader = PeriodicReader::builder(exporter, runtime::Tokio).build();
+    let provider = SdkMeterProvider::builder()
+        .with_reader(reader)
+        .with_resource(Resource::new([KeyValue::new(
+            "service.name",
+            "metrics-basic-example",
+        )]))
         .build();
-
-    counter.add(15, &[KeyValue::new("status", "200")]);
+    global::set_meter_provider(provider.clone());
+    provider
 }

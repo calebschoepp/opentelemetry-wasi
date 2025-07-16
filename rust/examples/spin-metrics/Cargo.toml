@@ -12,6 +12,8 @@ crate-type = ["cdylib"]
 [dependencies]
 anyhow = { workspace = true }
 opentelemetry = { workspace = true }
-opentelemetry_sdk = { workspace = true }
+opentelemetry_sdk = { workspace = true, features = ["metrics", "rt-tokio"] }
 opentelemetry-wasi = { path = "../../" }
 spin-sdk = { workspace = true }
+
+opentelemetry-stdout = { version = "0.27.0", features = ["metrics"] }

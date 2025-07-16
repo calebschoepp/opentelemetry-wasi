@@ -1,4 +1,107 @@
+// Using the `exporter` as the bridge between host and guest:
+// https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/exporter.rs
 interface metrics {
-    record meter {
+    // use otel-common.{any, key-value, key, value};
+
+    %export: func(metrics: resource-metrics) -> result<_, metric-error>;
+    force-flush: func() -> result<_, metric-error>;
+    shutdown: func() -> result<_, metric-error>;
+    temporality: func() -> temporality-t;
+
+    record resource-metrics {
+        %resource: %resource,
+        scope-metrics: list<scope-metrics>,
+    }
+
+    record %resource {
+        inner: resource-inner,
+    }
+
+    record resource-inner {
+        // TODO: not sure if this is the best way to handle this? The type listed in the `opentelemetry-sdk/resource/mod.rs` file is `HashMap<Key, Value>`
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/0e3511ee92f4e9d02eadd529b191ee7a33f6afe9/opentelemetry-sdk/src/resource/mod.rs#L43
+        attrs: list<key-value>,
+        schema-url: option<string>,
+    }
+
+    record scope-metrics {
+        scope: instrumentation-scope,
+        metrics: list<metric>,
+    }
+
+    record instrumentation-scope {
+        name: string,
+        version: option<string>,
+        schema-url: option<string>,
+        attributes: list<key-value>,
+    }
+
+    record metric {
+        name: string,
+        description: string,
+        unit: string,
+        data: any, // This is represented in the rust sdk as type `Aggregation`, which is basically an `any` type
+    }
+
+    variant metric-error {
+        other(string),
+        config(string),
+        invalid-instrument-configuration(string),
+    }
+
+
+
+    enum temporality-t {
+        cumulative, // TODO: #[default] is used on this in the source code
+        delta,
+        low-memory,
+    }
+
+    /// A key-value pair describing an attribute.
+    record key-value {
+        /// The attribute name.
+        key: key,
+        /// The attribute value.
+        value: value,
+    }
+
+    /// The key part of attribute `key-value` pairs.
+    type key = string;
+
+    /// The value part of attribute `key-value` pairs.
+    variant value {
+        /// A string value.
+        %string(string),
+        /// A boolean value.
+        %bool(bool),
+        /// A double precision floating point value.
+        %f64(f64),
+        /// A signed 64 bit integer value.
+        %s64(s64),
+        /// A homogeneous array of string values.
+        string-array(list<string>),
+        /// A homogeneous array of boolean values.
+        bool-array(list<bool>),
+        /// A homogeneous array of double precision floating point values.
+        f64-array(list<f64>),
+        /// A homogeneous array of 64 bit integer values.
+        s64-array(list<s64>),
+    }
+
+    /// A variant for all primitive types
+    variant any {
+        %char(char),
+        %string(string),
+        %bool(bool),
+        %f32(f32),
+        %f64(f64),
+        %s8(s8),
+        %s16(s16),
+        %s32(s32),
+        %s64(s64),
+        %u8(u8),
+        %u16(u16),
+        %u32(u32),
+        %u64(u64),
     }
 }
