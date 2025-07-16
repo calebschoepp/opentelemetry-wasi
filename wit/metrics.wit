@@ -1,0 +1,4 @@
+interface metrics {
+    record meter {
+    }
+}

@@ -1,0 +1,10 @@
+[package]
+name = "opentelemetry-wasi-metrics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry_sdk = { workspace = true }
+wit-bindgen = { workspace = true }

@@ -3,17 +3,26 @@ name = "opentelemetry-wasi"
 version = "0.27.0"
 edition = "2021"
 
+[lib]
+name = "opentelemetry_wasi"
+
 [dependencies]
 anyhow = { workspace = true }
 opentelemetry = { workspace = true }
 opentelemetry_sdk = { workspace = true }
-wit-bindgen = "0.30.0"
+wit-bindgen = { workspace = true }
+opentelemetry-wasi-metrics = { path = "crates/metrics" }
+opentelemetry-wasi-tracing = { path = "crates/tracing" }
 
 [workspace]
-members = ["examples/*"]
+members = [
+    "examples/*",
+    "crates/*",
+]
 
 [workspace.dependencies]
 anyhow = "1"
 opentelemetry = "0.27.0"
 opentelemetry_sdk = "0.27.0"
 spin-sdk = "3.1.0"
+wit-bindgen = "0.30.0"

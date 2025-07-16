@@ -410,6 +410,28 @@ version = "0.27.0"
 dependencies = [
  "anyhow",
  "opentelemetry",
+ "opentelemetry-wasi-metrics",
+ "opentelemetry-wasi-tracing",
+ "opentelemetry_sdk",
+ "wit-bindgen 0.30.0",
+]
+
+[[package]]
+name = "opentelemetry-wasi-metrics"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
+ "opentelemetry_sdk",
+ "wit-bindgen 0.30.0",
+]
+
+[[package]]
+name = "opentelemetry-wasi-tracing"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry",
  "opentelemetry_sdk",
  "wit-bindgen 0.30.0",
 ]
