@@ -1,5 +1,5 @@
 interface tracing {
-    // use otel-common.{key-value, key, value}; // TODO: Getting errors stating that `value` isn't able to be found when I build spin-basic example...
+    // use otel-common.{key-value, key, value};
     use wasi:clocks/wall-clock@0.2.0.{datetime};
 
     /// Called when a span is started.

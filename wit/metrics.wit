@@ -2,6 +2,7 @@
 // https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/exporter.rs
 interface metrics {
     // use otel-common.{any, key-value, key, value};
+    use wasi:clocks/wall-clock@0.2.0.{datetime};
 
     %export: func(metrics: resource-metrics) -> result<_, metric-error>;
     force-flush: func() -> result<_, metric-error>;
@@ -19,7 +20,7 @@ interface metrics {
 
     record resource-inner {
         // TODO: not sure if this is the best way to handle this? The type listed in the `opentelemetry-sdk/resource/mod.rs` file is `HashMap<Key, Value>`
-        // See https://github.com/open-telemetry/opentelemetry-rust/blob/0e3511ee92f4e9d02eadd529b191ee7a33f6afe9/opentelemetry-sdk/src/resource/mod.rs#L43
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/resource/mod.rs#L43
         attrs: list<key-value>,
         schema-url: option<string>,
     }
@@ -36,11 +37,82 @@ interface metrics {
         attributes: list<key-value>,
     }
 
+    // https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L33
     record metric {
         name: string,
         description: string,
         unit: string,
-        data: any, // This is represented in the rust sdk as type `Aggregation`, which is basically an `any` type
+        data: aggregation,
+    }
+
+    // TODO: Possible refactor could be to define a number variant and use that rather than a unique sum, gauge, histogram for each type
+    variant aggregation {
+        sum(sum),
+        gauge(gauge),
+        histogram(histogram),
+
+        // TODO: Do we need to have this available here? I can't tell whether this would be an aggregation type or not: https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L44
+        // exponential-histogram(exponential-histogram),
+    }
+
+    variant aggregation-number {
+        %f64(f64),
+        %s64(s64),
+        %u64(u64),
+    }
+
+    record sum {
+        data-points: list<data-point>,
+        temporality: temporality-t,
+        is-monotonic: bool,
+    }
+
+    record gauge {
+        data-points: list<data-point>,
+    }
+
+    record data-point {
+        attributes: list<key-value>,
+        start-time: option<datetime>,
+        time: option<datetime>,
+        value: aggregation-number,
+        exemplars: list<exemplar>,
+    }
+
+    record exemplar {
+        filtered-attributes: list<key-value>,
+        time: datetime,
+        value: aggregation-number,
+        span-id: span-id,
+        trace-id: trace-id,
+    }
+
+    /// The trace that this `span-context` belongs to.
+    ///
+    /// 16 bytes encoded as a hexadecimal string.
+    type trace-id = string;
+
+    /// The id of this `span-context`.
+    ///
+    /// 8 bytes encoded as a hexadecimal string.
+    type span-id = string;
+
+    record histogram {
+        data-points: list<histogram-data-point>,
+        temporality: temporality-t,
+    }
+
+    record histogram-data-point {
+        attributes: list<key-value>,
+        start-time: datetime,
+        time: datetime,
+        count: u64,
+        bounds: list<f64>,
+        bucket-counts: list<u64>,
+        min: option<aggregation-number>,
+        max: option<aggregation-number>,
+        sum: aggregation-number,
+        exemplars: list<exemplar>,
     }
 
     variant metric-error {
@@ -86,22 +158,5 @@ interface metrics {
         f64-array(list<f64>),
         /// A homogeneous array of 64 bit integer values.
         s64-array(list<s64>),
-    }
-
-    /// A variant for all primitive types
-    variant any {
-        %char(char),
-        %string(string),
-        %bool(bool),
-        %f32(f32),
-        %f64(f64),
-        %s8(s8),
-        %s16(s16),
-        %s32(s32),
-        %s64(s64),
-        %u8(u8),
-        %u16(u16),
-        %u32(u32),
-        %u64(u64),
     }
 }

@@ -1,6 +1,8 @@
 mod exporter;
 mod conversion;
 
+pub use exporter::WasiExporter;
+
 #[doc(hidden)]
 /// Module containing wit bindgen generated code.
 ///
