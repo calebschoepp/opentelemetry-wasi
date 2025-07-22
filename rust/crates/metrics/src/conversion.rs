@@ -25,7 +25,7 @@ impl From<&opentelemetry_sdk::resource::Resource> for Resource {
     }
 }
 
-impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
+impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetric {
     fn from(value: &opentelemetry_sdk::metrics::data::ScopeMetrics) -> Self {
         Self {
             scope: value.scope.clone().into(),
@@ -49,41 +49,73 @@ impl From<&opentelemetry_sdk::metrics::data::Metric> for Metric {
 fn convert_aggregation(v: &Box<dyn opentelemetry_sdk::metrics::data::Aggregation>) -> Aggregation {
     let any_ref = v.as_any();
     if let Some(gauge_f64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Gauge<f64>>() {
-        Aggregation::Gauge(Gauge { data_points: gauge_f64.data_points.iter().map(Into::into).collect() })
+        Aggregation::Gauge(Gauge {
+            start_time: match gauge_f64.start_time {
+                Some(v) => Some(v.into()),
+                None => None,
+            },
+            time: gauge_f64.time.into(),
+            data_points: gauge_f64.data_points.iter().map(Into::into).collect() })
     } else if let Some(gauge_i64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Gauge<i64>>() {
-        Aggregation::Gauge(Gauge { data_points: gauge_i64.data_points.iter().map(Into::into).collect() })
+        Aggregation::Gauge(Gauge {
+            start_time: match gauge_i64.start_time {
+                Some(v) => Some(v.into()),
+                None => None,
+            },
+            time: gauge_i64.time.into(),
+            data_points: gauge_i64.data_points.iter().map(Into::into).collect(),
+        })
     } else if let Some(gauge_u64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Gauge<u64>>() {
-        Aggregation::Gauge(Gauge { data_points: gauge_u64.data_points.iter().map(Into::into).collect() })
+        Aggregation::Gauge(Gauge {
+            start_time: match gauge_u64.start_time {
+                Some(v) => Some(v.into()),
+                None => None,
+            },
+            time: gauge_u64.time.into(),
+            data_points: gauge_u64.data_points.iter().map(Into::into).collect(),
+        })
     } else if let Some(sum_f64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Sum<f64>>() {
         Aggregation::Sum(Sum {
+            start_time: sum_f64.start_time.into(),
+            time: sum_f64.time.into(),
             data_points: sum_f64.data_points.iter().map(Into::into).collect(),
             temporality: sum_f64.temporality.into(),
             is_monotonic: sum_f64.is_monotonic,
         })
     } else if let Some(sum_i64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Sum<i64>>() {
         Aggregation::Sum(Sum {
+            start_time: sum_i64.start_time.into(),
+            time: sum_i64.time.into(),
             data_points: sum_i64.data_points.iter().map(Into::into).collect(),
             temporality: sum_i64.temporality.into(),
             is_monotonic: sum_i64.is_monotonic,
         })
     } else if let Some(sum_u64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Sum<u64>>() {
         Aggregation::Sum(Sum {
+            start_time: sum_u64.start_time.into(),
+            time: sum_u64.time.into(),
             data_points: sum_u64.data_points.iter().map(Into::into).collect(),
             temporality: sum_u64.temporality.into(),
             is_monotonic: sum_u64.is_monotonic,
         })
     } else if let Some(histogram_f64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<f64>>() {
         Aggregation::Histogram(Histogram {
+            start_time: histogram_f64.start_time.into(),
+            time: histogram_f64.time.into(),
             data_points: histogram_f64.data_points.iter().map(Into::into).collect(),
             temporality: histogram_f64.temporality.into(),
         })
     } else if let Some(histogram_i64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>() {
         Aggregation::Histogram(Histogram {
+            start_time: histogram_i64.start_time.into(),
+            time: histogram_i64.time.into(),
             data_points: histogram_i64.data_points.iter().map(Into::into).collect(),
             temporality: histogram_i64.temporality.into(),
         })
     } else if let Some(histogram_u64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>() {
         Aggregation::Histogram(Histogram {
+            start_time: histogram_u64.start_time.into(),
+            time: histogram_u64.time.into(),
             data_points: histogram_u64.data_points.iter().map(Into::into).collect(),
             temporality: histogram_u64.temporality.into(),
         })
@@ -103,54 +135,60 @@ impl From<opentelemetry_sdk::metrics::Temporality> for TemporalityT {
     }
 }
 
-impl From<&opentelemetry_sdk::metrics::data::DataPoint<f64>> for DataPoint {
-    fn from(value: &opentelemetry_sdk::metrics::data::DataPoint<f64>) -> Self {
+impl From<&opentelemetry_sdk::metrics::data::SumDataPoint<f64>> for SumDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::SumDataPoint<f64>) -> Self {
         Self {
             attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
-            start_time: match value.start_time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            time: match value.time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
             value: AggregationNumber::F64(value.value),
             exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
         }
     }
 }
 
-impl From<&opentelemetry_sdk::metrics::data::DataPoint<i64>> for DataPoint {
-    fn from(value: &opentelemetry_sdk::metrics::data::DataPoint<i64>) -> Self {
+impl From<&opentelemetry_sdk::metrics::data::SumDataPoint<i64>> for SumDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::SumDataPoint<i64>) -> Self {
         Self {
             attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
-            start_time: match value.start_time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            time: match value.time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
             value: AggregationNumber::S64(value.value),
             exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
         }
     }
 }
 
-impl From<&opentelemetry_sdk::metrics::data::DataPoint<u64>> for DataPoint {
-    fn from(value: &opentelemetry_sdk::metrics::data::DataPoint<u64>) -> Self {
+impl From<&opentelemetry_sdk::metrics::data::SumDataPoint<u64>> for SumDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::SumDataPoint<u64>) -> Self {
         Self {
             attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
-            start_time: match value.start_time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            time: match value.time {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
+            value: AggregationNumber::U64(value.value),
+            exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+impl From<&opentelemetry_sdk::metrics::data::GaugeDataPoint<f64>> for GaugeDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::GaugeDataPoint<f64>) -> Self {
+        Self {
+            attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
+            value: AggregationNumber::F64(value.value),
+            exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+impl From<&opentelemetry_sdk::metrics::data::GaugeDataPoint<i64>> for GaugeDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::GaugeDataPoint<i64>) -> Self {
+        Self {
+            attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
+            value: AggregationNumber::S64(value.value),
+            exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+impl From<&opentelemetry_sdk::metrics::data::GaugeDataPoint<u64>> for GaugeDataPoint {
+    fn from(value: &opentelemetry_sdk::metrics::data::GaugeDataPoint<u64>) -> Self {
+        Self {
+            attributes: value.attributes.to_owned().into_iter().map(Into::into).collect(),
             value: AggregationNumber::U64(value.value),
             exemplars: value.exemplars.to_owned().into_iter().map(Into::into).collect(),
         }
@@ -161,8 +199,6 @@ impl From<&opentelemetry_sdk::metrics::data::HistogramDataPoint<f64>> for Histog
     fn from(value: &opentelemetry_sdk::metrics::data::HistogramDataPoint<f64>) -> Self {
         Self {
             attributes: value.attributes.iter().map(Into::into).collect(),
-            start_time: value.start_time.into(),
-            time: value.time.into(),
             count: value.count,
             bounds: value.bounds.to_owned(),
             bucket_counts: value.bucket_counts.to_owned(),
@@ -184,8 +220,6 @@ impl From<&opentelemetry_sdk::metrics::data::HistogramDataPoint<i64>> for Histog
     fn from(value: &opentelemetry_sdk::metrics::data::HistogramDataPoint<i64>) -> Self {
         Self {
             attributes: value.attributes.iter().map(Into::into).collect(),
-            start_time: value.start_time.into(),
-            time: value.time.into(),
             count: value.count,
             bounds: value.bounds.to_owned(),
             bucket_counts: value.bucket_counts.to_owned(),
@@ -207,8 +241,6 @@ impl From<&opentelemetry_sdk::metrics::data::HistogramDataPoint<u64>> for Histog
     fn from(value: &opentelemetry_sdk::metrics::data::HistogramDataPoint<u64>) -> Self {
         Self {
             attributes: value.attributes.iter().map(Into::into).collect(),
-            start_time: value.start_time.into(),
-            time: value.time.into(),
             count: value.count,
             bounds: value.bounds.to_owned(),
             bucket_counts: value.bucket_counts.to_owned(),
@@ -232,8 +264,8 @@ impl From<&opentelemetry_sdk::metrics::data::Exemplar<f64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::F64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }
@@ -244,8 +276,8 @@ impl From<opentelemetry_sdk::metrics::data::Exemplar<f64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::F64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }
@@ -256,8 +288,8 @@ impl From<&opentelemetry_sdk::metrics::data::Exemplar<i64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::S64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }
@@ -268,8 +300,8 @@ impl From<opentelemetry_sdk::metrics::data::Exemplar<i64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::S64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }
@@ -280,8 +312,8 @@ impl From<&opentelemetry_sdk::metrics::data::Exemplar<u64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::U64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }
@@ -292,8 +324,8 @@ impl From<opentelemetry_sdk::metrics::data::Exemplar<u64>> for Exemplar {
             filtered_attributes: value.filtered_attributes.iter().map(Into::into).collect(),
             time: value.time.into(),
             value: AggregationNumber::U64(value.value),
-            span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
-            trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
+            span_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.span_id)),
+            trace_id: format!("{:x}", bytes::Bytes::copy_from_slice(&value.trace_id)),
         }
     }
 }

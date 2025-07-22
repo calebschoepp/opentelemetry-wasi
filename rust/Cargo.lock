@@ -102,9 +102,9 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
 name = "cc"
-version = "1.2.29"
+version = "1.2.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c1599538de2394445747c8cf7935946e3cc27e9625f889d979bfb2aaf569362"
+checksum = "deec109607ca693028562ed836a5f1c4b8bd77755c4e132fc5ce11b0b6211ae7"
 dependencies = [
  "shlex",
 ]
@@ -442,9 +442,9 @@ name = "not-wasm"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
+ "opentelemetry 0.28.0",
  "opentelemetry-stdout",
- "opentelemetry_sdk",
+ "opentelemetry_sdk 0.28.0",
  "tokio",
 ]
 
@@ -492,7 +492,21 @@ dependencies = [
  "futures-sink",
  "js-sys",
  "pin-project-lite",
- "thiserror",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "opentelemetry"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "236e667b670a5cdf90c258f5a55794ec5ac5027e960c224bff8367a59e1e6426"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+ "js-sys",
+ "pin-project-lite",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -505,12 +519,12 @@ dependencies = [
  "async-trait",
  "chrono",
  "futures-util",
- "opentelemetry",
- "opentelemetry_sdk",
+ "opentelemetry 0.27.1",
+ "opentelemetry_sdk 0.27.1",
  "ordered-float",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -518,10 +532,10 @@ name = "opentelemetry-wasi"
 version = "0.27.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
+ "opentelemetry 0.28.0",
  "opentelemetry-wasi-metrics",
  "opentelemetry-wasi-tracing",
- "opentelemetry_sdk",
+ "opentelemetry_sdk 0.28.0",
  "wit-bindgen 0.30.0",
 ]
 
@@ -531,8 +545,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "opentelemetry",
- "opentelemetry_sdk",
+ "bytes",
+ "opentelemetry 0.28.0",
+ "opentelemetry_sdk 0.28.0",
  "wit-bindgen 0.30.0",
 ]
 
@@ -541,8 +556,8 @@ name = "opentelemetry-wasi-tracing"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
- "opentelemetry_sdk",
+ "opentelemetry 0.28.0",
+ "opentelemetry_sdk 0.28.0",
  "wit-bindgen 0.30.0",
 ]
 
@@ -557,11 +572,30 @@ dependencies = [
  "futures-executor",
  "futures-util",
  "glob",
- "opentelemetry",
+ "opentelemetry 0.27.1",
  "percent-encoding",
  "rand",
  "serde_json",
- "thiserror",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "opentelemetry_sdk"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "84dfad6042089c7fc1f6118b7040dc2eb4ab520abbf410b79dc481032af39570"
+dependencies = [
+ "async-trait",
+ "futures-channel",
+ "futures-executor",
+ "futures-util",
+ "glob",
+ "opentelemetry 0.28.0",
+ "percent-encoding",
+ "rand",
+ "serde_json",
+ "thiserror 2.0.12",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -692,9 +726,9 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.5.13"
+version = "0.5.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d04b7d0ee6b4a0207a0a7adb104d23ecb0b47d6beae7152d0fa34b692b29fd6"
+checksum = "7e8af0dde094006011e6a740d4879319439489813bd0bcdc7d821beaeeff48ec"
 dependencies = [
  "bitflags",
 ]
@@ -761,9 +795,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.140"
+version = "1.0.141"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20068b6e96dc6c9bd23e01df8827e6c7e1f2fddd43c21810382803c136b99373"
+checksum = "30b9eff21ebe718216c6ec64e1d9ac57087aad11efc64e32002bce4a0d4c03d3"
 dependencies = [
  "itoa",
  "memchr",
@@ -851,9 +885,9 @@ name = "spin-basic"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
+ "opentelemetry 0.28.0",
  "opentelemetry-wasi",
- "opentelemetry_sdk",
+ "opentelemetry_sdk 0.28.0",
  "spin-sdk",
 ]
 
@@ -886,10 +920,10 @@ name = "spin-metrics"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
+ "opentelemetry 0.28.0",
  "opentelemetry-stdout",
  "opentelemetry-wasi",
- "opentelemetry_sdk",
+ "opentelemetry_sdk 0.28.0",
  "spin-sdk",
 ]
 
@@ -912,7 +946,7 @@ dependencies = [
  "serde_json",
  "spin-executor",
  "spin-macro",
- "thiserror",
+ "thiserror 1.0.69",
  "wit-bindgen 0.16.0",
 ]
 
@@ -921,9 +955,9 @@ name = "spin-tracing"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "opentelemetry",
+ "opentelemetry 0.28.0",
  "opentelemetry-wasi",
- "opentelemetry_sdk",
+ "opentelemetry_sdk 0.28.0",
  "spin-sdk",
  "tracing",
  "tracing-opentelemetry",
@@ -964,7 +998,16 @@ version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.69",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
+dependencies = [
+ "thiserror-impl 2.0.12",
 ]
 
 [[package]]
@@ -972,6 +1015,17 @@ name = "thiserror-impl"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.104",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1080,8 +1134,8 @@ checksum = "97a971f6058498b5c0f1affa23e7ea202057a7301dbff68e968b2d578bcbd053"
 dependencies = [
  "js-sys",
  "once_cell",
- "opentelemetry",
- "opentelemetry_sdk",
+ "opentelemetry 0.27.1",
+ "opentelemetry_sdk 0.27.1",
  "smallvec",
  "tracing",
  "tracing-core",

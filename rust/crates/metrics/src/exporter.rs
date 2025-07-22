@@ -1,41 +1,37 @@
-use opentelemetry_sdk::metrics::{data::ResourceMetrics, exporter::PushMetricExporter, MetricResult, Temporality};
-use crate::wit::wasi::otel::metrics::{export, force_flush, shutdown, temporality, MetricError, TemporalityT};
+use std::time::Duration;
+
+use opentelemetry_sdk::{
+    error::OTelSdkResult,
+    metrics::{data::ResourceMetrics, exporter::PushMetricExporter, Temporality}
+};
+use crate::wit::wasi::otel::metrics::{export, force_flush, shutdown, temporality, OtelSdkError, TemporalityT};
 use async_trait::async_trait;
 pub struct WasiExporter {}
 
 #[async_trait]
 impl PushMetricExporter for WasiExporter {
-    async fn export(&self, metrics: &mut ResourceMetrics) -> MetricResult<()>{
+    async fn export(&self, metrics: &mut ResourceMetrics) -> OTelSdkResult {
         let converted = metrics.into();
         export(&converted).map_err(|e| match e {
-            MetricError::Other(e) => opentelemetry_sdk::metrics::MetricError::Other(e),
-            MetricError::Config(e) => opentelemetry_sdk::metrics::MetricError::Config(e),
-            MetricError::InvalidInstrumentConfiguration(_) =>  {
-                // TODO: Couldn't figure out how to get a String type into a static string, so I'm using a generic message for now
-                opentelemetry_sdk::metrics::MetricError::InvalidInstrumentConfiguration("Invalid instrument configuration")
-            }
+            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
+            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
+            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
         })
     }
 
-    async fn force_flush(&self) -> MetricResult<()>{
+    async fn force_flush(&self) -> OTelSdkResult{
         force_flush().map_err(|e| match e {
-            MetricError::Other(e) => opentelemetry_sdk::metrics::MetricError::Other(e),
-            MetricError::Config(e) => opentelemetry_sdk::metrics::MetricError::Config(e),
-            MetricError::InvalidInstrumentConfiguration(_) =>  {
-                // TODO: Couldn't figure out how to get a String type into a static string, so I'm using a generic message for now
-                opentelemetry_sdk::metrics::MetricError::InvalidInstrumentConfiguration("Invalid instrument configuration")
-            }
+            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
+            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
+            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
         })
     }
 
-    fn shutdown(&self) -> MetricResult<()>{
+    fn shutdown(&self) -> OTelSdkResult{
         shutdown().map_err(|e| match e {
-            MetricError::Other(e) => opentelemetry_sdk::metrics::MetricError::Other(e),
-            MetricError::Config(e) => opentelemetry_sdk::metrics::MetricError::Config(e),
-            MetricError::InvalidInstrumentConfiguration(_) =>  {
-                // TODO: Couldn't figure out how to get a String type into a static string, so I'm using a generic message for now
-                opentelemetry_sdk::metrics::MetricError::InvalidInstrumentConfiguration("Invalid instrument configuration")
-            }
+            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
+            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
+            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
         })
     }
 

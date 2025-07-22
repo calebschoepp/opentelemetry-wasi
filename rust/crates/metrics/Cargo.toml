@@ -9,3 +9,4 @@ opentelemetry = { workspace = true }
 opentelemetry_sdk = { workspace = true }
 wit-bindgen = { workspace = true }
 async-trait = { workspace = true }
+bytes = { workspace = true }
