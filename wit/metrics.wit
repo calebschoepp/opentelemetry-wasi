@@ -1,132 +1,17 @@
 // Using the `exporter` as the bridge between host and guest:
-// https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/exporter.rs
+// https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/exporter.rs#L14
 interface metrics {
     // use otel-common.{any, key-value, key, value};
     use wasi:clocks/wall-clock@0.2.0.{datetime};
+    use wasi:clocks/monotonic-clock@0.2.0.{duration};
 
-    %export: func(metrics: resource-metrics) -> result<_, metric-error>;
-    force-flush: func() -> result<_, metric-error>;
-    shutdown: func() -> result<_, metric-error>;
+    %export: func(metrics: resource-metrics) -> result<_, otel-sdk-error>;
+    force-flush: func() -> result<_, otel-sdk-error>;
+    shutdown: func() -> result<_, otel-sdk-error>;
     temporality: func() -> temporality-t;
-
-    record resource-metrics {
-        %resource: %resource,
-        scope-metrics: list<scope-metrics>,
-    }
 
     record %resource {
         inner: resource-inner,
-    }
-
-    record resource-inner {
-        // TODO: not sure if this is the best way to handle this? The type listed in the `opentelemetry-sdk/resource/mod.rs` file is `HashMap<Key, Value>`
-        // See https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/resource/mod.rs#L43
-        attrs: list<key-value>,
-        schema-url: option<string>,
-    }
-
-    record scope-metrics {
-        scope: instrumentation-scope,
-        metrics: list<metric>,
-    }
-
-    record instrumentation-scope {
-        name: string,
-        version: option<string>,
-        schema-url: option<string>,
-        attributes: list<key-value>,
-    }
-
-    // https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L33
-    record metric {
-        name: string,
-        description: string,
-        unit: string,
-        data: aggregation,
-    }
-
-    // TODO: Possible refactor could be to define a number variant and use that rather than a unique sum, gauge, histogram for each type
-    variant aggregation {
-        sum(sum),
-        gauge(gauge),
-        histogram(histogram),
-
-        // TODO: Do we need to have this available here? I can't tell whether this would be an aggregation type or not: https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L44
-        // exponential-histogram(exponential-histogram),
-    }
-
-    variant aggregation-number {
-        %f64(f64),
-        %s64(s64),
-        %u64(u64),
-    }
-
-    record sum {
-        data-points: list<data-point>,
-        temporality: temporality-t,
-        is-monotonic: bool,
-    }
-
-    record gauge {
-        data-points: list<data-point>,
-    }
-
-    record data-point {
-        attributes: list<key-value>,
-        start-time: option<datetime>,
-        time: option<datetime>,
-        value: aggregation-number,
-        exemplars: list<exemplar>,
-    }
-
-    record exemplar {
-        filtered-attributes: list<key-value>,
-        time: datetime,
-        value: aggregation-number,
-        span-id: span-id,
-        trace-id: trace-id,
-    }
-
-    /// The trace that this `span-context` belongs to.
-    ///
-    /// 16 bytes encoded as a hexadecimal string.
-    type trace-id = string;
-
-    /// The id of this `span-context`.
-    ///
-    /// 8 bytes encoded as a hexadecimal string.
-    type span-id = string;
-
-    record histogram {
-        data-points: list<histogram-data-point>,
-        temporality: temporality-t,
-    }
-
-    record histogram-data-point {
-        attributes: list<key-value>,
-        start-time: datetime,
-        time: datetime,
-        count: u64,
-        bounds: list<f64>,
-        bucket-counts: list<u64>,
-        min: option<aggregation-number>,
-        max: option<aggregation-number>,
-        sum: aggregation-number,
-        exemplars: list<exemplar>,
-    }
-
-    variant metric-error {
-        other(string),
-        config(string),
-        invalid-instrument-configuration(string),
-    }
-
-
-
-    enum temporality-t {
-        cumulative, // TODO: #[default] is used on this in the source code
-        delta,
-        low-memory,
     }
 
     /// A key-value pair describing an attribute.
@@ -158,5 +43,126 @@ interface metrics {
         f64-array(list<f64>),
         /// A homogeneous array of 64 bit integer values.
         s64-array(list<s64>),
+    }
+
+    record resource-inner {
+        // TODO: not sure if this is the best way to handle this? The type listed in the `opentelemetry-sdk/resource/mod.rs` file is `HashMap<Key, Value>`
+        // https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/resource/mod.rs#L43
+        attrs: list<key-value>,
+        schema-url: option<string>,
+    }
+
+    variant aggregation-number {
+        %f64(f64),
+        %s64(s64),
+        %u64(u64),
+    }
+
+    record sum-data-point {
+        attributes: list<key-value>,
+        value: aggregation-number,
+        exemplars: list<exemplar>,
+    }
+
+    record sum {
+        data-points: list<sum-data-point>,
+        start-time: datetime,
+        time: datetime,
+        temporality: temporality-t,
+        is-monotonic: bool,
+    }
+
+    record gauge-data-point {
+        attributes: list<key-value>,
+        value: aggregation-number,
+        exemplars: list<exemplar>,
+    }
+
+    record gauge {
+        data-points: list<gauge-data-point>,
+        start-time: option<datetime>,
+        time: datetime,
+    }
+
+    record histogram-data-point {
+        attributes: list<key-value>,
+        count: u64,
+        bounds: list<f64>,
+        bucket-counts: list<u64>,
+        min: option<aggregation-number>,
+        max: option<aggregation-number>,
+        sum: aggregation-number,
+        exemplars: list<exemplar>,
+    }
+
+    record histogram {
+        data-points: list<histogram-data-point>,
+        start-time: datetime,
+        time: datetime,
+        temporality: temporality-t,
+    }
+
+    record exemplar {
+        filtered-attributes: list<key-value>,
+        time: datetime,
+        value: aggregation-number,
+        span-id: span-id,
+        trace-id: trace-id,
+    }
+
+    /// The trace that this `span-context` belongs to.
+    ///
+    /// 16 bytes encoded as a hexadecimal string.
+    type trace-id = string;
+
+    /// The id of this `span-context`.
+    ///
+    /// 8 bytes encoded as a hexadecimal string.
+    type span-id = string;
+
+    variant aggregation {
+        sum(sum),
+        gauge(gauge),
+        histogram(histogram),
+
+        // TODO: Do we need to have this available here? I can't tell whether this would be an aggregation type or not: https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L44
+        // exponential-histogram(exponential-histogram),
+    }
+
+    // https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/data/mod.rs#L33
+    record metric {
+        name: string,
+        description: string,
+        unit: string,
+        data: aggregation,
+    }
+
+    record instrumentation-scope {
+        name: string,
+        version: option<string>,
+        schema-url: option<string>,
+        attributes: list<key-value>,
+    }
+
+    record scope-metric {
+        scope: instrumentation-scope,
+        metrics: list<metric>,
+    }
+
+     record resource-metrics {
+        %resource: %resource,
+        scope-metrics: list<scope-metric>,
+    }
+
+    variant otel-sdk-error {
+        internal-failure(string),
+        timeout(duration),
+        already-shutdown,
+    }
+
+    enum temporality-t {
+        cumulative, // TODO: #[default] is used on this in the source code
+        delta,
+        low-memory,
     }
 }
