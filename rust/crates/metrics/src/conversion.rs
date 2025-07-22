@@ -45,6 +45,7 @@ impl From<&opentelemetry_sdk::metrics::data::Metric> for Metric {
     }
 }
 
+/// Converts an opentelemetry::Aggregation type to a wasi_otel::Aggregation type
 fn convert_aggregation(v: &Box<dyn opentelemetry_sdk::metrics::data::Aggregation>) -> Aggregation {
     let any_ref = v.as_any();
     if let Some(gauge_f64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Gauge<f64>>() {
@@ -75,6 +76,11 @@ fn convert_aggregation(v: &Box<dyn opentelemetry_sdk::metrics::data::Aggregation
         Aggregation::Histogram(Histogram {
             data_points: histogram_f64.data_points.iter().map(Into::into).collect(),
             temporality: histogram_f64.temporality.into(),
+        })
+    } else if let Some(histogram_i64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>() {
+        Aggregation::Histogram(Histogram {
+            data_points: histogram_i64.data_points.iter().map(Into::into).collect(),
+            temporality: histogram_i64.temporality.into(),
         })
     } else if let Some(histogram_u64) = any_ref.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>() {
         Aggregation::Histogram(Histogram {
