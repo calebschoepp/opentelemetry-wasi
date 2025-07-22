@@ -4,56 +4,64 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ydnar/wasi-http-go/wasihttp"
+
 	otelWasi "github.com/calebschoepp/opentelemetry-wasi"
-	spinhttp "github.com/spinframework/spin-go-sdk/v3/http"
-	spinkv "github.com/spinframework/spin-go-sdk/v3/kv"
+	spinkv "github.com/spinframework/spin-go-sdk/v2/kv"
+	"github.com/spinframework/spin-go-sdk/v2/wit"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	sdkTrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
 )
 
+var _ = wit.Wit
+
 func init() {
-	spinhttp.Handle(func(w http.ResponseWriter, r *http.Request) {
-		wasiProcessor := otelWasi.NewWasiProcessor()
-		tracerProvider := sdkTrace.NewTracerProvider(
-			sdkTrace.WithSpanProcessor(wasiProcessor),
-		)
+	wasihttp.Serve(&WasiHTTP{})
+}
 
-		otel.SetTracerProvider(tracerProvider)
-		tracer := otel.Tracer("basic-spin")
+type WasiHTTP struct{}
 
-		wasiPropagator := otelWasi.NewTraceContextPropagator()
-		wasiPropagator.Extract(r.Context())
+func (WasiHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	wasiProcessor := otelWasi.NewWasiProcessor()
+	tracerProvider := sdkTrace.NewTracerProvider(
+		sdkTrace.WithSpanProcessor(wasiProcessor),
+	)
 
-		ctx, span := tracer.Start(r.Context(), "main-operation")
-		defer span.End()
+	otel.SetTracerProvider(tracerProvider)
+	tracer := otel.Tracer("basic-spin")
 
-		span.SetAttributes(attribute.String("my-attribute", "my-value"))
-		span.AddEvent(
-			"Main span event",
-			trace.WithAttributes(attribute.String("foo", "1")),
-		)
+	wasiPropagator := otelWasi.NewTraceContextPropagator()
+	wasiPropagator.Extract(r.Context())
 
-		_, childSpan := tracer.Start(ctx, "child-operation")
-		childSpan.AddEvent(
-			"Sub span event",
-			trace.WithAttributes(attribute.String("bar", "1")),
-		)
-		defer childSpan.End()
+	ctx, span := tracer.Start(r.Context(), "main-operation")
+	defer span.End()
 
-		store, err := spinkv.OpenDefault()
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Failed to open kv store"))
-		}
+	span.SetAttributes(attribute.String("my-attribute", "my-value"))
+	span.AddEvent(
+		"Main span event",
+		trace.WithAttributes(attribute.String("foo", "1")),
+	)
 
-		if err := store.Set("foo", []byte("bar")); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Failed to write to kv store"))
-		}
+	_, childSpan := tracer.Start(ctx, "child-operation")
+	childSpan.AddEvent(
+		"Sub span event",
+		trace.WithAttributes(attribute.String("bar", "1")),
+	)
+	defer childSpan.End()
 
-		w.Header().Set("content-type", "text/plain")
-		fmt.Fprintln(w, "Hello, world!")
-	})
+	store, err := spinkv.OpenDefault()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Failed to open kv store"))
+	}
+
+	if err := store.Set("foo", []byte("bar")); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Failed to write to kv store"))
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	fmt.Fprintln(w, "Hello, world!")
 }
