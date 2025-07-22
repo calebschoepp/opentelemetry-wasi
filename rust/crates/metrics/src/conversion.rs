@@ -1,44 +1,10 @@
 use crate::wit::wasi::otel::metrics::*;
 
-impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
-    fn from(value: opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
-        Self {
-            resource: value.resource.into(),
-            scope_metrics: value.scope_metrics.into_iter().map(Into::into).collect(),
-        }
-    }
-}
-
 impl From<&mut opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
     fn from(value: &mut opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
         Self {
             resource: (&value.resource).into(),
             scope_metrics: value.scope_metrics.iter().to_owned().map(Into::into).collect(),
-        }
-    }
-}
-
-impl From<&opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
-    fn from(value: &opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
-        Self {
-            resource: (&value.resource).into(),
-            scope_metrics: value.scope_metrics.iter().to_owned().map(Into::into).collect(),
-        }
-    }
-}
-
-impl From<opentelemetry_sdk::resource::Resource> for Resource {
-    fn from(value: opentelemetry_sdk::resource::Resource) -> Self {
-        let mut attrs: Vec<KeyValue> = Vec::new();
-        value.into_iter().for_each(|v| {
-            attrs.push(KeyValue { key: v.0.to_string(), value: v.1.into() })
-        });
-
-        Self {
-            inner: ResourceInner {
-                attrs: attrs,
-                schema_url: value.schema_url().map(Into::into),
-            }
         }
     }
 }
@@ -59,31 +25,11 @@ impl From<&opentelemetry_sdk::resource::Resource> for Resource {
     }
 }
 
-impl From<opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
-    fn from(value: opentelemetry_sdk::metrics::data::ScopeMetrics) -> Self {
-        Self {
-            scope: value.scope.into(),
-            metrics: value.metrics.into_iter().map(Into::into).collect(),
-        }
-    }
-}
-
 impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
     fn from(value: &opentelemetry_sdk::metrics::data::ScopeMetrics) -> Self {
         Self {
             scope: value.scope.clone().into(),
             metrics: value.metrics.iter().to_owned().map(Into::into).collect(),
-        }
-    }
-}
-
-impl From<opentelemetry_sdk::metrics::data::Metric> for Metric {
-    fn from(value: opentelemetry_sdk::metrics::data::Metric) -> Self {
-        Self {
-            name: value.name.into(),
-            description: value.description.into(),
-            unit: value.unit.into(),
-            data: value.data.into(),
         }
     }
 }
@@ -343,12 +289,6 @@ impl From<opentelemetry_sdk::metrics::data::Exemplar<u64>> for Exemplar {
             span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
             trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
         }
-    }
-}
-
-impl From<Box<dyn opentelemetry_sdk::metrics::data::Aggregation>> for Aggregation {
-    fn from(value: Box<dyn opentelemetry_sdk::metrics::data::Aggregation>) -> Self {
-        value.into()
     }
 }
 
