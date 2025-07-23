@@ -540,6 +540,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "opentelemetry-wasi-logging"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "opentelemetry 0.28.0",
+ "opentelemetry_sdk 0.28.0",
+ "wit-bindgen 0.30.0",
+]
+
+[[package]]
 name = "opentelemetry-wasi-metrics"
 version = "0.1.0"
 dependencies = [
