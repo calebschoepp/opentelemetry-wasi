@@ -1,17 +1,345 @@
-// Using the `exporter` as the bridge between host and guest:
-// https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/exporter.rs#L14
+// Using `MetricReader` as bridge between guest and host:
+// https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/reader.rs
+
 interface metrics {
     // use otel-common.{any, key-value, key, value};
     use wasi:clocks/wall-clock@0.2.0.{datetime};
     use wasi:clocks/monotonic-clock@0.2.0.{duration};
 
-    %export: func(metrics: resource-metrics) -> result<_, otel-sdk-error>;
+    // TODO: these aren't in the MetricReader spec; however, they are in the rust sdk. Should we include?
+    // register-pipeline: func(pipeline: pipeline);
+    // temporality: func(kind: instrument-kind) -> temporality-t;
+    collect: func(rm: resource-metrics) -> result<_, metric-error>;
     force-flush: func() -> result<_, otel-sdk-error>;
     shutdown: func() -> result<_, otel-sdk-error>;
-    temporality: func() -> temporality-t;
+
+    variant otel-sdk-error {
+        internal-failure(string),
+        timeout(duration),
+        already-shutdown,
+    }
+
+    variant metric-error {
+        other(string),
+        config(string),
+        // TODO: double check that this is the correct way to implement the `export-err`:
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/error.rs#L22
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/error.rs#L8
+        export-err(exporter-name),
+        invalid-instrument-configuration(string),
+    }
+
+    type exporter-name = string;
+
+    enum temporality-t {
+        /// TODO: validate that cumulative is the default temporality in the SDK implementation
+        cumulative,
+        delta,
+        low-memory,
+    }
+
+    record pipeline {
+        // TODO: `resource: Resource` appears to be accessible only to the crate: https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/pipeline.rs#L37
+        reader: metric-reader, // TODO: this refers to the larger interface itself...how to implement?
+        views: list<view>,
+        inner: pipeline-inner,
+    }
+
+    resource view {
+        match-inst: func(inst: instrument) -> option<stream>;
+    }
+
+    record instrument {
+        name: string,
+        description: string,
+        kind: option<instrument-kind>,
+        unit: string,
+        scope: instrumentation-scope,
+    }
+
+    enum instrument-kind {
+        /// Identifies a group of instruments that record increasing values synchronously
+        /// with the code path they are measuring.
+        counter,
+        /// A group of instruments that record increasing and decreasing values
+        /// synchronously with the code path they are measuring.
+        up-down-counter,
+        /// A group of instruments that record a distribution of values synchronously with
+        /// the code path they are measuring.
+        histogram,
+        /// A group of instruments that record increasing values in an asynchronous
+        /// callback.
+        observable-counter,
+        /// A group of instruments that record increasing and decreasing values in an
+        /// asynchronous callback.
+        observable-up-down-counter,
+
+        /// a group of instruments that record current value synchronously with
+        /// the code path they are measuring.
+        gauge,
+        ///
+        /// a group of instruments that record current values in an asynchronous callback.
+        observable-gauge,
+    }
+
+    record instrumentation-scope {
+        name: string,
+        version: string,
+        schema-url: string,
+        attributes: list<key-value>,
+    }
+
+    record pipeline-inner {
+        aggregations: list<tuple<instrumentation-scope, list<instrument-sync>>>,
+        callbacks: list<generic-callback>, // TODO: unsure whether/how to implement: https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/pipeline.rs#L51
+    }
+
+    record instrument-sync {
+        name: string,
+        description: string,
+        unit: string,
+        compute-aggregation: compute-aggregation,
+    }
+
+    /// Stores the aggregate of measurements into the aggregation and returns the number
+    /// of aggregate data-points output
+    resource compute-aggregation {
+        /// Compute the new aggregation and store in `dest`.
+        ///
+        /// If no initial aggregation exists, `dest` will be `None`, in which case the
+        /// returned option is expected to contain a new aggregation with the data from
+        /// the current collection cycle.
+        call: func(dest: option<aggregation>) -> tuple<u64, option<aggregation>>; // TODO: validate that the return value `u64` is an acceptable alternative for `usize`
+    }
+
+    variant metric-data {
+        gauge(gauge),
+        sum(sum),
+        histogram(histogram),
+        exponential-histogram(exponential-histogram),
+    }
+
+    record gauge {
+        data-points: list<gauge-data-point>,
+        start-time: option<datetime>,
+        time: datetime,
+    }
+
+    record gauge-data-point {
+        attributes: list<key-value>,
+        value: metric-number,
+        exemplars: list<exemplar>,
+    }
+
+    record sum {
+        data-points: list<sum-data-point>,
+        start-time: datetime,
+        time: datetime,
+        temporality: temporality-t,
+        is-monotonic: bool,
+    }
+
+    record sum-data-point {
+        attributes: list<key-value>,
+        value: metric-number,
+        exemplars: list<exemplar>,
+    }
+
+    record histogram {
+        data-points: list<histogram-data-point>,
+        start-time: datetime,
+        time: datetime,
+        temporality: temporality-t,
+    }
+
+    record histogram-data-point {
+        attributes: list<key-value>,
+        count: u64,
+        bounds: list<f64>,
+        bucket-counts: list<u64>,
+        min: option<metric-number>,
+        max: option<metric-number>,
+        sum: metric-number,
+        exemplars: list<exemplar>,
+    }
+
+    record exponential-histogram {
+        data-points: list<exponential-histogram-data-point>,
+        start-time: datetime,
+        time: datetime,
+        temporality: temporality-t,
+    }
+
+    record exponential-histogram-data-point {
+        attributes: list<key-value>,
+        count: u64, // TODO: check that u64 is acceptable replacement for usize
+        min: option<metric-number>,
+        max: option<metric-number>,
+        sum: metric-number,
+        scale: s8,
+        zero-count: u64,
+        positive-bucket: exponential-bucket,
+        negative-bucket: exponential-bucket,
+        zero-threshold: f64,
+        exemplars: list<exemplar>,
+    }
+
+    record exponential-bucket {
+        offset: s32,
+        counts: list<u64>,
+    }
+
+    record exemplar {
+        filtered-attributes: list<key-value>,
+        time: datetime,
+        value: metric-number,
+        span-id: span-id,
+        trace-id: trace-id,
+    }
+
+    /// The trace that this `span-context` belongs to.
+    ///
+    /// 16 bytes encoded as a hexadecimal string.
+    type trace-id = string;
+
+    /// The id of this `span-context`.
+    ///
+    /// 8 bytes encoded as a hexadecimal string.
+    type span-id = string;
+
+    variant metric-number {
+        %f64(f64),
+        %s64(s64),
+        %u64(u64),
+    }
+
+    record %stream {
+        name: string,
+        description: string,
+        unit: string,
+        aggregation: option<aggregation>,
+        allowed-attribute-keys: option<list<key>>, // TODO: make sure this is the correct implementation: https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/instrument.rs#L205
+    }
+
+    variant aggregation {
+        /// An aggregation that drops all recorded data.
+        drop,
+
+        /// An aggregation that uses the default instrument kind selection mapping to
+        /// select another aggregation.
+        ///
+        /// A metric reader can be configured to make an aggregation selection based on
+        /// instrument kind that differs from the default. This aggregation ensures the
+        /// default is used.
+        ///
+        /// See the [the spec] for information about the default
+        /// instrument kind selection mapping.
+        ///
+        /// [the spec]: https://github.com/open-telemetry/opentelemetry-specification/blob/v1.19.0/specification/metrics/sdk.md#default-aggregation
+        default,
+
+        /// An aggregation that summarizes a set of measurements as their arithmetic
+        /// sum.
+        sum,
+
+        /// An aggregation that summarizes a set of measurements as the last one made.
+        last-value,
+
+        /// An aggregation that summarizes a set of measurements as a histogram with
+        /// explicitly defined buckets.
+        explicit-bucket-histogram(explicit-bucket-histogram),
+
+        /// An aggregation that summarizes a set of measurements as a histogram with
+        /// bucket widths that grow exponentially.
+        base-two-exponential-histogram(base-two-exponential-histogram),
+    }
+
+    record explicit-bucket-histogram {
+        /// The increasing bucket boundary values.
+        ///
+        /// Boundary values define bucket upper bounds. Buckets are exclusive of their
+        /// lower boundary and inclusive of their upper bound (except at positive
+        /// infinity). A measurement is defined to fall into the greatest-numbered
+        /// bucket with a boundary that is greater than or equal to the measurement. As
+        /// an example, boundaries defined as:
+        ///
+        /// vec![0.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 250.0, 500.0, 750.0,
+        /// 1000.0, 2500.0, 5000.0, 7500.0, 10000.0];
+        ///
+        /// Will define these buckets:
+        ///
+        /// (-∞, 0], (0, 5.0], (5.0, 10.0], (10.0, 25.0], (25.0, 50.0], (50.0,
+        ///  75.0], (75.0, 100.0], (100.0, 250.0], (250.0, 500.0], (500.0,
+        ///  750.0], (750.0, 1000.0], (1000.0, 2500.0], (2500.0, 5000.0],
+        ///  (5000.0, 7500.0], (7500.0, 10000.0], (10000.0, +∞)
+        boundaries: list<f64>,
+
+        /// Indicates whether to not record the min and max of the distribution.
+        ///
+        /// By default, these values are recorded.
+        ///
+        /// Recording these values for cumulative data is expected to have little
+        /// value, they will represent the entire life of the instrument instead of
+        /// just the current collection cycle. It is recommended to set this to
+        /// `false` for that type of data to avoid computing the low-value
+        /// instances.
+        record-min-max: bool,
+
+    }
+
+    record base-two-exponential-histogram {
+        /// The maximum number of buckets to use for the histogram.
+            max-size: u32,
+
+            /// The maximum resolution scale to use for the histogram.
+            ///
+            /// The maximum value is `20`, in which case the maximum number of buckets
+            /// that can fit within the range of a signed 32-bit integer index could be
+            /// used.
+            ///
+            /// The minimum value is `-10` in which case only two buckets will be used.
+            max-scale: s8,
+
+            /// Indicates whether to not record the min and max of the distribution.
+            ///
+            /// By default, these values are recorded.
+            ///
+            /// It is generally not valuable to record min and max for cumulative data
+            /// as they will represent the entire life of the instrument instead of just
+            /// the current collection cycle, you can opt out by setting this value to
+            /// `false`
+            record-min-max: bool,
+    }
+
+    record resource-metrics {
+        %resource: %resource,
+        scope-metrics: list<scope-metrics>,
+    }
 
     record %resource {
         inner: resource-inner,
+    }
+
+    record resource-inner {
+        attributes: list<key-value>, // TODO: validate that this is implemented correctly: https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/resource/mod.rs#L43
+        schema-url: option<string>,
+    }
+
+    record scope-metrics {
+        scope: instrumentation-scope,
+        metrics: list<metric>,
+    }
+
+    record metric {
+        name: string,
+        description: string,
+        unit: string,
+        // TODO: unclear if `metric-data` is the correct way to represent the data. Based on the comments for the `Aggregation` trait in the same files as the `Metric` struct,
+        // as well as some suggestions from my AI assistant, it seems like this could be a good way to handle it. If not, open to suggestions.
+        // Also, keep in mind that there is an `Aggregation` enum in the `/src/metrics/aggregation.rs`, and this appears to be a separate type
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/data/mod.rs#L49
+        // See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/data/mod.rs#L41
+        data: metric-data,
     }
 
     /// A key-value pair describing an attribute.
@@ -43,126 +371,5 @@ interface metrics {
         f64-array(list<f64>),
         /// A homogeneous array of 64 bit integer values.
         s64-array(list<s64>),
-    }
-
-    record resource-inner {
-        // TODO: not sure if this is the best way to handle this? The type listed in the `opentelemetry-sdk/resource/mod.rs` file is `HashMap<Key, Value>`
-        // https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/resource/mod.rs#L43
-        attrs: list<key-value>,
-        schema-url: option<string>,
-    }
-
-    variant aggregation-number {
-        %f64(f64),
-        %s64(s64),
-        %u64(u64),
-    }
-
-    record sum-data-point {
-        attributes: list<key-value>,
-        value: aggregation-number,
-        exemplars: list<exemplar>,
-    }
-
-    record sum {
-        data-points: list<sum-data-point>,
-        start-time: datetime,
-        time: datetime,
-        temporality: temporality-t,
-        is-monotonic: bool,
-    }
-
-    record gauge-data-point {
-        attributes: list<key-value>,
-        value: aggregation-number,
-        exemplars: list<exemplar>,
-    }
-
-    record gauge {
-        data-points: list<gauge-data-point>,
-        start-time: option<datetime>,
-        time: datetime,
-    }
-
-    record histogram-data-point {
-        attributes: list<key-value>,
-        count: u64,
-        bounds: list<f64>,
-        bucket-counts: list<u64>,
-        min: option<aggregation-number>,
-        max: option<aggregation-number>,
-        sum: aggregation-number,
-        exemplars: list<exemplar>,
-    }
-
-    record histogram {
-        data-points: list<histogram-data-point>,
-        start-time: datetime,
-        time: datetime,
-        temporality: temporality-t,
-    }
-
-    record exemplar {
-        filtered-attributes: list<key-value>,
-        time: datetime,
-        value: aggregation-number,
-        span-id: span-id,
-        trace-id: trace-id,
-    }
-
-    /// The trace that this `span-context` belongs to.
-    ///
-    /// 16 bytes encoded as a hexadecimal string.
-    type trace-id = string;
-
-    /// The id of this `span-context`.
-    ///
-    /// 8 bytes encoded as a hexadecimal string.
-    type span-id = string;
-
-    variant aggregation {
-        sum(sum),
-        gauge(gauge),
-        histogram(histogram),
-
-        // TODO: Do we need to have this available here? I can't tell whether this would be an aggregation type or not: https://github.com/open-telemetry/opentelemetry-rust/blob/ade08cb1a3876da219a47760fe45abd075b7cd38/opentelemetry-sdk/src/metrics/data/mod.rs#L44
-        // exponential-histogram(exponential-histogram),
-    }
-
-    // https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/metrics/data/mod.rs#L33
-    record metric {
-        name: string,
-        description: string,
-        unit: string,
-        data: aggregation,
-    }
-
-    record instrumentation-scope {
-        name: string,
-        version: option<string>,
-        schema-url: option<string>,
-        attributes: list<key-value>,
-    }
-
-    record scope-metric {
-        scope: instrumentation-scope,
-        metrics: list<metric>,
-    }
-
-     record resource-metrics {
-        %resource: %resource,
-        scope-metrics: list<scope-metric>,
-    }
-
-    variant otel-sdk-error {
-        internal-failure(string),
-        timeout(duration),
-        already-shutdown,
-    }
-
-    enum temporality-t {
-        cumulative, // TODO: #[default] is used on this in the source code
-        delta,
-        low-memory,
     }
 }
