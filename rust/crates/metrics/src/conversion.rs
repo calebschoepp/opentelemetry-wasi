@@ -2,11 +2,15 @@ use crate::wit::wasi::otel::metrics::*;
 use crate::wit::wasi::otel::types::{KeyValue, Value};
 use std::time::UNIX_EPOCH;
 
-impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
-    fn from(value: opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
+impl From<&mut opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
+    fn from(value: &mut opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
         Self {
-            resource: value.resource.into(),
-            scope_metrics: value.scope_metrics.into_iter().map(Into::into).collect(),
+            resource: value.resource.to_owned().into(),
+            scope_metrics: value.scope_metrics
+            .iter()
+            .to_owned()
+            .map(Into::into)
+            .collect(),
         }
     }
 }
@@ -106,6 +110,15 @@ impl From<opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
     }
 }
 
+impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
+    fn from(value: &opentelemetry_sdk::metrics::data::ScopeMetrics) -> Self {
+        Self {
+            scope: value.scope.to_owned().into(),
+            metrics: value.metrics.iter().to_owned().map(Into::into).collect(),
+        }
+    }
+}
+
 impl From<opentelemetry::InstrumentationScope> for InstrumentationScope {
     fn from(value: opentelemetry::InstrumentationScope) -> Self {
         Self {
@@ -123,6 +136,17 @@ impl From<opentelemetry_sdk::metrics::data::Metric> for Metric {
             name: value.name.to_string(),
             description: value.description.to_string(),
             unit: value.unit.to_string(),
+            data: value.data.into(),
+        }
+    }
+}
+
+impl From<&opentelemetry_sdk::metrics::data::Metric> for Metric {
+    fn from(value: &opentelemetry_sdk::metrics::data::Metric) -> Self {
+        Self {
+            name: value.name.to_owned().to_string(),
+            description: value.description.to_owned().to_string(),
+            unit: value.unit.to_owned().to_string(),
             data: value.data.into(),
         }
     }

@@ -6,7 +6,7 @@ use opentelemetry_sdk::{
     metrics::{data::ResourceMetrics, exporter::PushMetricExporter, Temporality}
 };
 
-use crate::wit::wasi::otel::metrics::{export, MetricError};
+use crate::wit::wasi::otel::metrics::export;
 
 pub struct WasiExporter {
     // TODO: I'm just copying what was done in the `tracing/processor.rs` file, so this
