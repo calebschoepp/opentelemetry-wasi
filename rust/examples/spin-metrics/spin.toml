@@ -11,8 +11,8 @@ route = "/..."
 component = "spin-metrics"
 
 [component.spin-metrics]
-source = "target/wasm32-wasip1/release/spin_metrics.wasm"
+source = "../../target/wasm32-wasip2/release/spin_metrics.wasm"
 allowed_outbound_hosts = []
 [component.spin-metrics.build]
-command = "cargo build --target wasm32-wasip1 --release"
+command = "cargo build --target wasm32-wasip2 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

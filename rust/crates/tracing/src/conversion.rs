@@ -1,6 +1,6 @@
-use std::time::UNIX_EPOCH;
-
 use crate::wit::wasi::otel::tracing::*;
+use crate::wit::wasi::otel::types::{KeyValue, Value};
+use std::time::UNIX_EPOCH;
 
 impl From<opentelemetry_sdk::trace::SpanData> for SpanData {
     fn from(value: opentelemetry_sdk::trace::SpanData) -> Self {

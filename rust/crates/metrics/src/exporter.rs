@@ -1,45 +1,47 @@
-use std::time::Duration;
+use std::sync::atomic::{Ordering, AtomicBool};
+use async_trait::async_trait;
 
 use opentelemetry_sdk::{
-    error::OTelSdkResult,
+    error::{OTelSdkResult, OTelSdkError},
     metrics::{data::ResourceMetrics, exporter::PushMetricExporter, Temporality}
 };
-use crate::wit::wasi::otel::metrics::{export, force_flush, shutdown, temporality, OtelSdkError, TemporalityT};
-use async_trait::async_trait;
-pub struct WasiExporter {}
+
+use crate::wit::wasi::otel::metrics::{export, MetricError};
+
+pub struct WasiExporter {
+    // TODO: I'm just copying what was done in the `tracing/processor.rs` file, so this
+    // and the non-export methods implemented on the struct may not be correct...
+    is_shutdown: AtomicBool,
+}
 
 #[async_trait]
 impl PushMetricExporter for WasiExporter {
     async fn export(&self, metrics: &mut ResourceMetrics) -> OTelSdkResult {
         let converted = metrics.into();
-        export(&converted).map_err(|e| match e {
-            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
-            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
-            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
-        })
+
+        export(&converted).map_err(|e| OTelSdkError::InternalFailure(e.to_string()))
     }
 
-    async fn force_flush(&self) -> OTelSdkResult{
-        force_flush().map_err(|e| match e {
-            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
-            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
-            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
-        })
+    async fn force_flush(&self) -> OTelSdkResult {
+        if self.is_shutdown.load(Ordering::Relaxed) {
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+        }
+        Ok(())
     }
 
-    fn shutdown(&self) -> OTelSdkResult{
-        shutdown().map_err(|e| match e {
-            OtelSdkError::AlreadyShutdown => opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown,
-            OtelSdkError::InternalFailure(e) => opentelemetry_sdk::error::OTelSdkError::InternalFailure(e),
-            OtelSdkError::Timeout(d) => opentelemetry_sdk::error::OTelSdkError::Timeout(Duration::from_nanos(d)),
-        })
+    fn shutdown(&self) -> OTelSdkResult {
+        let mut result: Result<(), opentelemetry_sdk::error::OTelSdkError> = Ok(());
+
+        async {result = self.force_flush().await};
+
+        if self.is_shutdown.swap(true, Ordering::Relaxed) {
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+        }
+
+        result
     }
 
     fn temporality(&self) -> Temporality{
-        match temporality(){
-            TemporalityT::Cumulative => Temporality::Cumulative,
-            TemporalityT::Delta => Temporality::Delta,
-            _ => Temporality::LowMemory,
-        }
+        Temporality::Cumulative
     }
 }

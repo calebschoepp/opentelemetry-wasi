@@ -443,7 +443,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "opentelemetry 0.28.0",
- "opentelemetry-stdout",
+ "opentelemetry-stdout 0.27.0",
  "opentelemetry_sdk 0.28.0",
  "tokio",
 ]
@@ -525,6 +525,21 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 1.0.69",
+]
+
+[[package]]
+name = "opentelemetry-stdout"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5eb0e5a5132e4b80bf037a78e3e12c8402535199f5de490d0c38f7eac71bc831"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures-util",
+ "opentelemetry 0.28.0",
+ "opentelemetry_sdk 0.28.0",
+ "serde",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -931,7 +946,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "opentelemetry 0.28.0",
- "opentelemetry-stdout",
+ "opentelemetry-stdout 0.28.0",
  "opentelemetry-wasi",
  "opentelemetry_sdk 0.28.0",
  "spin-sdk",

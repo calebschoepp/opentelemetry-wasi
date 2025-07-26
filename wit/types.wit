@@ -1,4 +1,4 @@
-interface otel-common {
+interface types {
     /// A key-value pair describing an attribute.
     record key-value {
         /// The attribute name.
@@ -28,22 +28,5 @@ interface otel-common {
         f64-array(list<f64>),
         /// A homogeneous array of 64 bit integer values.
         s64-array(list<s64>),
-    }
-
-    /// A variant for all primitive types
-    variant any {
-        %char(char),
-        %string(string),
-        %bool(bool),
-        %f32(f32),
-        %f64(f64),
-        %s8(s8),
-        %s16(s16),
-        %s32(s32),
-        %s64(s64),
-        %u8(u8),
-        %u16(u16),
-        %u32(u32),
-        %u64(u64),
     }
 }
