@@ -65,3 +65,5 @@ func (WasiHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/plain")
 	fmt.Fprintln(w, "Hello, world!")
 }
+
+func main() {}
