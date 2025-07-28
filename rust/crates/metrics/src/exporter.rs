@@ -11,7 +11,7 @@ use crate::wit::wasi::otel::metrics::export;
 pub struct WasiExporter {
     // TODO: I'm just copying what was done in the `tracing/processor.rs` file, so this
     // and the non-export methods implemented on the struct may not be correct...
-    is_shutdown: AtomicBool,
+    pub is_shutdown: AtomicBool,
 }
 
 #[async_trait]
@@ -32,7 +32,7 @@ impl PushMetricExporter for WasiExporter {
     fn shutdown(&self) -> OTelSdkResult {
         let mut result: Result<(), opentelemetry_sdk::error::OTelSdkError> = Ok(());
 
-        async {result = self.force_flush().await};
+        async {result = self.force_flush().await}; // TODO: this might be a no-op...
 
         if self.is_shutdown.swap(true, Ordering::Relaxed) {
             return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)

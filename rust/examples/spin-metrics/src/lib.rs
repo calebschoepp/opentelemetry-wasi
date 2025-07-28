@@ -1,3 +1,5 @@
+use std::sync::atomic::AtomicBool;
+
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 
@@ -35,7 +37,7 @@ fn handle_spin_metrics(req: Request) -> anyhow::Result<impl IntoResponse> {
 }
 
 fn init_meter_provider() -> opentelemetry_sdk::metrics::SdkMeterProvider {
-    let exporter = opentelemetry_wasi::WasiExporter{};
+    let exporter = opentelemetry_wasi::WasiExporter{is_shutdown: AtomicBool::new(false)};
     // let exporter = opentelemetry_stdout::MetricExporterBuilder::default()
     //     // Build exporter using Delta Temporality (Defaults to Temporality::Cumulative)
     //     // .with_temporality(opentelemetry_sdk::metrics::Temporality::Delta)
