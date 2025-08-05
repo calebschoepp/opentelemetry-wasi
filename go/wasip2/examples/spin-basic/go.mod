@@ -6,6 +6,7 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	go.bytecodealliance.org/cm v0.3.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/metric v1.37.0 // indirect
@@ -14,8 +15,7 @@ require (
 
 require (
 	github.com/calebschoepp/opentelemetry-wasi v0.0.0
-	github.com/spinframework/spin-go-sdk/v2 v2.0.0-20250422162322-8ffe6d3efa29
-	github.com/ydnar/wasi-http-go v0.0.0-00010101000000-000000000000
+	github.com/spinframework/spin-go-sdk/v3 v3.0.0
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/sdk v1.37.0
 	go.opentelemetry.io/otel/trace v1.37.0
@@ -23,4 +23,4 @@ require (
 
 replace github.com/calebschoepp/opentelemetry-wasi => ../..
 
-replace github.com/ydnar/wasi-http-go => ../../../../../wasi-http-go
+replace github.com/spinframework/spin-go-sdk/v3 => ../../../../../spin-go-sdk/v3
