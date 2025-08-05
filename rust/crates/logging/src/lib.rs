@@ -1,3 +1,6 @@
+mod conversion;
+mod processor;
+
 #[doc(hidden)]
 /// Module containing wit bindgen generated code.
 ///

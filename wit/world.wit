@@ -4,6 +4,7 @@ world imports {
     import types;
     import tracing;
     import metrics;
+    import logging;
 }
 
 // TODO: Switch to using wkg

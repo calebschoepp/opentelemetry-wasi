@@ -1,9 +1,109 @@
 // This is modeled after the `LogRecordProcessor`
 // See https://opentelemetry.io/docs/specs/otel/logs/sdk/#logrecordprocessor
+// See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/logs/record.rs
 
-// interface logging {
-//     on-emit: func();
-//     enabled: func(); // TODO: according to the specs, this is still in development. Should we include?
-//     shutdown: func();
-//     force-flush: func();
-// }
+interface logging {
+    use wasi:clocks/wall-clock@0.2.0.{datetime};
+
+    emit: func(data: log-record) -> result<_, log-error>;
+
+    record log-record {
+        event-name: option<string>,
+        timestamp: option<datetime>,
+        observed-timestamp: option<datetime>,
+        severity: option<severity>,
+        severity-text: option<string>,
+        body: option<log-any>,
+        attributes: list<log-record-attribute>,
+    }
+
+    variant log-any {
+        value(log-value),
+        %list(log-list),
+        map(log-map),
+    }
+
+    variant log-value {
+        int(s64),
+        double(f64),
+        %string(string),
+        boolean(bool),
+    }
+
+    variant log-list {
+        bytes(list<u8>),
+        %list(list<log-value>),
+    }
+
+    type log-map = list<log-map-key-value>;
+
+    type log-map-key = string;
+
+    variant log-map-value {
+        value(log-value),
+        %list(log-list),
+    }
+
+    record log-map-key-value {
+        key: log-map-key,
+        value: log-map-value,
+    }
+
+    enum severity {
+        trace,
+        // Trace = 1,
+        trace2,
+        // Trace2 = 2,
+        trace3,
+        // Trace3 = 3,
+        trace4,
+        // Trace4 = 4,
+        debug,
+        // Debug = 5,
+        debug2,
+        // Debug2 = 6,
+        debug3,
+        // Debug3 = 7,
+        debug4,
+        // Debug4 = 8,
+        info,
+        // Info = 9,
+        info2,
+        // Info2 = 10,
+        info3,
+        // Info3 = 11,
+        info4,
+        // Info4 = 12,
+        warn,
+        // Warn = 13,
+        warn2,
+        // Warn2 = 14,
+        warn3,
+        // Warn3 = 15,
+        warn4,
+        // Warn4 = 16,
+        error,
+        // Error = 17,
+        error2,
+        // Error2 = 18,
+        error3,
+        // Error3 = 19,
+        error4,
+        // Error4 = 20,
+        fatal,
+        // Fatal = 21,
+        fatal2,
+        // Fatal2 = 22,
+        fatal3,
+        // Fatal3 = 23,
+        fatal4,
+        // Fatal4 = 24,
+    }
+
+    record log-record-attribute {
+        key: string,
+        value: log-any,
+    }
+
+    type log-error = string;
+}

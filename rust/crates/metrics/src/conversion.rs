@@ -6,11 +6,12 @@ impl From<&mut opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMe
     fn from(value: &mut opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
         Self {
             resource: value.resource.to_owned().into(),
-            scope_metrics: value.scope_metrics
-            .iter()
-            .to_owned()
-            .map(Into::into)
-            .collect(),
+            scope_metrics: value
+                .scope_metrics
+                .iter()
+                .to_owned()
+                .map(Into::into)
+                .collect(),
         }
     }
 }
@@ -21,7 +22,7 @@ impl From<opentelemetry_sdk::resource::Resource> for Resource {
             inner: ResourceInner {
                 attributes: value.into_iter().map(Into::into).collect(),
                 schema_url: match value.schema_url() {
-                    Some(v ) => Some(v.to_string()),
+                    Some(v) => Some(v.to_string()),
                     None => None,
                 },
             },
@@ -176,17 +177,26 @@ impl From<Box<dyn opentelemetry_sdk::metrics::data::Aggregation>> for MetricData
             MetricData::Sum(s.into())
         } else if let Some(s) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Sum<u64>>() {
             MetricData::Sum(s.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<f64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<f64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<f64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<f64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<i64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<i64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<u64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<u64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
         } else {
             panic!("unknown aggregation type")
@@ -209,17 +219,26 @@ impl From<&Box<dyn opentelemetry_sdk::metrics::data::Aggregation>> for MetricDat
             MetricData::Sum(s.into())
         } else if let Some(s) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Sum<u64>>() {
             MetricData::Sum(s.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<f64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<f64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<i64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>() {
+        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::Histogram<u64>>()
+        {
             MetricData::Histogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<f64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<f64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<i64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<i64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
-        } else if let Some(h) = v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<u64>>() {
+        } else if let Some(h) =
+            v.downcast_ref::<opentelemetry_sdk::metrics::data::ExponentialHistogram<u64>>()
+        {
             MetricData::ExponentialHistogram(h.into())
         } else {
             panic!("unknown aggregation type")
@@ -233,7 +252,12 @@ where
 {
     fn from(value: &opentelemetry_sdk::metrics::data::Gauge<T>) -> Self {
         Self {
-            data_points: value.data_points.to_owned().into_iter().map(Into::into).collect(),
+            data_points: value
+                .data_points
+                .to_owned()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
             start_time: match value.start_time {
                 Some(v) => Some(v.into()),
                 None => None,
@@ -262,7 +286,12 @@ where
 {
     fn from(value: &opentelemetry_sdk::metrics::data::Sum<T>) -> Self {
         Self {
-            data_points: value.data_points.to_owned().into_iter().map(Into::into).collect(),
+            data_points: value
+                .data_points
+                .to_owned()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
             start_time: value.start_time.into(),
             time: value.time.into(),
             temporality: value.temporality.into(),
@@ -290,7 +319,12 @@ where
 {
     fn from(value: &opentelemetry_sdk::metrics::data::Histogram<T>) -> Self {
         Self {
-            data_points: value.data_points.to_owned().into_iter().map(Into::into).collect(),
+            data_points: value
+                .data_points
+                .to_owned()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
             start_time: value.start_time.into(),
             time: value.time.into(),
             temporality: value.temporality.into(),
@@ -322,14 +356,18 @@ where
     }
 }
 
-
 impl<T> From<&opentelemetry_sdk::metrics::data::ExponentialHistogram<T>> for ExponentialHistogram
 where
     T: Into<MetricNumber> + Clone + Copy,
 {
     fn from(value: &opentelemetry_sdk::metrics::data::ExponentialHistogram<T>) -> Self {
         Self {
-            data_points: value.data_points.to_owned().into_iter().map(Into::into).collect(),
+            data_points: value
+                .data_points
+                .to_owned()
+                .into_iter()
+                .map(Into::into)
+                .collect(),
             start_time: value.start_time.into(),
             time: value.time.into(),
             temporality: value.temporality.into(),
@@ -337,7 +375,8 @@ where
     }
 }
 
-impl<T> From<opentelemetry_sdk::metrics::data::ExponentialHistogramDataPoint<T>> for ExponentialHistogramDataPoint
+impl<T> From<opentelemetry_sdk::metrics::data::ExponentialHistogramDataPoint<T>>
+    for ExponentialHistogramDataPoint
 where
     T: Into<MetricNumber> + Clone + Copy,
 {
@@ -385,17 +424,21 @@ impl From<opentelemetry_sdk::metrics::Temporality> for TemporalityT {
 
 impl<T> From<opentelemetry_sdk::metrics::data::Exemplar<T>> for Exemplar
 where
-    T: Into<MetricNumber>
+    T: Into<MetricNumber>,
 {
-     fn from(value: opentelemetry_sdk::metrics::data::Exemplar<T>) -> Self {
-         Self {
-            filtered_attributes: value.filtered_attributes.into_iter().map(Into::into).collect(),
+    fn from(value: opentelemetry_sdk::metrics::data::Exemplar<T>) -> Self {
+        Self {
+            filtered_attributes: value
+                .filtered_attributes
+                .into_iter()
+                .map(Into::into)
+                .collect(),
             time: value.time.into(),
             value: value.value.into(),
             span_id: String::from_utf8(value.span_id.to_vec()).unwrap(),
             trace_id: String::from_utf8(value.trace_id.to_vec()).unwrap(),
-         }
-     }
+        }
+    }
 }
 
 impl From<f64> for MetricNumber {

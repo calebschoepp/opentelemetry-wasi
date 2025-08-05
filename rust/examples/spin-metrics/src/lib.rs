@@ -9,7 +9,7 @@ use opentelemetry_sdk::Resource;
 
 /// A simple Spin HTTP component.
 #[http_component]
-fn handle_spin_metrics(req: Request) -> anyhow::Result<impl IntoResponse> {
+fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
     // Initialize the MeterProvider with the stdout Exporter.
     let meter_provider = init_meter_provider();
     global::set_meter_provider(meter_provider);
@@ -37,11 +37,10 @@ fn handle_spin_metrics(req: Request) -> anyhow::Result<impl IntoResponse> {
 }
 
 fn init_meter_provider() -> opentelemetry_sdk::metrics::SdkMeterProvider {
-    let exporter = opentelemetry_wasi::WasiExporter{is_shutdown: AtomicBool::new(false)};
-    // let exporter = opentelemetry_stdout::MetricExporterBuilder::default()
-    //     // Build exporter using Delta Temporality (Defaults to Temporality::Cumulative)
-    //     // .with_temporality(opentelemetry_sdk::metrics::Temporality::Delta)
-    //     .build();
+    let exporter = opentelemetry_wasi::WasiMetricExporter {
+        is_shutdown: AtomicBool::new(false),
+    };
+
     let provider = SdkMeterProvider::builder()
         .with_periodic_exporter(exporter)
         .with_resource(

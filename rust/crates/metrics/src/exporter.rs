@@ -1,21 +1,21 @@
-use std::sync::atomic::{Ordering, AtomicBool};
 use async_trait::async_trait;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use opentelemetry_sdk::{
-    error::{OTelSdkResult, OTelSdkError},
-    metrics::{data::ResourceMetrics, exporter::PushMetricExporter, Temporality}
+    error::{OTelSdkError, OTelSdkResult},
+    metrics::{data::ResourceMetrics, exporter::PushMetricExporter, Temporality},
 };
 
 use crate::wit::wasi::otel::metrics::export;
 
-pub struct WasiExporter {
+pub struct WasiMetricExporter {
     // TODO: I'm just copying what was done in the `tracing/processor.rs` file, so this
     // and the non-export methods implemented on the struct may not be correct...
     pub is_shutdown: AtomicBool,
 }
 
 #[async_trait]
-impl PushMetricExporter for WasiExporter {
+impl PushMetricExporter for WasiMetricExporter {
     async fn export(&self, metrics: &mut ResourceMetrics) -> OTelSdkResult {
         let converted = metrics.into();
 
@@ -24,7 +24,7 @@ impl PushMetricExporter for WasiExporter {
 
     async fn force_flush(&self) -> OTelSdkResult {
         if self.is_shutdown.load(Ordering::Relaxed) {
-            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
         Ok(())
     }
@@ -32,16 +32,16 @@ impl PushMetricExporter for WasiExporter {
     fn shutdown(&self) -> OTelSdkResult {
         let mut result: Result<(), opentelemetry_sdk::error::OTelSdkError> = Ok(());
 
-        async {result = self.force_flush().await}; // TODO: this might be a no-op...
+        async { result = self.force_flush().await }; // TODO: this might be a no-op...
 
         if self.is_shutdown.swap(true, Ordering::Relaxed) {
-            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
 
         result
     }
 
-    fn temporality(&self) -> Temporality{
+    fn temporality(&self) -> Temporality {
         Temporality::Cumulative
     }
 }
