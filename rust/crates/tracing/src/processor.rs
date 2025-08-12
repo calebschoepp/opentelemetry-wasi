@@ -26,11 +26,15 @@ impl Default for WasiProcessor {
 
 impl SpanProcessor for WasiProcessor {
     fn on_start(&self, span: &mut opentelemetry_sdk::trace::Span, _: &opentelemetry::Context) {
+        println!("WasiProcessor::on_start invoked");
         if self.is_shutdown.load(Ordering::Relaxed) {
             return;
         }
         if let Some(span_data) = span.exported_data() {
+            println!("SpanData is SOME");
             on_start(&span_data.span_context.into());
+        } else {
+            println!("SpanData is NONE");
         }
     }
 
@@ -43,7 +47,7 @@ impl SpanProcessor for WasiProcessor {
 
     fn force_flush(&self) -> OTelSdkResult {
         if self.is_shutdown.load(Ordering::Relaxed) {
-            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
         Ok(())
     }
@@ -51,7 +55,7 @@ impl SpanProcessor for WasiProcessor {
     fn shutdown(&self) -> OTelSdkResult {
         let result = self.force_flush();
         if self.is_shutdown.swap(true, Ordering::Relaxed) {
-            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown)
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
         result
     }
