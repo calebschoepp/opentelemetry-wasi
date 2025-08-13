@@ -1,5 +1,6 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use opentelemetry::global::ObjectSafeSpan;
 use opentelemetry_sdk::{error::OTelSdkResult, trace::SpanProcessor};
 
 use crate::wit::wasi::otel::tracing::{on_end, on_start};
@@ -26,15 +27,11 @@ impl Default for WasiProcessor {
 
 impl SpanProcessor for WasiProcessor {
     fn on_start(&self, span: &mut opentelemetry_sdk::trace::Span, _: &opentelemetry::Context) {
-        println!("WasiProcessor::on_start invoked");
         if self.is_shutdown.load(Ordering::Relaxed) {
             return;
         }
         if let Some(span_data) = span.exported_data() {
-            println!("SpanData is SOME");
             on_start(&span_data.span_context.into());
-        } else {
-            println!("SpanData is NONE");
         }
     }
 

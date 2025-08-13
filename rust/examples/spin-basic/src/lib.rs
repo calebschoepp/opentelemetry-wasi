@@ -17,6 +17,7 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     let wasi_processor = opentelemetry_wasi::WasiProcessor::new();
     let tracer_provider = SdkTracerProvider::builder()
         .with_span_processor(wasi_processor)
+        .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
         .build();
     global::set_tracer_provider(tracer_provider);
     let tracer = global::tracer("basic-spin");
@@ -26,7 +27,6 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     let _context_guard = wasi_propagator.extract(&Context::current()).attach();
 
     // Create some spans and events
-    println!("INVOKE: on_start(main-operation)");
     tracer.in_span("main-operation", |cx| {
         let span = cx.span();
         span.set_attribute(KeyValue::new("my-attribute", "my-value"));
@@ -34,14 +34,12 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
             "Main span event".to_string(),
             vec![KeyValue::new("foo", "1")],
         );
-        println!("INVOKE: on_start(child-operation)");
         tracer.in_span("child-operation", |cx| {
             let span = cx.span();
             span.add_event("Sub span event", vec![KeyValue::new("bar", "1")]);
 
             let store = Store::open_default().unwrap();
             store.set("foo", "bar".as_bytes()).unwrap();
-            println!("Child Span created");
         });
     });
 
