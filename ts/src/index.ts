@@ -9,42 +9,55 @@ import {
   SpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
 import { Context } from "@opentelemetry/api";
+import { BindOnceFuture } from "@opentelemetry/core";
 
 export class WasiProcessor implements SpanProcessor {
-  forceFlush(): Promise<void> {
-    throw new Error("Method not implemented.");
+  private _shutdownOnce: BindOnceFuture<void>;
+
+  constructor() {
+    this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
   }
 
-  onStart(span: Span, parentContext: Context): void {
+  forceFlush(): Promise<void> {
+    // no-op
+    return Promise.resolve();
+  }
+
+  onStart(span: Span, _: Context): void {
+    if (this._shutdownOnce.isCalled) {
+      return;
+    }
+
+    // TODO
     wasiSpanStart(
-      {
-        name: "foo",
-        startTime: {
-          seconds: BigInt(span.startTime[0]),
-          nanoseconds: span.startTime[1],
-        },
-        spanContext: {
-          traceId: "",
-          spanId: "",
-          traceFlags: { sampled: true },
-          isRemote: false,
-          traceState: [],
-        },
-        parentSpanId: "",
-        spanKind: "client",
-        endTime: {
-          seconds: BigInt(span.endTime[0]),
-          nanoseconds: span.endTime[1],
-        },
-        attributes: [],
-        events: [],
-        links: [],
-        status: { tag: "unset" },
-        instrumentationScope: {
-          name: "",
-          attributes: [],
-        },
-      },
+      // {
+      //   name: "foo",
+      //   startTime: {
+      //     seconds: BigInt(span.startTime[0]),
+      //     nanoseconds: span.startTime[1],
+      //   },
+      //   spanContext: {
+      //     traceId: "",
+      //     spanId: "",
+      //     traceFlags: { sampled: true },
+      //     isRemote: false,
+      //     traceState: [],
+      //   },
+      //   parentSpanId: "",
+      //   spanKind: "client",
+      //   endTime: {
+      //     seconds: BigInt(span.endTime[0]),
+      //     nanoseconds: span.endTime[1],
+      //   },
+      //   attributes: [],
+      //   events: [],
+      //   links: [],
+      //   status: { tag: "unset" },
+      //   instrumentationScope: {
+      //     name: "",
+      //     attributes: [],
+      //   },
+      // },
       {
         traceId: "",
         spanId: "",
@@ -56,6 +69,10 @@ export class WasiProcessor implements SpanProcessor {
   }
 
   onEnd(span: ReadableSpan): void {
+    if (this._shutdownOnce.isCalled) {
+      return;
+    }
+
     wasiSpanEnd({
       name: "foo",
       startTime: {
@@ -87,7 +104,10 @@ export class WasiProcessor implements SpanProcessor {
   }
 
   shutdown(): Promise<void> {
-    // Do not care
-    throw new Error("Method not implemented.");
+    return this._shutdownOnce.call();
+  }
+
+  private _shutdown(): void {
+    // no-op
   }
 }

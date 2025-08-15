@@ -14,3 +14,4 @@ opentelemetry = { workspace = true }
 opentelemetry_sdk = { workspace = true }
 opentelemetry-wasi = { path = "../../" }
 spin-sdk = { workspace = true }
+opentelemetry-otlp = { version = "0.27", features = ["http-proto"] }

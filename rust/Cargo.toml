@@ -15,5 +15,5 @@ members = ["examples/*"]
 [workspace.dependencies]
 anyhow = "1"
 opentelemetry = "0.27.0"
-opentelemetry_sdk = "0.27.0"
+opentelemetry_sdk = { version = "0.27.0", features = [] }
 spin-sdk = "3.1.0"
