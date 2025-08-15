@@ -22,9 +22,9 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     global::set_tracer_provider(tracer_provider);
     let tracer = global::tracer("basic-spin");
 
-    // Extract context from the Wasm host
-    let wasi_propagator = opentelemetry_wasi::TraceContextPropagator::new();
-    let _context_guard = wasi_propagator.extract(&Context::current()).attach();
+    // // Extract context from the Wasm host
+    // let wasi_propagator = opentelemetry_wasi::TraceContextPropagator::new();
+    // let _context_guard = wasi_propagator.extract(&Context::current()).attach();
 
     // Create some spans and events
     tracer.in_span("main-operation", |cx| {
