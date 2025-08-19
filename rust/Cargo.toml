@@ -12,6 +12,8 @@ opentelemetry = { workspace = true }
 opentelemetry_sdk = { workspace = true }
 wit-bindgen = { workspace = true }
 opentelemetry-wasi-metrics = { path = "crates/metrics" }
+opentelemetry-wasi-logs = { path = "crates/logs" }
+
 opentelemetry-wasi-tracing = { path = "crates/tracing" }
 
 [workspace]

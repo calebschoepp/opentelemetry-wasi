@@ -1,7 +1,7 @@
 use core::panic;
 use std::{collections::HashMap, time::UNIX_EPOCH};
 
-use crate::wit::wasi::otel::logging::*;
+use crate::wit::wasi::otel::logs::*;
 
 impl From<&mut opentelemetry_sdk::logs::SdkLogRecord> for LogRecord {
     fn from(value: &mut opentelemetry_sdk::logs::SdkLogRecord) -> Self {

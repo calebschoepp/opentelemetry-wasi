@@ -1,6 +1,8 @@
 mod conversion;
 mod processor;
 
+pub use processor::WasiLogProcessor;
+
 #[doc(hidden)]
 /// Module containing wit bindgen generated code.
 ///

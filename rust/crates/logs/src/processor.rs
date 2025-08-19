@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use opentelemetry_sdk::error::OTelSdkResult;
 
-use crate::wit::wasi::otel::logging::emit;
+use crate::wit::wasi::otel::logs::emit;
 
 #[derive(Debug)]
 pub struct WasiLogProcessor {
@@ -31,7 +31,7 @@ impl opentelemetry_sdk::logs::LogProcessor for WasiLogProcessor {
     ) {
         match emit(&data.into()) {
             Ok(_) => (),
-            Err(v) => panic!("{}", v), // TODO: this feels risky to panic here; however, not sure how to handle errors since the function doesn't return an error...
+            Err(v) => println!("ERROR: opentelemetry_wasi failed to emit log: {}", v),
         }
     }
 

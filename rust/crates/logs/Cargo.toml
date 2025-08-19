@@ -1,5 +1,5 @@
 [package]
-name = "opentelemetry-wasi-logging"
+name = "opentelemetry-wasi-logs"
 version = "0.1.0"
 edition = "2021"
 

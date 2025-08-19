@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "spin-logs"
+version = "0.1.0"
+authors = ["Andrew Steurer <94206073+asteurer@users.noreply.github.com>"]
+description = "A Spin application demonstrating the use of OpenTelemetry logs"
+
+[[trigger.http]]
+route = "/..."
+component = "spin-logs"
+
+[component.spin-logs]
+source = "../../target/wasm32-wasip2/release/spin_metrics.wasm"
+allowed_outbound_hosts = []
+[component.spin-logs.build]
+command = "cargo build --target wasm32-wasip2 --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

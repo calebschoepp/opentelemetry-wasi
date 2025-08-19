@@ -14,6 +14,14 @@ pub struct WasiMetricExporter {
     pub is_shutdown: AtomicBool,
 }
 
+impl WasiMetricExporter {
+    pub fn new() -> Self {
+        Self {
+            is_shutdown: AtomicBool::new(false),
+        }
+    }
+}
+
 #[async_trait]
 impl PushMetricExporter for WasiMetricExporter {
     async fn export(&self, metrics: &mut ResourceMetrics) -> OTelSdkResult {
@@ -30,15 +38,11 @@ impl PushMetricExporter for WasiMetricExporter {
     }
 
     fn shutdown(&self) -> OTelSdkResult {
-        let mut result: Result<(), opentelemetry_sdk::error::OTelSdkError> = Ok(());
-
-        async { result = self.force_flush().await }; // TODO: this might be a no-op...
-
         if self.is_shutdown.swap(true, Ordering::Relaxed) {
             return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
 
-        result
+        Ok(())
     }
 
     fn temporality(&self) -> Temporality {

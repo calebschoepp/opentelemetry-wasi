@@ -2,7 +2,7 @@
 // See https://opentelemetry.io/docs/specs/otel/logs/sdk/#logrecordprocessor
 // See https://github.com/open-telemetry/opentelemetry-rust/blob/189078d7a92e534d67137ffaed8e35456eaa589b/opentelemetry-sdk/src/logs/record.rs
 
-interface logging {
+interface logs {
     use wasi:clocks/wall-clock@0.2.0.{datetime};
 
     emit: func(data: log-record) -> result<_, log-error>;

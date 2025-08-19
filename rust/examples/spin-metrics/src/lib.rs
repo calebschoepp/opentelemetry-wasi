@@ -1,26 +1,19 @@
-use std::sync::atomic::AtomicBool;
-
+use opentelemetry::{global, KeyValue};
+use opentelemetry_sdk::metrics::{
+    periodic_reader_with_async_runtime::PeriodicReader, SdkMeterProvider,
+};
+use opentelemetry_sdk::{runtime, Resource};
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 
-use opentelemetry::{global, KeyValue};
-use opentelemetry_sdk::metrics::SdkMeterProvider;
-use opentelemetry_sdk::Resource;
-
-/// A simple Spin HTTP component.
 #[http_component]
 fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
-    // Initialize the MeterProvider with the stdout Exporter.
     let meter_provider = init_meter_provider();
     global::set_meter_provider(meter_provider);
 
-    // Create a meter from the above MeterProvider.
-    let meter = global::meter("mylibraryname");
+    let meter = global::meter("spin_meter");
+    let counter = meter.u64_counter("spin_counter").build();
 
-    // Create a Counter Instrument.
-    let counter = meter.u64_counter("my_counter").build();
-
-    // Record measurements using the Counter instrument.
     counter.add(
         10,
         &[
@@ -32,20 +25,18 @@ fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
     Ok(Response::builder()
         .status(200)
         .header("content-type", "text/plain")
-        .body("Hello World!")
+        .body("Hello, World!")
         .build())
 }
 
 fn init_meter_provider() -> opentelemetry_sdk::metrics::SdkMeterProvider {
-    let exporter = opentelemetry_wasi::WasiMetricExporter {
-        is_shutdown: AtomicBool::new(false),
-    };
-
+    let exporter = opentelemetry_wasi::WasiMetricExporter::new();
+    let reader = PeriodicReader::builder(exporter, runtime::Tokio).build();
     let provider = SdkMeterProvider::builder()
-        .with_periodic_exporter(exporter)
+        .with_reader(reader)
         .with_resource(
             Resource::builder()
-                .with_service_name("metrics-basic-example")
+                .with_service_name("spin-metrics")
                 .build(),
         )
         .build();
