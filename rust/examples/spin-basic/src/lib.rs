@@ -1,5 +1,5 @@
 use opentelemetry::{global, Context};
-use opentelemetry_sdk::trace::TracerProvider;
+use opentelemetry_sdk::trace::SdkTracerProvider;
 use opentelemetry_wasi::WasiPropagator;
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
@@ -15,7 +15,7 @@ use opentelemetry::{
 fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     // Set up a tracer using the WASI processor
     let wasi_processor = opentelemetry_wasi::WasiProcessor::new();
-    let tracer_provider = TracerProvider::builder()
+    let tracer_provider = SdkTracerProvider::builder()
         .with_span_processor(wasi_processor)
         .build();
     global::set_tracer_provider(tracer_provider);
