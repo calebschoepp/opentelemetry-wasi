@@ -1,9 +1,8 @@
+use crate::wit::wasi::otel::tracing::*;
 use std::time::UNIX_EPOCH;
 
-use crate::wit::wasi::otel::tracing::*;
-
-impl From<opentelemetry_sdk::export::trace::SpanData> for SpanData {
-    fn from(value: opentelemetry_sdk::export::trace::SpanData) -> Self {
+impl From<opentelemetry_sdk::trace::SpanData> for SpanData {
+    fn from(value: opentelemetry_sdk::trace::SpanData) -> Self {
         Self {
             span_context: value.span_context.into(),
             parent_span_id: value.parent_span_id.to_string(),

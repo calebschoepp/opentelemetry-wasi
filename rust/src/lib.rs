@@ -1,10 +1,6 @@
-mod conversion;
-mod processor;
-mod propagation;
+mod tracing;
 
-pub use processor::WasiProcessor;
-pub use propagation::TraceContextPropagator;
-pub use propagation::WasiPropagator;
+pub use tracing::*;
 
 #[doc(hidden)]
 /// Module containing wit bindgen generated code.

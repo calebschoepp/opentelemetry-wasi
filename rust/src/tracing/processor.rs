@@ -1,9 +1,6 @@
-use std::sync::atomic::{AtomicBool, Ordering};
-
-use opentelemetry::trace::TraceError;
-use opentelemetry_sdk::trace::SpanProcessor;
-
 use crate::wit::wasi::otel::tracing::{on_end, on_start};
+use opentelemetry_sdk::{error::OTelSdkResult, trace::SpanProcessor};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive(Debug)]
 pub struct WasiProcessor {
@@ -35,25 +32,29 @@ impl SpanProcessor for WasiProcessor {
         }
     }
 
-    fn on_end(&self, span: opentelemetry_sdk::export::trace::SpanData) {
+    fn on_end(&self, span: opentelemetry_sdk::trace::SpanData) {
         if self.is_shutdown.load(Ordering::Relaxed) {
             return;
         }
         on_end(&span.into());
     }
 
-    fn force_flush(&self) -> opentelemetry::trace::TraceResult<()> {
+    fn force_flush(&self) -> OTelSdkResult {
         if self.is_shutdown.load(Ordering::Relaxed) {
-            return Err(TraceError::Other("Processor already shutdown".into()));
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
         Ok(())
     }
 
-    fn shutdown(&self) -> opentelemetry::trace::TraceResult<()> {
+    fn shutdown(&self) -> OTelSdkResult {
         let result = self.force_flush();
         if self.is_shutdown.swap(true, Ordering::Relaxed) {
-            return Err(TraceError::Other("Processor already shutdown".into()));
+            return OTelSdkResult::Err(opentelemetry_sdk::error::OTelSdkError::AlreadyShutdown);
         }
         result
+    }
+
+    fn shutdown_with_timeout(&self, _timeout: std::time::Duration) -> OTelSdkResult {
+        self.shutdown()
     }
 }
