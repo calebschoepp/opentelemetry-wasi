@@ -1,6 +1,8 @@
 interface tracing {
     use wasi:clocks/wall-clock@0.2.0.{datetime};
 
+    use types.{key-value};
+
     /// Called when a span is started.
     on-start: func(context: span-context);
 
@@ -89,37 +91,6 @@ interface tracing {
         consumer,
         /// Default value. Indicates that the span represents an internal operation within an application, as opposed to an operations with remote parents or children.
         internal
-    }
-
-    /// A key-value pair describing an attribute.
-    record key-value {
-        /// The attribute name.
-        key: key,
-        /// The attribute value.
-        value: value,
-    }
-
-    /// The key part of attribute `key-value` pairs.
-    type key = string;
-
-    /// The value part of attribute `key-value` pairs.
-    variant value {
-        /// A string value.
-        %string(string),
-        /// A boolean value.
-        %bool(bool),
-        /// A double precision floating point value.
-        %f64(f64),
-        /// A signed 64 bit integer value.
-        %s64(s64),
-        /// A homogeneous array of string values.
-        string-array(list<string>),
-        /// A homogeneous array of boolean values.
-        bool-array(list<bool>),
-        /// A homogeneous array of double precision floating point values.
-        f64-array(list<f64>),
-        /// A homogeneous array of 64 bit integer values.
-        s64-array(list<s64>),
     }
 
     /// An event describing a specific moment in time on a span and associated attributes.
