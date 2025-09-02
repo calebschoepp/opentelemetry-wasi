@@ -1,0 +1,16 @@
+package docs:adder@0.1.0;
+
+interface add {
+    record numbers {
+        x: u32,
+        y: u32,
+    }
+
+    add: func(nums: numbers) -> u32;
+}
+
+
+world adder {
+    include wasi:cli/imports@0.2.0;
+    export add;
+}
