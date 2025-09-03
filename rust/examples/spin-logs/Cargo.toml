@@ -1,0 +1,20 @@
+[package]
+name = "spin-logs"
+authors = ["Andrew Steurer <94206073+asteurer@users.noreply.github.com>"]
+description = ""
+version = "0.1.0"
+rust-version = "1.78"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry_sdk = { workspace = true }
+opentelemetry-wasi = { path = "../../" }
+spin-sdk = { workspace = true }
+tracing = { workspace = true }
+opentelemetry-appender-tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

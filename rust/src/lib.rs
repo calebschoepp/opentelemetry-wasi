@@ -1,6 +1,8 @@
+mod logs;
 mod tracing;
 mod types;
 
+pub use logs::*;
 pub use tracing::*;
 
 #[doc(hidden)]
