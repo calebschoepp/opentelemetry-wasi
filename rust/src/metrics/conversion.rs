@@ -1,4 +1,4 @@
-use crate::wit::wasi::{clocks0_2_0::monotonic_clock::Duration, otel::metrics::*};
+use crate::wit::wasi::{clocks::monotonic_clock::Duration, otel::metrics::*};
 
 impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
     fn from(value: opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
