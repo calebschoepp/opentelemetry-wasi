@@ -29,4 +29,20 @@ interface types {
         /// A homogeneous array of 64 bit integer values.
         s64-array(list<s64>),
     }
+
+    /// Describes the instrumentation scope that produced telemetry.
+    record instrumentation-scope {
+        /// Name of the instrumentation scope.
+        name: string,
+
+        /// The library version.
+        version: option<string>,
+
+        /// Schema URL used by this library.
+        /// https://github.com/open-telemetry/opentelemetry-specification/blob/v1.9.0/specification/schemas/overview.md#schema-url
+        schema-url: option<string>,
+
+        /// Specifies the instrumentation scope attributes to associate with emitted telemetry.
+        attributes: list<key-value>,
+    }
 }

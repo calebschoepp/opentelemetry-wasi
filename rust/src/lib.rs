@@ -1,6 +1,8 @@
+mod metrics;
 mod tracing;
 mod types;
 
+pub use metrics::*;
 pub use tracing::*;
 
 #[doc(hidden)]
