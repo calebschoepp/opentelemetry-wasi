@@ -120,3 +120,69 @@ impl From<opentelemetry::trace::Status> for Status {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::panic;
+    use opentelemetry::trace as O;
+    use opentelemetry_sdk::trace as Sdk;
+    use std::time;
+
+    #[test]
+    fn span_data_conversion() {
+        // TODO: there were some fields that I didn't test due to using the defaults:
+        // - events
+        // - instrumentation_scope.{attributes, schema_url, version}
+        // - links
+        // - span_context.trace_state
+        let otel_span = Sdk::SpanData {
+            attributes: vec![opentelemetry::KeyValue::new("foo", "bar")],
+            dropped_attributes_count: 6,
+            end_time: time::UNIX_EPOCH + time::Duration::from_secs(1234567890),
+            events: Sdk::SpanEvents::default(),
+            instrumentation_scope: opentelemetry::InstrumentationScope::builder("tst-scp").build(),
+            links: Sdk::SpanLinks::default(),
+            name: std::borrow::Cow::Borrowed("test-name"),
+            parent_span_id: opentelemetry::SpanId::from_bytes([2u8; 8]),
+            span_context: O::SpanContext::new(
+                O::TraceId::from_bytes([0u8; 16]),
+                O::SpanId::from_bytes([1u8; 8]),
+                O::TraceFlags::SAMPLED,
+                true,
+                O::TraceState::default(),
+            ),
+            span_kind: O::SpanKind::Internal,
+            start_time: time::UNIX_EPOCH + time::Duration::from_secs(9876543210),
+            status: O::Status::Ok,
+        };
+
+        let span: SpanData = otel_span.into();
+
+        // Root
+        assert_eq!(span.dropped_attributes, 6u32);
+        assert_eq!(span.end_time.seconds, 1234567890u64);
+        assert_eq!(span.name, "test-name".to_string());
+        assert_eq!(span.parent_span_id, "0202020202020202");
+        assert_eq!(span.span_kind, SpanKind::Internal);
+        assert_eq!(span.start_time.seconds, 9876543210u64);
+        assert!(matches!(span.status, Status::Ok));
+
+        // SpanContext
+        assert_eq!(span.span_context.trace_id, "0");
+        assert_eq!(span.span_context.span_id, "101010101010101");
+        assert_eq!(span.span_context.trace_flags, TraceFlags::SAMPLED);
+        assert!(span.span_context.is_remote);
+
+        // Attributes
+        assert!(span.attributes.len() == 1);
+        assert_eq!(span.attributes[0].key, "foo".to_string());
+        match &span.attributes[0].value {
+            crate::wit::wasi::otel::types::Value::String(s) => assert_eq!(s, "bar"),
+            _ => panic!("Expected Value::String, got {:?}", span.attributes[0].value),
+        }
+
+        // InstrumentationScope
+        assert_eq!(span.instrumentation_scope.name, "tst-scp".to_string());
+    }
+}
