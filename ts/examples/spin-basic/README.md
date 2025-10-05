@@ -1,32 +1,35 @@
-# `http-ts` Template
-
-A starter template for building TypeScript HTTP applications with Spin.
-
-## Getting Started
-
-Build the App
-
+# Usage
+Install the TypeScript branch of `opentelemetry-wasi`
 ```bash
-spin build
+git clone --depth 1 --branch ts https://github.com/asteurer/opentelemetry-wasi.git
 ```
 
-## Run the App 
-
+Install the experimental branch of Spin
 ```bash
-spin up
+git clone --depth 1 --branch wasi-otel-metrics https://github.com/asteurer/spin.git wasi-otel-spin
 ```
 
-## Using Spin Interfaces
+Build Spin
+```bash
+cd wasi-otel-spin
 
-To use additional Spin interfaces, install the corresponding packages:
+# The Spin app take forever to initialize if we don't use a release build
+cargo build --release
+```
 
-| Interface     | Package                         |
-|---------------|---------------------------------|
-| Key-Value     | `@spinframework/spin-kv`        |
-| LLM           | `@spinframework/spin-llm`       |
-| MQTT          | `@spinframework/spin-mqtt`      |
-| MySQL         | `@spinframework/spin-mysql`     |
-| PostgreSQL    | `@spinframework/spin-postgres`  |
-| Redis         | `@spinframework/spin-redis`     |
-| SQLite        | `@spinframework/spin-sqlite`    |
-| Variables     | `@spinframework/spin-variables` |
+Install required plugins
+```bash
+spin plugin update
+
+spin plugin install otel
+```
+
+Run the application
+```bash
+cd opentelemetry-wasi/ts/examples/spin-basic
+
+/path/to/wasi-otel-spin build && /path/to/wasi-otel-spin otel up
+
+# In a different terminal...
+curl localhost:3000
+```

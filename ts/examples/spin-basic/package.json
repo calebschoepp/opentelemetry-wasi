@@ -20,6 +20,7 @@
     "dependencies": {
         "@spinframework/build-tools": "^1.0.1",
         "@spinframework/wasi-http-proxy": "^1.0.0",
+        "@spinframework/spin-kv": "^1.0.0",
         "opentelemetry-wasi": "file:../../",
         "itty-router": "^5.0.18"
     }

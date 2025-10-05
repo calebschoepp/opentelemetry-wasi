@@ -1,0 +1,5 @@
+# Updates the files in the `dist` and `types/interfaces` directories.
+# Run this if the Spin app isn't reflecting the latest version of the WIT files and/or SDK
+build:
+	npx jco guest-types -o ./types ./wit
+	npm run build
