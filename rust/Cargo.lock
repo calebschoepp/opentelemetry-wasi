@@ -669,7 +669,6 @@ name = "spin-metrics"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "once_cell",
  "opentelemetry",
  "opentelemetry-wasi",
  "opentelemetry_sdk",
