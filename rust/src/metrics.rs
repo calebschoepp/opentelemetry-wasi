@@ -1,5 +1,4 @@
 mod conversion;
-mod exporter;
+mod reader;
 
-pub use exporter::WasiMetricCollector;
-pub use exporter::WasiMetricExporter;
+pub use reader::WasiMetricReader;

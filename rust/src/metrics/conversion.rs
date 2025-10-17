@@ -37,12 +37,10 @@ impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
 impl From<opentelemetry_sdk::resource::Resource> for Resource {
     fn from(value: opentelemetry_sdk::resource::Resource) -> Self {
         Self {
-            inner: ResourceInner {
-                attributes: value.into_iter().map(Into::into).collect(),
-                schema_url: match value.schema_url() {
-                    Some(v) => Some(v.to_string()),
-                    None => None,
-                },
+            attributes: value.into_iter().map(Into::into).collect(),
+            schema_url: match value.schema_url() {
+                Some(v) => Some(v.to_string()),
+                None => None,
             },
         }
     }

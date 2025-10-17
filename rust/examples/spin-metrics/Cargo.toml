@@ -15,4 +15,3 @@ opentelemetry = { workspace = true }
 opentelemetry_sdk = { workspace = true }
 opentelemetry-wasi = { path = "../../" }
 spin-sdk = { workspace = true }
-once_cell = "1.21.3"
