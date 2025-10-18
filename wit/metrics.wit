@@ -5,7 +5,9 @@ interface metrics {
     use tracing.{span-id, trace-id};
 
     /// `export` sends all metric data related to a Reader from the SDK
-    %export: func(metrics: resource-metrics) -> result<_, otel-error>;
+    %export: func(metrics: resource-metrics) -> result<_, error>;
+
+    type error = string;
 
     /// `resource-metrics` is a collection of `scope-metrics` and the associated `resource`
     /// that created them.
@@ -252,12 +254,5 @@ interface metrics {
         %f64(f64),
         %s64(s64),
         %u64(u64),
-    }
-
-    /// A representation of the `OTelSdkError`.
-    variant otel-error {
-        already-shutdown,
-        timeout(duration),
-        internal-failure(string),
     }
 }

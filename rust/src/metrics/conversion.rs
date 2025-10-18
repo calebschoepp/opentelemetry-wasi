@@ -1,26 +1,10 @@
-use crate::wit::wasi::{clocks0_2_0::monotonic_clock::Duration, otel::metrics::*};
+use crate::wit::wasi::otel::metrics::*;
 
 impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
     fn from(value: opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
         Self {
             resource: value.resource().to_owned().into(),
             scope_metrics: value.scope_metrics().map(Into::into).collect(),
-        }
-    }
-}
-
-impl From<OtelError> for opentelemetry_sdk::error::OTelSdkError {
-    fn from(value: OtelError) -> Self {
-        use opentelemetry_sdk::error::OTelSdkError as O;
-        use OtelError as W;
-        fn to_duration(d: Duration) -> std::time::Duration {
-            // TODO: validate that this is correct
-            std::time::Duration::from_secs(d)
-        }
-        match value {
-            W::AlreadyShutdown => O::AlreadyShutdown,
-            W::InternalFailure(v) => O::InternalFailure(v),
-            W::Timeout(v) => O::Timeout(to_duration(v)),
         }
     }
 }

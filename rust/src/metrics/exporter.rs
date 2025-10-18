@@ -40,7 +40,9 @@ impl WasiMetricExporter {
         // Scrape the metrics from the reader.
         self.reader.collect(&mut metrics)?;
         // Export to the host.
-        wasi::otel::metrics::export(&metrics.into()).map_err(|e| e.into())
+        // TODO: is there a better way to handle the resulting WASI error string?
+        wasi::otel::metrics::export(&metrics.into())
+            .map_err(|e| opentelemetry_sdk::error::OTelSdkError::InternalFailure(e))
     }
 }
 
