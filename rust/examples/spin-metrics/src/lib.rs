@@ -1,6 +1,6 @@
 use opentelemetry::{global, KeyValue};
 use opentelemetry_sdk::{metrics::SdkMeterProvider, Resource};
-use opentelemetry_wasi::WasiMetricReader;
+use opentelemetry_wasi::WasiMetricExporter;
 use spin_sdk::{
     http::{IntoResponse, Request, Response},
     http_component,
@@ -8,61 +8,36 @@ use spin_sdk::{
 
 #[http_component]
 fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
-    let reader = WasiMetricReader::new();
+    let reader = WasiMetricExporter::default();
     let provider = SdkMeterProvider::builder()
-        .with_reader(reader.reader())
+        .with_reader(reader.clone())
         .with_resource(
             Resource::builder()
                 .with_service_name("spin-metrics")
                 .build(),
         )
         .build();
-    global::set_meter_provider(provider);
+    global::set_meter_provider(provider.clone());
 
-    let counter = global::meter("spin_meter")
-        .u64_counter("spin_counter")
-        .build();
-    let up_down_counter = global::meter("spin_meter")
-        .i64_up_down_counter("spin_up_down_counter")
-        .build();
-    let histogram = global::meter("spin_meter")
-        .u64_histogram("spin_histogram")
-        .build();
-    let gauge = global::meter("spin_meter").u64_gauge("spin_gauge").build();
+    // WARNING: Async instruments (i.e. Observable counters, gauges, etc.) are
+    // not yet supported, and will generate a runtime panic.
+    let meter = global::meter("spin_meter");
+    let counter = meter.u64_counter("spin_counter").build();
+    let up_down_counter = meter.i64_up_down_counter("spin_up_down_counter").build();
+    let histogram = meter.u64_histogram("spin_histogram").build();
+    let gauge = meter.u64_gauge("spin_gauge").build();
 
-    counter.add(
-        10,
-        &[
-            KeyValue::new("counterkey1", "countervalue1"),
-            KeyValue::new("counterkey2", "countervalue2"),
-        ],
-    );
+    let attrs = &[
+        KeyValue::new("spinkey1", "spinvalue1"),
+        KeyValue::new("spinkey2", "spinvalue2"),
+    ];
 
-    up_down_counter.add(
-        -1,
-        &[
-            KeyValue::new("updowncounterkey1", "updowncountervalue1"),
-            KeyValue::new("updowncounterkey2", "updowncountervalue2"),
-        ],
-    );
+    counter.add(10, attrs);
+    up_down_counter.add(-1, attrs);
+    histogram.record(9, attrs);
+    gauge.record(8, attrs);
 
-    histogram.record(
-        9,
-        &[
-            KeyValue::new("histogramkey1", "histogramvalue1"),
-            KeyValue::new("histogramkey2", "histogramvalue2"),
-        ],
-    );
-
-    gauge.record(
-        8,
-        &[
-            KeyValue::new("gaugekey1", "gaugevalue1"),
-            KeyValue::new("gaugekey2", "gaugevalue2"),
-        ],
-    );
-
-    reader.push()?;
+    reader.export()?;
 
     Ok(Response::builder()
         .status(200)
