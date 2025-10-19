@@ -11,7 +11,7 @@ use std::sync::Arc;
 ///
 /// This exporter wraps a `ManualReader` to use the reader's existing OpenTelemetry SDK internals
 /// while providing a WASI export mechanism. The embedded reader handles metric
-/// collection and aggregation, and the wrapper manages exports to the host.
+/// collection and the wrapper manages exports to the host.
 ///
 /// # Example
 /// ```ignore
@@ -77,19 +77,8 @@ impl MetricReader for WasiMetricExporter {
         Ok(())
     }
 
-    /// Determines the temporality for a given instrument type.
-    ///
-    /// # Panics
-    /// Panics if called with observable (async) instrument kinds, as these are not yet
-    /// supported in WASI environments due to lack of background task execution.
+    /// Sets the temporatlity for the embedded reader based on the `InstrumentKind`.
     fn temporality(&self, kind: InstrumentKind) -> Temporality {
-        match kind {
-            InstrumentKind::ObservableCounter
-            | InstrumentKind::ObservableGauge
-            | InstrumentKind::ObservableUpDownCounter => {
-                panic!("Async InstrumentKinds are not yet supported");
-            }
-            _ => self.reader.temporality(kind),
-        }
+        self.reader.temporality(kind)
     }
 }

@@ -19,8 +19,6 @@ fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
         .build();
     global::set_meter_provider(provider.clone());
 
-    // WARNING: Async instruments (i.e. Observable counters, gauges, etc.) are
-    // not yet supported, and will generate a runtime panic.
     let meter = global::meter("spin_meter");
     let counter = meter.u64_counter("spin_counter").build();
     let up_down_counter = meter.i64_up_down_counter("spin_up_down_counter").build();
@@ -37,6 +35,7 @@ fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
     histogram.record(9, attrs);
     gauge.record(8, attrs);
 
+    // This MUST be called at least once before the end of the code to export the metric data
     reader.export()?;
 
     Ok(Response::builder()
