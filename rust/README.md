@@ -27,6 +27,6 @@ curl localhost:3000
 
 ## Notes about Metrics
 ### Observable (Async) Instruments
-Async instruments (observable counters, gauges, etc.) collect metric data that must be manually exported to the host. While typical applications use periodic exporters to handle this automatically, Rust WebAssembly applications don't yet support periodic exporters. To address this, this SDK provides a manual reader that developers will explicitly call to export the metric data at one or more points during the life of the guest application.
+Async instruments (observable counters, gauges, etc.) collect metric data that must be manually exported to the host. While typical applications use periodic exporters to handle this automatically, Rust WebAssembly applications don't yet support periodic exporters. To address this, this SDK provides a manual reader that will be explicitly called to export the metric data at one or more points during the life of the guest application.
 
 ## Notes about Logs

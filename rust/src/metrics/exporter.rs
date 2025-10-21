@@ -13,39 +13,110 @@ use std::sync::Arc;
 /// while providing a WASI export mechanism. The embedded reader handles metric
 /// collection and the wrapper manages exports to the host.
 ///
-/// # Example
+/// # Default Example
 /// ```ignore
 /// let exporter = WasiMetricExporter::default();
 /// let provider = SdkMeterProvider::builder().with_reader(reader.clone());
 /// // Measure something...
-/// exporter.export()?; // Manually trigger export to WASI host
+/// // Once the exporter goes out of scope (dropped), the metrics will automatically export to the host.
+/// ```
+///
+/// # Manual Export Example
+/// ```ignore
+/// let reader = WasiMetricExporter::builder()
+///     .with_manual_export_only()
+///     .build();
+/// let provider = SdkMeterProvider::builder().with_reader(reader.clone());
+/// // Measure something...
+/// reader.export()?; // User must manually trigger export to host at some point before the end of the code.
 /// ```
 #[derive(Debug, Clone)]
 pub struct WasiMetricExporter {
     reader: Arc<ManualReader>,
+    export_on_drop: bool,
+}
+
+pub struct WasiMetricExporterBuilder {
+    export_on_drop: bool,
+}
+
+impl WasiMetricExporterBuilder {
+    pub fn new() -> Self {
+        Self {
+            export_on_drop: true,
+        }
+    }
+
+    /// Configure the exporter to NOT automatically export when dropped.
+    ///
+    /// By default, the exporter will automatically export any collected metrics
+    /// when it goes out of scope to prevent data loss. This method disables that
+    /// behavior, requiring all exports to be triggered manually via [`export()`].
+    ///
+    /// Use this when you need precise control over when metrics are sent to the
+    /// host.
+    ///
+    /// # Example
+    /// ```ignore
+    /// let reader = WasiMetricExporter::builder()
+    ///     .with_manual_export_only()
+    ///     .build();
+    /// // No export happens here
+    /// drop(reader);
+    /// ```
+    ///
+    /// [`export()`]: WasiMetricExporter::export
+    pub fn with_manual_export_only(mut self) -> Self {
+        self.export_on_drop = false;
+        self
+    }
+
+    /// Build the exporter.
+    pub fn build(self) -> WasiMetricExporter {
+        WasiMetricExporter {
+            reader: Arc::new(ManualReader::builder().build()),
+            export_on_drop: self.export_on_drop,
+        }
+    }
 }
 
 impl Default for WasiMetricExporter {
     fn default() -> Self {
-        Self {
-            reader: Arc::new(ManualReader::builder().build()),
+        Self::builder().build()
+    }
+}
+
+impl Drop for WasiMetricExporter {
+    fn drop(&mut self) {
+        if self.export_on_drop {
+            match self.export() {
+                // TODO: do we want to print error messages that surface, or do something else with them?
+                _ => (),
+            }
         }
     }
 }
 
 impl WasiMetricExporter {
+    /// Create a new builder for configuring a WasiMetricExporter.
+    pub fn builder() -> WasiMetricExporterBuilder {
+        WasiMetricExporterBuilder::new()
+    }
+
     /// Exports metric data to a compatible host or component.
     pub fn export(&self) -> OTelSdkResult {
         let mut metrics = ResourceMetrics::default();
         // Scrape the metrics from the reader.
         self.reader.collect(&mut metrics)?;
         // Export to the host.
-        // TODO: is there a better way to handle the resulting WASI error string?
         wasi::otel::metrics::export(&metrics.into())
             .map_err(|e| opentelemetry_sdk::error::OTelSdkError::InternalFailure(e))
     }
 }
 
+// Unless the `MetricReader` trait is specifically imported in the application code, these methods
+// willl not be exposed to the end user. They are only meant to delegate to the manual reader or
+// provide no-op methods that satisfy the trait requirements for an `SdkMeterProvider`.
 impl MetricReader for WasiMetricExporter {
     /// Registers the metrics pipeline with this reader.
     ///
@@ -62,22 +133,18 @@ impl MetricReader for WasiMetricExporter {
         self.reader.collect(rm)
     }
 
-    /// This method is a no-op.
     fn force_flush(&self) -> OTelSdkResult {
         Ok(())
     }
 
-    /// This method is a no-op.
     fn shutdown(&self) -> OTelSdkResult {
         Ok(())
     }
 
-    /// This method is a no-op.
     fn shutdown_with_timeout(&self, _timeout: std::time::Duration) -> OTelSdkResult {
         Ok(())
     }
 
-    /// Sets the temporatlity for the embedded reader based on the `InstrumentKind`.
     fn temporality(&self, kind: InstrumentKind) -> Temporality {
         self.reader.temporality(kind)
     }

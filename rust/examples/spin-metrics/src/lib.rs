@@ -8,6 +8,7 @@ use spin_sdk::{
 
 #[http_component]
 fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
+    // By default, the `WasiMetricExporter` will export to the host once it goes out of scope (dropped).
     let reader = WasiMetricExporter::default();
     let provider = SdkMeterProvider::builder()
         .with_reader(reader.clone())
@@ -34,9 +35,6 @@ fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
     up_down_counter.add(-1, attrs);
     histogram.record(9, attrs);
     gauge.record(8, attrs);
-
-    // This MUST be called at least once before the end of the code to export the metric data
-    reader.export()?;
 
     Ok(Response::builder()
         .status(200)
