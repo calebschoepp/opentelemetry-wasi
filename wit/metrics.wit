@@ -4,7 +4,7 @@ interface metrics {
     use types.{key-value, instrumentation-scope};
     use tracing.{span-id, trace-id};
 
-    /// `export` sends all metric data related to a Reader from the SDK
+    /// `export` exports a resource's metric data.
     %export: func(metrics: resource-metrics) -> result<_, error>;
 
     type error = string;
@@ -20,7 +20,9 @@ interface metrics {
 
     /// An immutable representation of the entity producing telemetry as attributes.
     record %resource {
+        /// Attributes that identify the resource.
         attributes: list<key-value>,
+        /// The schema URL to be recorded in the emitted resource.
         schema-url: option<string>,
     }
 

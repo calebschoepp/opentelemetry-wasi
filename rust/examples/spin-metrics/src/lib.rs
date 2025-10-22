@@ -8,7 +8,7 @@ use spin_sdk::{
 
 #[http_component]
 fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
-    // By default, the `WasiMetricExporter` will export to the host once it goes out of scope (dropped).
+    // By default `WasiMetricExporter` will export metrics to the host once it is dropped.
     let reader = WasiMetricExporter::default();
     let provider = SdkMeterProvider::builder()
         .with_reader(reader.clone())

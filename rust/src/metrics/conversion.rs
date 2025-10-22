@@ -43,14 +43,13 @@ impl From<&opentelemetry_sdk::metrics::data::Metric> for Metric {
 
 impl From<&opentelemetry_sdk::metrics::data::AggregatedMetrics> for AggregatedMetrics {
     fn from(value: &opentelemetry_sdk::metrics::data::AggregatedMetrics) -> Self {
-        use opentelemetry_sdk::metrics::data::AggregatedMetrics as A;
+        use opentelemetry_sdk::metrics::data as sdk;
         fn convert_metric<T>(metric: &opentelemetry_sdk::metrics::data::MetricData<T>) -> MetricData
         where
             T: Into<MetricNumber> + Clone + Copy,
         {
-            use opentelemetry_sdk::metrics::data::MetricData as M;
             match metric {
-                M::Gauge(gauge) => MetricData::Gauge(Gauge {
+                sdk::MetricData::Gauge(gauge) => MetricData::Gauge(Gauge {
                     data_points: gauge.data_points().map(Into::into).collect(),
                     start_time: match gauge.start_time() {
                         Some(v) => Some(v.into()),
@@ -58,20 +57,20 @@ impl From<&opentelemetry_sdk::metrics::data::AggregatedMetrics> for AggregatedMe
                     },
                     time: gauge.time().into(),
                 }),
-                M::Sum(sum) => MetricData::Sum(Sum {
+                sdk::MetricData::Sum(sum) => MetricData::Sum(Sum {
                     data_points: sum.data_points().map(Into::into).collect(),
                     start_time: sum.start_time().into(),
                     time: sum.time().into(),
                     temporality: sum.temporality().into(),
                     is_monotonic: sum.is_monotonic(),
                 }),
-                M::Histogram(hist) => MetricData::Histogram(Histogram {
+                sdk::MetricData::Histogram(hist) => MetricData::Histogram(Histogram {
                     data_points: hist.data_points().map(Into::into).collect(),
                     start_time: hist.start_time().into(),
                     time: hist.time().into(),
                     temporality: hist.temporality().into(),
                 }),
-                M::ExponentialHistogram(hist) => {
+                sdk::MetricData::ExponentialHistogram(hist) => {
                     MetricData::ExponentialHistogram(ExponentialHistogram {
                         data_points: hist.data_points().map(Into::into).collect(),
                         start_time: hist.start_time().into(),
@@ -82,9 +81,9 @@ impl From<&opentelemetry_sdk::metrics::data::AggregatedMetrics> for AggregatedMe
             }
         }
         match value {
-            A::F64(v) => AggregatedMetrics::F64(convert_metric(v)),
-            A::U64(v) => AggregatedMetrics::U64(convert_metric(v)),
-            A::I64(v) => AggregatedMetrics::S64(convert_metric(v)),
+            sdk::AggregatedMetrics::F64(v) => AggregatedMetrics::F64(convert_metric(v)),
+            sdk::AggregatedMetrics::U64(v) => AggregatedMetrics::U64(convert_metric(v)),
+            sdk::AggregatedMetrics::I64(v) => AggregatedMetrics::S64(convert_metric(v)),
         }
     }
 }
