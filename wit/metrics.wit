@@ -166,7 +166,7 @@ interface metrics {
         /// The set of key value pairs that uniquely identify the time series.
         attributes: list<key-value>,
         /// The number of updates this histogram has been calculated with.
-        count: u64, // TODO: check that u64 is an acceptable replacement for usize
+        count: u64,
         /// The minimum value recorded.
         min: option<metric-number>,
         /// The maximum value recorded.
@@ -236,7 +236,7 @@ interface metrics {
         ///
         /// New measurements are added to all previous measurements since a start time.
         ///
-        /// This is the default temporality
+        /// This is the default temporality.
         cumulative,
         /// A measurement interval that resets each cycle.
         ///
