@@ -18,7 +18,7 @@ use std::sync::Arc;
 /// let exporter = WasiMetricExporter::default();
 /// let provider = SdkMeterProvider::builder().with_reader(reader.clone());
 /// // Measure something...
-/// // Once the exporter goes out of scope (dropped), the metrics will automatically export to the host.
+/// // Once the exporter is dropped, the metrics will automatically export to the host.
 /// ```
 ///
 /// # Manual Export Example
