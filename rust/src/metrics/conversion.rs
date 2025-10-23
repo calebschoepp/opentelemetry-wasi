@@ -41,186 +41,95 @@ impl From<&opentelemetry_sdk::metrics::data::Metric> for Metric {
     }
 }
 
-impl From<&opentelemetry_sdk::metrics::data::AggregatedMetrics> for AggregatedMetrics {
+impl From<&opentelemetry_sdk::metrics::data::AggregatedMetrics> for MetricData {
     fn from(value: &opentelemetry_sdk::metrics::data::AggregatedMetrics) -> Self {
         use opentelemetry_sdk::metrics::data as sdk;
-        fn convert_metric<T>(metric: &opentelemetry_sdk::metrics::data::MetricData<T>) -> MetricData
-        where
-            T: Into<MetricNumber> + Clone + Copy,
-        {
-            match metric {
-                sdk::MetricData::Gauge(gauge) => MetricData::Gauge(Gauge {
-                    data_points: gauge.data_points().map(Into::into).collect(),
-                    start_time: match gauge.start_time() {
+        match value {
+            sdk::AggregatedMetrics::F64(data) => match data {
+                sdk::MetricData::Gauge(g) => MetricData::F64Gauge(F64Gauge {
+                    data_points: g
+                        .data_points()
+                        .map(|dp| F64GaugeDataPoint {
+                            attributes: dp.attributes().into_iter().map(Into::into).collect(),
+                            value: dp.value().into(),
+                            exemplars: dp.exemplars().into_iter().map(Into::into).collect(),
+                        })
+                        .collect(),
+                    start_time: match g.start_time() {
                         Some(v) => Some(v.into()),
                         None => None,
                     },
-                    time: gauge.time().into(),
+                    time: g.time().into(),
                 }),
-                sdk::MetricData::Sum(sum) => MetricData::Sum(Sum {
-                    data_points: sum.data_points().map(Into::into).collect(),
-                    start_time: sum.start_time().into(),
-                    time: sum.time().into(),
-                    temporality: sum.temporality().into(),
-                    is_monotonic: sum.is_monotonic(),
+                sdk::MetricData::Sum(s) => MetricData::F64Sum(F64Sum {
+                    data_points: s
+                        .data_points()
+                        .map(|dp| F64SumDataPoint {
+                            attributes: dp.attributes().into_iter().map(Into::into).collect(),
+                            value: dp.value().into(),
+                            exemplars: dp.exemplars().into_iter().map(Into::into).collect(),
+                        })
+                        .collect(),
+                    start_time: s.start_time().into(),
+                    time: s.time().into(),
+                    temporality: s.temporality().into(),
+                    is_monotonic: s.is_monotonic(),
                 }),
-                sdk::MetricData::Histogram(hist) => MetricData::Histogram(Histogram {
-                    data_points: hist.data_points().map(Into::into).collect(),
-                    start_time: hist.start_time().into(),
-                    time: hist.time().into(),
-                    temporality: hist.temporality().into(),
+                sdk::MetricData::Histogram(h) => MetricData::F64Histogram(F64Histogram {
+                    data_points: h
+                        .data_points()
+                        .map(|dp| F64HistogramDataPoint {
+                            attributes: dp.attributes().into_iter().map(Into::into).collect(),
+                            count: dp.count(),
+                            bounds: dp.bounds().collect(),
+                            bucket_counts: dp.bucket_counts().collect(),
+                            min: match dp.min() {
+                                Some(v) => Some(v.into()),
+                                None => None,
+                            },
+                            max: match dp.max() {
+                                Some(v) => Some(v.into()),
+                                None => None,
+                            },
+                            sum: dp.sum().into(),
+                            exemplars: dp.exemplars().into_iter().map(Into::into).collect(),
+                        })
+                        .collect(),
+                    start_time: h.start_time().into(),
+                    time: h.time().into(),
+                    temporality: h.temporality().into(),
                 }),
-                sdk::MetricData::ExponentialHistogram(hist) => {
-                    MetricData::ExponentialHistogram(ExponentialHistogram {
-                        data_points: hist.data_points().map(Into::into).collect(),
-                        start_time: hist.start_time().into(),
-                        time: hist.time().into(),
-                        temporality: hist.temporality().into(),
+                sdk::MetricData::ExponentialHistogram(h) => {
+                    MetricData::F64ExponentialHistogram(F64ExponentialHistogram {
+                        data_points: h
+                            .data_points()
+                            .map(|dp| F64ExponentialHistogramDataPoint {
+                                attributes: dp.attributes().into_iter().map(Into::into).collect(),
+                                count: dp.count() as u64,
+                                min: match dp.min() {
+                                    Some(v) => Some(v.into()),
+                                    None => None,
+                                },
+                                max: match dp.max() {
+                                    Some(v) => Some(v.into()),
+                                    None => None,
+                                },
+                                sum: dp.sum().into(),
+                                scale: dp.scale(),
+                                zero_count: dp.zero_count(),
+                                positive_bucket: dp.positive_bucket().into(),
+                                negative_bucket: dp.negative_bucket().into(),
+                                zero_threshold: dp.zero_threshold(),
+                                exemplars: dp.exemplars().map(Into::into).collect(),
+                            })
+                            .collect(),
+                        start_time: h.start_time().into(),
+                        time: h.time().into(),
+                        temporality: h.temporality().into(),
                     })
                 }
-            }
-        }
-        match value {
-            sdk::AggregatedMetrics::F64(v) => AggregatedMetrics::F64(convert_metric(v)),
-            sdk::AggregatedMetrics::U64(v) => AggregatedMetrics::U64(convert_metric(v)),
-            sdk::AggregatedMetrics::I64(v) => AggregatedMetrics::S64(convert_metric(v)),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::Gauge<T>> for Gauge
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::Gauge<T>) -> Self {
-        Self {
-            data_points: value.data_points().map(Into::into).collect(),
-            start_time: match value.start_time() {
-                Some(v) => Some(v.into()),
-                None => None,
             },
-            time: value.time().into(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::GaugeDataPoint<T>> for GaugeDataPoint
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::GaugeDataPoint<T>) -> Self {
-        Self {
-            attributes: value.attributes().into_iter().map(Into::into).collect(),
-            value: value.value().into(),
-            exemplars: value.exemplars().into_iter().map(Into::into).collect(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::Sum<T>> for Sum
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::Sum<T>) -> Self {
-        Self {
-            data_points: value.data_points().map(Into::into).collect(),
-            start_time: value.start_time().into(),
-            time: value.time().into(),
-            temporality: value.temporality().into(),
-            is_monotonic: value.is_monotonic(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::SumDataPoint<T>> for SumDataPoint
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::SumDataPoint<T>) -> Self {
-        Self {
-            attributes: value.attributes().into_iter().map(Into::into).collect(),
-            value: value.value().into(),
-            exemplars: value.exemplars().into_iter().map(Into::into).collect(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::Histogram<T>> for Histogram
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::Histogram<T>) -> Self {
-        Self {
-            data_points: value.data_points().map(Into::into).collect(),
-            start_time: value.start_time().into(),
-            time: value.time().into(),
-            temporality: value.temporality().into(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::HistogramDataPoint<T>> for HistogramDataPoint
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::HistogramDataPoint<T>) -> Self {
-        Self {
-            attributes: value.attributes().into_iter().map(Into::into).collect(),
-            count: value.count(),
-            bounds: value.bounds().collect(),
-            bucket_counts: value.bucket_counts().collect(),
-            min: match value.min() {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            max: match value.max() {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            sum: value.sum().into(),
-            exemplars: value.exemplars().into_iter().map(Into::into).collect(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::ExponentialHistogram<T>> for ExponentialHistogram
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::ExponentialHistogram<T>) -> Self {
-        Self {
-            data_points: value.data_points().map(Into::into).collect(),
-            start_time: value.start_time().into(),
-            time: value.time().into(),
-            temporality: value.temporality().into(),
-        }
-    }
-}
-
-impl<T> From<&opentelemetry_sdk::metrics::data::ExponentialHistogramDataPoint<T>>
-    for ExponentialHistogramDataPoint
-where
-    T: Into<MetricNumber> + Clone + Copy,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::ExponentialHistogramDataPoint<T>) -> Self {
-        Self {
-            attributes: value.attributes().into_iter().map(Into::into).collect(),
-            count: value.count() as u64,
-            min: match value.min() {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            max: match value.max() {
-                Some(v) => Some(v.into()),
-                None => None,
-            },
-            sum: value.sum().into(),
-            scale: value.scale(),
-            zero_count: value.zero_count(),
-            positive_bucket: value.positive_bucket().into(),
-            negative_bucket: value.negative_bucket().into(),
-            zero_threshold: value.zero_threshold(),
-            exemplars: value.exemplars().map(Into::into).collect(),
+            _ => todo!("Create a macro for the remaining number types"),
         }
     }
 }
@@ -244,35 +153,38 @@ impl From<opentelemetry_sdk::metrics::Temporality> for Temporality {
     }
 }
 
-impl<T> From<&opentelemetry_sdk::metrics::data::Exemplar<T>> for Exemplar
-where
-    T: Into<MetricNumber> + Clone,
-{
-    fn from(value: &opentelemetry_sdk::metrics::data::Exemplar<T>) -> Self {
+impl From<&opentelemetry_sdk::metrics::data::Exemplar<f64>> for F64Exemplar {
+    fn from(value: &opentelemetry_sdk::metrics::data::Exemplar<f64>) -> Self {
         Self {
             filtered_attributes: value.filtered_attributes().map(Into::into).collect(),
             time: value.time().into(),
-            value: value.clone().value.into(), // TODO: this feels heavy...research optimizing?
+            value: value.value,
             span_id: String::from_utf8(value.span_id().to_vec()).unwrap(),
             trace_id: String::from_utf8(value.trace_id().to_vec()).unwrap(),
         }
     }
 }
 
-impl From<f64> for MetricNumber {
-    fn from(value: f64) -> Self {
-        MetricNumber::F64(value)
+impl From<&opentelemetry_sdk::metrics::data::Exemplar<u64>> for U64Exemplar {
+    fn from(value: &opentelemetry_sdk::metrics::data::Exemplar<u64>) -> Self {
+        Self {
+            filtered_attributes: value.filtered_attributes().map(Into::into).collect(),
+            time: value.time().into(),
+            value: value.value,
+            span_id: String::from_utf8(value.span_id().to_vec()).unwrap(),
+            trace_id: String::from_utf8(value.trace_id().to_vec()).unwrap(),
+        }
     }
 }
 
-impl From<i64> for MetricNumber {
-    fn from(value: i64) -> Self {
-        MetricNumber::S64(value)
-    }
-}
-
-impl From<u64> for MetricNumber {
-    fn from(value: u64) -> Self {
-        MetricNumber::U64(value)
+impl From<&opentelemetry_sdk::metrics::data::Exemplar<i64>> for S64Exemplar {
+    fn from(value: &opentelemetry_sdk::metrics::data::Exemplar<i64>) -> Self {
+        Self {
+            filtered_attributes: value.filtered_attributes().map(Into::into).collect(),
+            time: value.time().into(),
+            value: value.value,
+            span_id: String::from_utf8(value.span_id().to_vec()).unwrap(),
+            trace_id: String::from_utf8(value.trace_id().to_vec()).unwrap(),
+        }
     }
 }
