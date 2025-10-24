@@ -1,6 +1,6 @@
 use crate::wit::wasi;
 use opentelemetry_sdk::{
-    error::OTelSdkResult,
+    error::{OTelSdkError, OTelSdkResult},
     metrics::{
         data::ResourceMetrics, reader::MetricReader, InstrumentKind, ManualReader, Temporality,
     },
@@ -90,8 +90,19 @@ impl Drop for WasiMetricExporter {
     fn drop(&mut self) {
         if self.export_on_drop {
             match self.export() {
-                // TODO: do we want to print error messages that surface, or do something else with them?
-                _ => (),
+                Ok(_) => (),
+                Err(e) => match e {
+                    OTelSdkError::AlreadyShutdown => {
+                        opentelemetry::otel_error!(name: "shutdown_already_invoked")
+                    }
+                    OTelSdkError::InternalFailure(msg) => {
+                        opentelemetry::otel_error!(name: "internal_failure", msg = msg)
+                    }
+                    OTelSdkError::Timeout(d) => {
+                        let msg = format!("Operation timed out after {} seconds", d.as_secs());
+                        opentelemetry::otel_error!(name: "timeout", msg = msg)
+                    }
+                },
             }
         }
     }
