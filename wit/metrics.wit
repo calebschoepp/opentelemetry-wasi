@@ -7,10 +7,10 @@ interface metrics {
     /// Exports a resource's metric data.
     %export: func(metrics: resource-metrics) -> result<_, error>;
 
+    /// An error resulting from `export` being called.
     type error = string;
 
-    /// A collection of `scope-metrics` and the associated `resource`
-    /// that created them.
+    /// A collection of `scope-metrics` and the associated `resource` that created them.
     record resource-metrics {
         /// The entity that collected the metrics.
         %resource: %resource,
@@ -36,108 +36,69 @@ interface metrics {
 
     /// A collection of one or more aggregated time series from a metric.
     record metric {
-        /// The name of the metric that created this data.
+        /// The name of the instrument that created this data.
         name: string,
-        /// The description of the metric, which can be used in documentation.
+        /// The description of the instrument, which can be used in documentation.
         description: string,
-        /// The unit in which the metric reports.
+        /// The unit in which the instrument reports.
         unit: string,
-        /// The aggregated data from an metric.
-        data: metric-data,
+        /// The aggregated data from an instrument.
+        data: metric-data
     }
 
     /// Metric data for all types.
     variant metric-data {
         /// Metric data for an f64 gauge.
-        f64-gauge(f64-gauge),
-        /// Metric data for a u64 gauge.
-        u64-gauge(u64-gauge),
-        /// Metric data for an s64 gauge.
-        s64-gauge(s64-gauge),
+        f64-gauge(gauge),
         /// Metric data for an f64 sum.
-        f64-sum(f64-sum),
-        /// Metric data for a u64 sum.
-        u64-sum(u64-sum),
-        /// Metric data for an s64 sum.
-        s64-sum(s64-sum),
+        f64-sum(sum),
         /// Metric data for an f64 histogram.
-        f64-histogram(f64-histogram),
-        /// Metric data for a u64 histogram.
-        u64-histogram(u64-histogram),
-        /// Metric data for an s64 histogram.
-        s64-histogram(s64-histogram),
+        f64-histogram(histogram),
         /// Metric data for an f64 exponential-histogram.
-        f64-exponential-histogram(f64-exponential-histogram),
-        /// Metric data for a u64 exponential-histogram.
-        u64-exponential-histogram(u64-exponential-histogram),
+        f64-exponential-histogram(exponential-histogram),
+        /// Metric data for an u64 gauge.
+        u64-gauge(gauge),
+        /// Metric data for an u64 sum.
+        u64-sum(sum),
+        /// Metric data for an u64 histogram.
+        u64-histogram(histogram),
+        /// Metric data for an u64 exponential-histogram.
+        u64-exponential-histogram(exponential-histogram),
+        /// Metric data for an s64 gauge.
+        s64-gauge(gauge),
+        /// Metric data for an s64 sum.
+        s64-sum(sum),
+        /// Metric data for an s64 histogram.
+        s64-histogram(histogram),
         /// Metric data for an s64 exponential-histogram.
-        s64-exponential-histogram(s64-exponential-histogram),
+        s64-exponential-histogram(exponential-histogram),
     }
 
-    /// An f64 measurement of the current value of an instrument.
-    record f64-gauge {
+    /// A measurement of the current value of an instrument.
+    record gauge {
         /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<f64-gauge-data-point>,
+        data-points: list<gauge-data-point>,
         /// The time when the time series was started.
         start-time: option<datetime>,
         /// The time when the time series was recorded.
         time: datetime,
     }
 
-    /// A single f64 data point in a time series.
-    record f64-gauge-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
+    /// A single data point in a time series to be associated with a `gauge`.
+    record gauge-data-point {
+        /// `attributes` is the set of key value pairs that uniquely identify the
+        /// time series.
         attributes: list<key-value>,
         /// The value of this data point.
-        value: f64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<f64-exemplar>,
+        value: metric-number,
+        /// The sampled `exemplar`s collected during the time series.
+        exemplars: list<exemplar>,
     }
 
-    /// An s64 measurement of the current value of an instrument.
-    record s64-gauge {
-        /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<s64-gauge-data-point>,
-        /// The time when the time series was started.
-        start-time: option<datetime>,
-        /// The time when the time series was recorded.
-        time: datetime,
-    }
-
-    /// A single s64 data point in a time series.
-    record s64-gauge-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The value of this data point.
-        value: s64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<s64-exemplar>,
-    }
-
-    /// A u64 measurement of the current value of an instrument.
-    record u64-gauge {
-        /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<u64-gauge-data-point>,
-        /// The time when the time series was started.
-        start-time: option<datetime>,
-        /// The time when the time series was recorded.
-        time: datetime,
-    }
-
-    /// A single u64 data point in a time series.
-    record u64-gauge-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The value of this data point.
-        value: u64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<u64-exemplar>,
-    }
-
-    /// Represents the f64 sum of all measurements of values from an instrument.
-    record f64-sum {
+    /// Represents the sum of all measurements of values from an instrument.
+    record sum {
          /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<f64-sum-data-point>,
+        data-points: list<sum-data-point>,
         /// The time when the time series was started.
         start-time: datetime,
         /// The time when the time series was recorded.
@@ -149,70 +110,21 @@ interface metrics {
         is-monotonic: bool,
     }
 
-    /// A single f64 data point in a time series.
-    record f64-sum-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
+    /// A single data point in a time series to be associated with a `sum`.
+    record sum-data-point {
+        /// `attributes` is the set of key value pairs that uniquely identify the
+        /// time series.
         attributes: list<key-value>,
         /// The value of this data point.
-        value: f64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<f64-exemplar>,
+        value: metric-number,
+        /// The sampled `exemplar`s collected during the time series.
+        exemplars: list<exemplar>,
     }
 
-    /// Represents the u64 sum of all measurements of values from an instrument.
-    record u64-sum {
-         /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<u64-sum-data-point>,
-        /// The time when the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-        /// Whether this aggregation only increases or decreases.
-        is-monotonic: bool,
-    }
-
-    /// A single u64 data point in a time series.
-    record u64-sum-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The value of this data point.
-        value: u64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<u64-exemplar>,
-    }
-
-    /// Represents the s64 sum of all measurements of values from an instrument.
-    record s64-sum {
-         /// Represents individual aggregated measurements with unique attributes.
-        data-points: list<s64-sum-data-point>,
-        /// The time when the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-        /// Whether this aggregation only increases or decreases.
-        is-monotonic: bool,
-    }
-
-    /// A single s64 data point in a time series.
-    record s64-sum-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The value of this data point.
-        value: s64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<s64-exemplar>,
-    }
-
-    /// Represents the f64 histogram of all measurements of values from an instrument.
-    record f64-histogram {
+    /// Represents the histogram of all measurements of values from an instrument.
+    record histogram {
         /// Individual aggregated measurements with unique attributes.
-        data-points: list<f64-histogram-data-point>,
+        data-points: list<histogram-data-point>,
         /// The time when the time series was started.
         start-time: datetime,
         /// The time when the time series was recorded.
@@ -222,8 +134,8 @@ interface metrics {
         temporality: temporality,
     }
 
-    /// A single f64 histogram data point in a time series.
-    record f64-histogram-data-point {
+    /// A single data point in a time series to be associated with a `histogram`.
+    record histogram-data-point {
         /// The set of key value pairs that uniquely identify the time series.
         attributes: list<key-value>,
         /// The number of updates this histogram has been calculated with.
@@ -233,85 +145,19 @@ interface metrics {
         /// The count of each of the buckets.
         bucket-counts: list<u64>,
         /// The minimum value recorded.
-        min: option<f64>,
+        min: option<metric-number>,
         /// The maximum value recorded.
-        max: option<f64>,
+        max: option<metric-number>,
         /// The sum of the values recorded
-        sum: f64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<f64-exemplar>,
+        sum: metric-number,
+        /// The sampled `exemplar`s collected during the time series.
+        exemplars: list<exemplar>,
     }
 
-    /// Represents the u64 histogram of all measurements of values from an instrument.
-    record u64-histogram {
-        /// Individual aggregated measurements with unique attributes.
-        data-points: list<u64-histogram-data-point>,
-        /// The time when the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-    }
-
-    /// A single u64 histogram data point in a time series.
-    record u64-histogram-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The number of updates this histogram has been calculated with.
-        count: u64,
-        /// The upper bounds of the buckets of the histogram.
-        bounds: list<f64>,
-        /// The count of each of the buckets.
-        bucket-counts: list<u64>,
-        /// The minimum value recorded.
-        min: option<u64>,
-        /// The maximum value recorded.
-        max: option<u64>,
-        /// The sum of the values recorded
-        sum: u64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<u64-exemplar>,
-    }
-
-    /// Represents the s64 histogram of all measurements of values from an instrument.
-    record s64-histogram {
-        /// Individual aggregated measurements with unique attributes.
-        data-points: list<s64-histogram-data-point>,
-        /// The time when the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-    }
-
-    /// A single s64 histogram data point in a time series.
-    record s64-histogram-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The number of updates this histogram has been calculated with.
-        count: u64,
-        /// The upper bounds of the buckets of the histogram.
-        bounds: list<f64>,
-        /// The count of each of the buckets.
-        bucket-counts: list<u64>,
-        /// The minimum value recorded.
-        min: option<s64>,
-        /// The maximum value recorded.
-        max: option<s64>,
-        /// The sum of the values recorded
-        sum: s64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<s64-exemplar>,
-    }
-
-    /// The f64 histogram of all measurements of values from an instrument.
-    record f64-exponential-histogram {
+    /// The histogram of all measurements of values from an instrument.
+    record exponential-histogram {
         /// The individual aggregated measurements with unique attributes.
-        data-points: list<f64-exponential-histogram-data-point>,
+        data-points: list<exponential-histogram-data-point>,
         /// When the time series was started.
         start-time: datetime,
         /// The time when the time series was recorded.
@@ -321,18 +167,18 @@ interface metrics {
         temporality: temporality,
     }
 
-    /// A single exponential f64 histogram data point in a time series.
-    record f64-exponential-histogram-data-point {
+    /// A single data point in a time series to be associated with an `exponential-histogram `.
+    record exponential-histogram-data-point {
         /// The set of key value pairs that uniquely identify the time series.
         attributes: list<key-value>,
         /// The number of updates this histogram has been calculated with.
         count: u64,
         /// The minimum value recorded.
-        min: option<f64>,
+        min: option<metric-number>,
         /// The maximum value recorded.
-        max: option<f64>,
+        max: option<metric-number>,
         /// The maximum value recorded.
-        sum: f64,
+        sum: metric-number,
         /// Describes the resolution of the histogram.
         ///
         /// Boundaries are located at powers of the base, where:
@@ -356,108 +202,7 @@ interface metrics {
         /// [-zero_threshold, zero_threshold].
         zero-threshold: f64,
         /// The sampled exemplars collected during the time series.
-        exemplars: list<f64-exemplar>,
-    }
-
-    /// The u64 histogram of all measurements of values from an instrument.
-    record u64-exponential-histogram {
-        /// The individual aggregated measurements with unique attributes.
-        data-points: list<u64-exponential-histogram-data-point>,
-        /// When the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-    }
-
-    /// A single exponential u64 histogram data point in a time series.
-    record u64-exponential-histogram-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The number of updates this histogram has been calculated with.
-        count: u64,
-        /// The minimum value recorded.
-        min: option<u64>,
-        /// The maximum value recorded.
-        max: option<u64>,
-        /// The maximum value recorded.
-        sum: u64,
-        /// Describes the resolution of the histogram.
-        ///
-        /// Boundaries are located at powers of the base, where:
-        ///
-        ///   base = 2 ^ (2 ^ -scale)
-        scale: s8,
-        /// The number of values whose absolute value is less than or equal to
-        /// `zero_threshold`.
-        ///
-        /// When `zero_threshold` is `0`, this is the number of values that cannot be
-        /// expressed using the standard exponential formula as well as values that have
-        /// been rounded to zero.
-        zero-count: u64,
-        /// The range of positive value bucket counts.
-        positive-bucket: exponential-bucket,
-        /// The range of negative value bucket counts.
-        negative-bucket: exponential-bucket,
-        /// The width of the zero region.
-        ///
-        /// Where the zero region is defined as the closed interval
-        /// [-zero_threshold, zero_threshold].
-        zero-threshold: f64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<u64-exemplar>,
-    }
-    /// The s64 histogram of all measurements of values from an instrument.
-    record s64-exponential-histogram {
-        /// The individual aggregated measurements with unique attributes.
-        data-points: list<s64-exponential-histogram-data-point>,
-        /// When the time series was started.
-        start-time: datetime,
-        /// The time when the time series was recorded.
-        time: datetime,
-        /// Describes if the aggregation is reported as the change from the last report
-        /// time, or the cumulative changes since a fixed start time.
-        temporality: temporality,
-    }
-
-    /// A single exponential s64 histogram data point in a time series.
-    record s64-exponential-histogram-data-point {
-        /// The set of key value pairs that uniquely identify the time series.
-        attributes: list<key-value>,
-        /// The number of updates this histogram has been calculated with.
-        count: u64,
-        /// The minimum value recorded.
-        min: option<s64>,
-        /// The maximum value recorded.
-        max: option<s64>,
-        /// The maximum value recorded.
-        sum: s64,
-        /// Describes the resolution of the histogram.
-        ///
-        /// Boundaries are located at powers of the base, where:
-        ///
-        ///   base = 2 ^ (2 ^ -scale)
-        scale: s8,
-        /// The number of values whose absolute value is less than or equal to
-        /// `zero_threshold`.
-        ///
-        /// When `zero_threshold` is `0`, this is the number of values that cannot be
-        /// expressed using the standard exponential formula as well as values that have
-        /// been rounded to zero.
-        zero-count: u64,
-        /// The range of positive value bucket counts.
-        positive-bucket: exponential-bucket,
-        /// The range of negative value bucket counts.
-        negative-bucket: exponential-bucket,
-        /// The width of the zero region.
-        ///
-        /// Where the zero region is defined as the closed interval
-        /// [-zero_threshold, zero_threshold].
-        zero-threshold: f64,
-        /// The sampled exemplars collected during the time series.
-        exemplars: list<s64-exemplar>,
+        exemplars: list<exemplar>,
     }
 
     /// A set of bucket counts, encoded in a contiguous array of counts.
@@ -471,53 +216,15 @@ interface metrics {
         counts: list<u64>,
     }
 
-    /// An f64 measurement sampled from a time series providing a typical example.
-    record f64-exemplar {
+    /// A measurement sampled from a time series providing a typical example.
+    record exemplar {
         /// The attributes recorded with the measurement but filtered out of the
         /// time series' aggregated data.
         filtered-attributes: list<key-value>,
         /// The time when the measurement was recorded.
         time: datetime,
         /// The measured value.
-        value: f64,
-        /// The ID of the span that was active during the measurement.
-        ///
-        /// If no span was active or the span was not sampled this will be empty.
-        span-id: span-id,
-        /// The ID of the trace the active span belonged to during the measurement.
-        ///
-        /// If no span was active or the span was not sampled this will be empty.
-        trace-id: trace-id,
-    }
-
-    /// A u64 measurement sampled from a time series providing a typical example.
-    record u64-exemplar {
-        /// The attributes recorded with the measurement but filtered out of the
-        /// time series' aggregated data.
-        filtered-attributes: list<key-value>,
-        /// The time when the measurement was recorded.
-        time: datetime,
-        /// The measured value.
-        value: u64,
-        /// The ID of the span that was active during the measurement.
-        ///
-        /// If no span was active or the span was not sampled this will be empty.
-        span-id: span-id,
-        /// The ID of the trace the active span belonged to during the measurement.
-        ///
-        /// If no span was active or the span was not sampled this will be empty.
-        trace-id: trace-id,
-    }
-
-    /// An s64 measurement sampled from a time series providing a typical example.
-    record s64-exemplar {
-        /// The attributes recorded with the measurement but filtered out of the
-        /// time series' aggregated data.
-        filtered-attributes: list<key-value>,
-        /// The time when the measurement was recorded.
-        time: datetime,
-        /// The measured value.
-        value: s64,
+        value: metric-number,
         /// The ID of the span that was active during the measurement.
         ///
         /// If no span was active or the span was not sampled this will be empty.
@@ -546,5 +253,12 @@ interface metrics {
         /// Delta aggregation temporality, which allows them to shed memory
         /// following a cardinality explosion, thus use less memory.
         low-memory,
+    }
+
+    /// The number types available for any given instrument.
+    variant metric-number {
+        %f64(f64),
+        %s64(s64),
+        %u64(u64),
     }
 }
