@@ -36,13 +36,13 @@ interface metrics {
 
     /// A collection of one or more aggregated time series from a metric.
     record metric {
-        /// The name of the instrument that created this data.
+        /// The name of the metric that created this data.
         name: string,
-        /// The description of the instrument, which can be used in documentation.
+        /// The description of the metric, which can be used in documentation.
         description: string,
-        /// The unit in which the instrument reports.
+        /// The unit in which the metric reports.
         unit: string,
-        /// The aggregated data from an instrument.
+        /// The aggregated data from a metric.
         data: metric-data
     }
 
