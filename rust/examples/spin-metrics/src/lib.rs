@@ -9,9 +9,9 @@ use spin_sdk::{
 #[http_component]
 fn handle_spin_metrics(_req: Request) -> anyhow::Result<impl IntoResponse> {
     // By default `WasiMetricExporter` will export metrics to the host once it is dropped.
-    let reader = WasiMetricExporter::default();
+    let exporter = WasiMetricExporter::default();
     let provider = SdkMeterProvider::builder()
-        .with_reader(reader.clone())
+        .with_reader(exporter.clone())
         .with_resource(
             Resource::builder()
                 .with_service_name("spin-metrics")

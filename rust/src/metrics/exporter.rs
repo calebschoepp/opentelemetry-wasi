@@ -16,19 +16,19 @@ use std::sync::Arc;
 /// # Default Example
 /// ```ignore
 /// let exporter = WasiMetricExporter::default();
-/// let provider = SdkMeterProvider::builder().with_reader(reader.clone());
+/// let provider = SdkMeterProvider::builder().with_reader(exporter.clone());
 /// // Measure something...
 /// // Once the exporter is dropped, the metrics will automatically export to the host.
 /// ```
 ///
 /// # Manual Export Example
 /// ```ignore
-/// let reader = WasiMetricExporter::builder()
+/// let exporter = WasiMetricExporter::builder()
 ///     .with_manual_export_only()
 ///     .build();
-/// let provider = SdkMeterProvider::builder().with_reader(reader.clone());
+/// let provider = SdkMeterProvider::builder().with_reader(exporter.clone());
 /// // Measure something...
-/// reader.export()?; // User must manually trigger export to host at some point before the end of the code.
+/// exporter.export()?; // User must manually trigger export to host at some point before the end of the code.
 /// ```
 #[derive(Debug, Clone)]
 pub struct WasiMetricExporter {
@@ -58,11 +58,11 @@ impl WasiMetricExporterBuilder {
     ///
     /// # Example
     /// ```ignore
-    /// let reader = WasiMetricExporter::builder()
+    /// let exporter = WasiMetricExporter::builder()
     ///     .with_manual_export_only()
     ///     .build();
     /// // No export happens here
-    /// drop(reader);
+    /// drop(exporter);
     /// ```
     ///
     /// [`export()`]: WasiMetricExporter::export
