@@ -107,6 +107,7 @@ impl WasiMetricExporter {
         match self.reader.collect(&mut metrics) {
             Ok(_) => (),
             Err(e) => match e {
+                // These errors will never occur while using the custom exporter.
                 OTelSdkError::AlreadyShutdown | OTelSdkError::Timeout(_) => (),
                 OTelSdkError::InternalFailure(e) => {
                     opentelemetry::otel_error!(name: "internal_error", msg = e);
