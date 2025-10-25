@@ -1,5 +1,3 @@
-use core::f64;
-
 use crate::wit::wasi::otel::metrics::*;
 
 impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {

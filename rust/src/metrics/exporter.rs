@@ -89,21 +89,7 @@ impl Default for WasiMetricExporter {
 impl Drop for WasiMetricExporter {
     fn drop(&mut self) {
         if self.export_on_drop {
-            match self.export() {
-                Ok(_) => (),
-                Err(e) => match e {
-                    OTelSdkError::AlreadyShutdown => {
-                        opentelemetry::otel_error!(name: "shutdown_already_invoked")
-                    }
-                    OTelSdkError::InternalFailure(msg) => {
-                        opentelemetry::otel_error!(name: "internal_failure", msg = msg)
-                    }
-                    OTelSdkError::Timeout(d) => {
-                        let msg = format!("Operation timed out after {} seconds", d.as_secs());
-                        opentelemetry::otel_error!(name: "timeout", msg = msg)
-                    }
-                },
-            }
+            self.export();
         }
     }
 }
@@ -115,13 +101,25 @@ impl WasiMetricExporter {
     }
 
     /// Exports metric data to a compatible host or component.
-    pub fn export(&self) -> OTelSdkResult {
+    pub fn export(&self) {
         let mut metrics = ResourceMetrics::default();
         // Scrape the metrics from the reader.
-        self.reader.collect(&mut metrics)?;
+        match self.reader.collect(&mut metrics) {
+            Ok(_) => (),
+            Err(e) => match e {
+                OTelSdkError::AlreadyShutdown | OTelSdkError::Timeout(_) => (),
+                OTelSdkError::InternalFailure(e) => {
+                    opentelemetry::otel_error!(name: "internal_error", msg = e);
+                }
+            },
+        };
         // Export to the host.
-        wasi::otel::metrics::export(&metrics.into())
-            .map_err(|e| opentelemetry_sdk::error::OTelSdkError::InternalFailure(e))
+        match wasi::otel::metrics::export(&metrics.into()) {
+            Ok(_) => (),
+            Err(e) => {
+                opentelemetry::otel_error!(name: "internal_error", msg = e);
+            }
+        }
     }
 }
 
