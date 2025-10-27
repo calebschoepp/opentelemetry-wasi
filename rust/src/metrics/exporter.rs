@@ -1,4 +1,5 @@
 use crate::wit::wasi;
+use opentelemetry::otel_error;
 use opentelemetry_sdk::{
     error::{OTelSdkError, OTelSdkResult},
     metrics::{
@@ -89,7 +90,7 @@ impl Default for WasiMetricExporter {
 impl Drop for WasiMetricExporter {
     fn drop(&mut self) {
         if self.export_on_drop {
-            self.export();
+            _ = self.export();
         }
     }
 }
@@ -101,24 +102,32 @@ impl WasiMetricExporter {
     }
 
     /// Exports metric data to a compatible host or component.
-    pub fn export(&self) {
+    pub fn export(&self) -> Result<(), OTelSdkError> {
         let mut metrics = ResourceMetrics::default();
         // Scrape the metrics from the reader.
         match self.reader.collect(&mut metrics) {
             Ok(_) => (),
-            Err(e) => match e {
-                // These errors will never occur while using the custom exporter.
-                OTelSdkError::AlreadyShutdown | OTelSdkError::Timeout(_) => (),
+            Err(sdk_error) => match sdk_error {
+                OTelSdkError::AlreadyShutdown => {
+                    otel_error!(name: "collect_already_shutdown", msg = "Shutdown has already been invoked.");
+                    return Err(sdk_error);
+                }
+                OTelSdkError::Timeout(d) => {
+                    otel_error!(name: "collect_timeout", msg = format!("Operation timed out after {} seconds.", d.as_secs()));
+                    return Err(OTelSdkError::Timeout(d));
+                }
                 OTelSdkError::InternalFailure(e) => {
-                    opentelemetry::otel_error!(name: "internal_error", msg = e);
+                    otel_error!(name: "collect_internal_failure", msg = format!("Operation failed due to an internal error: {}", e));
+                    return Err(OTelSdkError::InternalFailure(e));
                 }
             },
-        };
+        }
         // Export to the host.
         match wasi::otel::metrics::export(&metrics.into()) {
-            Ok(_) => (),
+            Ok(_) => Ok(()),
             Err(e) => {
-                opentelemetry::otel_error!(name: "internal_error", msg = e);
+                otel_error!(name: "export_internal_error", msg = format!("Operation failed due to an internal error: {}", e));
+                return Err(OTelSdkError::InternalFailure(e));
             }
         }
     }
