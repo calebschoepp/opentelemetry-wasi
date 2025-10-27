@@ -114,7 +114,7 @@ impl WasiMetricExporter {
                 }
                 OTelSdkError::Timeout(d) => {
                     otel_error!(name: "collect_timeout", msg = format!("Operation timed out after {} seconds.", d.as_secs()));
-                    return Err(OTelSdkError::Timeout(d));
+                    return Err(sdk_error);
                 }
                 OTelSdkError::InternalFailure(e) => {
                     otel_error!(name: "collect_internal_failure", msg = format!("Operation failed due to an internal error: {}", e));
