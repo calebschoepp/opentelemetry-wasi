@@ -120,14 +120,3 @@ impl From<opentelemetry::trace::Status> for Status {
         }
     }
 }
-
-impl From<opentelemetry::InstrumentationScope> for InstrumentationScope {
-    fn from(value: opentelemetry::InstrumentationScope) -> Self {
-        Self {
-            name: value.name().to_string(),
-            version: value.version().map(Into::into),
-            schema_url: value.schema_url().map(Into::into),
-            attributes: value.attributes().map(Into::into).collect(),
-        }
-    }
-}
