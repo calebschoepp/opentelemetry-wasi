@@ -1,5 +1,5 @@
 use crate::wit::wasi::{
-    clocks0_2_0::wall_clock::Datetime,
+    clocks::wall_clock::Datetime,
     otel::types::{InstrumentationScope, KeyValue, Value},
 };
 use std::time::UNIX_EPOCH;
