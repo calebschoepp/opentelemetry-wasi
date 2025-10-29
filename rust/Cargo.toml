@@ -18,9 +18,14 @@ members = ["examples/*"]
 
 [workspace.dependencies]
 anyhow = "1"
-opentelemetry = { version = "0.30.0", features = ["internal-logs"] }
+opentelemetry = { version = "0.30.0" }
 opentelemetry_sdk = { version = "0.30.0", features = ["experimental_metrics_custom_reader"] }
 spin-sdk = "3.1.0"
 tracing = "0.1.41"
 tracing-opentelemetry = "0.31.0"
 tracing-subscriber = "0.3.19"
+
+[features]
+# This enables OTel internal logging.
+# For more information, see https://docs.rs/opentelemetry/latest/opentelemetry/#macros
+internal-logs = ["opentelemetry/internal-logs"]
