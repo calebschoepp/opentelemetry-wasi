@@ -3,12 +3,12 @@ use opentelemetry_sdk::{error::OTelSdkResult, trace::SpanProcessor};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive(Debug)]
-pub struct WasiProcessor {
+pub struct WasiSpanProcessor {
     is_shutdown: AtomicBool,
 }
 
-impl WasiProcessor {
-    /// Create a new `WasiProcessor`.
+impl WasiSpanProcessor {
+    /// Create a new `WasiSpanProcessor`.
     pub fn new() -> Self {
         Self {
             is_shutdown: AtomicBool::new(false),
@@ -16,13 +16,13 @@ impl WasiProcessor {
     }
 }
 
-impl Default for WasiProcessor {
+impl Default for WasiSpanProcessor {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl SpanProcessor for WasiProcessor {
+impl SpanProcessor for WasiSpanProcessor {
     fn on_start(&self, span: &mut opentelemetry_sdk::trace::Span, _: &opentelemetry::Context) {
         if self.is_shutdown.load(Ordering::Relaxed) {
             return;
