@@ -15,7 +15,7 @@ use tracing_subscriber::util::SubscriberInitExt;
 #[http_component]
 fn handle_spin_tracing(_req: Request) -> anyhow::Result<impl IntoResponse> {
     // Set up a tracer using the WASI processor
-    let wasi_processor = opentelemetry_wasi::WasiProcessor::new();
+    let wasi_processor = opentelemetry_wasi::WasiSpanProcessor::new();
     let provider = SdkTracerProvider::builder()
         .with_span_processor(wasi_processor)
         .build();

@@ -14,7 +14,7 @@ use opentelemetry::{
 #[http_component]
 fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     // Set up a tracer using the WASI processor
-    let wasi_processor = opentelemetry_wasi::WasiProcessor::new();
+    let wasi_processor = opentelemetry_wasi::WasiSpanProcessor::new();
     let tracer_provider = SdkTracerProvider::builder()
         .with_span_processor(wasi_processor)
         .build();
