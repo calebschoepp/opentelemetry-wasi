@@ -38,7 +38,11 @@ fn handle_spin_tracing(_req: Request) -> anyhow::Result<impl IntoResponse> {
 fn main_operation() {
     // Propagate the context from the Wasm host
     let wasi_propagator = opentelemetry_wasi::TraceContextPropagator::new();
-    tracing::Span::current().set_parent(wasi_propagator.extract(&Context::current()));
+    if let Err(e) =
+        tracing::Span::current().set_parent(wasi_propagator.extract(&Context::current()))
+    {
+        panic!("{e}");
+    };
 
     tracing::info!(name: "Main span event", foo = "1");
     child_operation();

@@ -1,6 +1,8 @@
 use opentelemetry::{global, Context};
+use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::SdkTracerProvider;
-use opentelemetry_wasi::WasiPropagator;
+use opentelemetry_sdk::Resource;
+use opentelemetry_wasi::{WasiMetricExporter, WasiPropagator};
 use spin_sdk::http::{IntoResponse, Request, Response};
 use spin_sdk::http_component;
 use spin_sdk::key_value::Store;
@@ -10,13 +12,12 @@ use opentelemetry::{
     KeyValue,
 };
 
-/// A simple Spin HTTP component.
 #[http_component]
 fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
-    // Set up a tracer using the WASI processor
-    let wasi_processor = opentelemetry_wasi::WasiSpanProcessor::new();
+    // Set up a tracer using the WASI span processor.
+    let span_processor = opentelemetry_wasi::WasiSpanProcessor::new();
     let tracer_provider = SdkTracerProvider::builder()
-        .with_span_processor(wasi_processor)
+        .with_span_processor(span_processor)
         .build();
     global::set_tracer_provider(tracer_provider);
     let tracer = global::tracer("basic-spin");
@@ -42,9 +43,40 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
         });
     });
 
+    // Set up a meter provider using the WASI metric exporter.
+    // By default `WasiMetricExporter` will export metrics to the host once it is dropped.
+    let metric_exporter = WasiMetricExporter::default();
+    let metric_provider = SdkMeterProvider::builder()
+        .with_reader(metric_exporter.clone())
+        .with_resource(
+            Resource::builder()
+                .with_service_name("spin-metrics")
+                .build(),
+        )
+        .build();
+    global::set_meter_provider(metric_provider.clone());
+    let meter = global::meter("spin_meter");
+
+    // Create some instruments
+    let counter = meter.u64_counter("spin_counter").build();
+    let up_down_counter = meter.i64_up_down_counter("spin_up_down_counter").build();
+    let histogram = meter.u64_histogram("spin_histogram").build();
+    let gauge = meter.u64_gauge("spin_gauge").build();
+
+    let attrs = &[
+        KeyValue::new("spinkey1", "spinvalue1"),
+        KeyValue::new("spinkey2", "spinvalue2"),
+    ];
+
+    // Measure things with the instruments
+    counter.add(10, attrs);
+    up_down_counter.add(-1, attrs);
+    histogram.record(9, attrs);
+    gauge.record(8, attrs);
+
     Ok(Response::builder()
         .status(200)
         .header("content-type", "text/plain")
-        .body("Hello, Fermyon")
+        .body("Hello, world!")
         .build())
 }
