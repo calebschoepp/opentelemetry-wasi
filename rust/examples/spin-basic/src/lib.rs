@@ -55,24 +55,26 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
         )
         .build();
     global::set_meter_provider(metric_provider.clone());
-    let meter = global::meter("spin_meter");
-
-    // Create some instruments
-    let counter = meter.u64_counter("spin_counter").build();
-    let up_down_counter = meter.i64_up_down_counter("spin_up_down_counter").build();
-    let histogram = meter.u64_histogram("spin_histogram").build();
-    let gauge = meter.u64_gauge("spin_gauge").build();
+    let meter = global::meter("spin-meter");
 
     let attrs = &[
         KeyValue::new("spinkey1", "spinvalue1"),
         KeyValue::new("spinkey2", "spinvalue2"),
     ];
 
-    // Measure things with the instruments
+    // Create some instruments and measure things.
+    let counter = meter.u64_counter("spin-counter").build();
     counter.add(10, attrs);
+
+    let up_down_counter = meter.i64_up_down_counter("spin-up-down-counter").build();
     up_down_counter.add(-1, attrs);
+
+    let histogram = meter.u64_histogram("spin-histogram").build();
     histogram.record(9, attrs);
-    gauge.record(8, attrs);
+    histogram.record(15, attrs);
+
+    let gauge = meter.f64_gauge("spin-gauge").build();
+    gauge.record(123.456, attrs);
 
     Ok(Response::builder()
         .status(200)

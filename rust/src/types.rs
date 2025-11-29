@@ -43,7 +43,7 @@ impl From<&opentelemetry::Value> for Value {
                 opentelemetry::Array::I64(items) => Self::S64Array(items.to_owned()),
                 opentelemetry::Array::F64(items) => Self::F64Array(items.to_owned()),
                 opentelemetry::Array::String(items) => {
-                    Self::StringArray(items.to_owned().into_iter().map(Into::into).collect())
+                    Self::StringArray(items.iter().map(|e| e.to_string()).collect())
                 }
                 _ => unimplemented!(),
             },

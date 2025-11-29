@@ -1,1 +1,1 @@
-{ "rust-analyzer.linkedProjects": ["rust/Cargo.toml"] }
+{ "rust-analyzer.linkedProjects": ["rust/Cargo.toml", "integration_tests/Cargo.toml"] }
