@@ -2,7 +2,7 @@ import {
   onStart as wasiSpanStart,
   onEnd as wasiSpanEnd,
   SpanKind,
-  outerSpanContext,
+  outerSpanContext as wasiOuterSpanContext,
 } from "wasi:otel/tracing@0.2.0-draft";
 import {
   ReadableSpan,
@@ -22,14 +22,19 @@ import {
 
 export class WasiTraceContextPropagator {
     constructor() {}
+    /**
+     * Retrieves trace context from a WASI host and combines it with the current trace context.
+     * @param cx The current trace context.
+     * @returns The combined host and current trace context.
+     */
     extract(cx: Context): Context {
-        return trace.setSpanContext(cx, wasiToSpanContext(outerSpanContext()));
+        return trace.setSpanContext(cx, wasiToSpanContext(wasiOuterSpanContext()));
     }
 }
 
 export class WasiSpanProcessor implements SpanProcessor {
-  forceFlush(): Promise<void> {
-    throw new Error("Method not implemented.");
+  async forceFlush(): Promise<void> {
+    // no-op
   }
 
   onStart(span: Span, _: Context): void {
@@ -61,8 +66,7 @@ export class WasiSpanProcessor implements SpanProcessor {
         name: span.instrumentationLibrary.name,
         version: span.instrumentationLibrary.version,
         schemaUrl: span.instrumentationLibrary.schemaUrl,
-        // Although other SDKs use the InstrumentationScope.attributes field;
-        // the `opentelemetry-js` SDK does not.
+        // Although other SDKs use the InstrumentationScope.attributes field, the `opentelemetry-js` SDK does not.
         // See https://github.com/open-telemetry/opentelemetry-js/blob/06621d27068881cc45329ecc76564f1d0c0b133f/packages/opentelemetry-core/src/common/types.ts#L47
         attributes: [],
       },
@@ -72,8 +76,7 @@ export class WasiSpanProcessor implements SpanProcessor {
     });
   }
 
-  shutdown(): Promise<void> {
-    // Do not care
-    throw new Error("Method not implemented.");
+  async shutdown(): Promise<void> {
+    // no-op
   }
 }

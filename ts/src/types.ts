@@ -1,7 +1,7 @@
 import {
-  TraceFlags as wasiTraceFlags,
-  TraceState as wasiTraceState,
-  SpanContext as wasiSpanContext,
+  TraceFlags as WasiTraceFlags,
+  TraceState as WasiTraceState,
+  SpanContext as WasiSpanContext,
   Datetime,
 } from "wasi:otel/tracing@0.2.0-draft";
 import {
@@ -18,7 +18,10 @@ import {
     TraceState
 } from "@opentelemetry/api";
 
-export function spanContextToWasi(ctx: SpanContext): wasiSpanContext {
+/**
+ * Converts OpenTelemetry SpanContext to WASI SpanContext
+ */
+export function spanContextToWasi(ctx: SpanContext): WasiSpanContext {
   return {
     traceId: ctx.traceId,
     spanId: ctx.spanId,
@@ -28,16 +31,22 @@ export function spanContextToWasi(ctx: SpanContext): wasiSpanContext {
   }
 }
 
-function wasiToTraceState (wts: wasiTraceState): TraceState {
-        let traceState = createTraceState();
-        for (const [key, value] of wts) {
-            traceState = traceState.set(key, value);
-        }
+/**
+ * Converts WASI TraceState to OpenTelemetry TraceState
+ */
+function wasiToTraceState (wts: WasiTraceState): TraceState {
+  let traceState = createTraceState();
+  for (const [key, value] of wts) {
+      traceState = traceState.set(key, value);
+  }
 
-        return traceState;
-    }
+  return traceState;
+}
 
-export function wasiToSpanContext(ctx: wasiSpanContext): SpanContext {
+/**
+ * Converts WASI SpanContext to OpenTelemetry SpanContext
+ */
+export function wasiToSpanContext(ctx: WasiSpanContext): SpanContext {
     return {
         traceId: ctx.traceId,
         spanId: ctx.spanId,
@@ -47,6 +56,9 @@ export function wasiToSpanContext(ctx: wasiSpanContext): SpanContext {
     }
 }
 
+/**
+ * Converts OpenTelemetry Attributes to WASI Attributes
+ */
 export function attributesToWasi(attrs: Attributes | undefined): KeyValue[] {
   if (attrs === undefined) {
     return [];
@@ -57,6 +69,9 @@ export function attributesToWasi(attrs: Attributes | undefined): KeyValue[] {
   }));
 }
 
+/**
+ * Converts OpenTelemetry AttributeValue to WASI AttributeValue
+ */
 function attributeValueToWasi(value: AttributeValue | undefined): Value {
   if (typeof value === 'string') {
     return { tag: 'string', val: value };
@@ -91,23 +106,33 @@ function attributeValueToWasi(value: AttributeValue | undefined): Value {
   return { tag: 'string', val: String(value) };
 }
 
-function traceFlagsToWasi(flags: TraceFlags): wasiTraceFlags {
+/**
+ * Converts OpenTelemetry TraceFlags to WASI TraceFlags
+ */
+function traceFlagsToWasi(flags: TraceFlags): WasiTraceFlags {
   const SAMPLED = 0x01;
   return (flags & SAMPLED) === SAMPLED ? {sampled: true} : {sampled: false};
 }
 
-function traceStateToWasi(value: TraceState | undefined): wasiTraceState {
+/**
+ * Converts OpenTelemetry TraceState to WASI TraceTraceState
+ */
+function traceStateToWasi(value: TraceState | undefined): WasiTraceState {
   if (value == undefined) {
     return [];
   }
   return value.serialize().split(',').map(entry => {
-     // This mimics Rust's `split_once` method
+     // This ensures that a pattern like "foo=bar=baz" is split into
+     // Key("foo"), Value("bar=baz")
       const [key, ...rest] = entry.split('=');
       const value = rest.join('=');
       return [key, value];
   });
 }
 
+/**
+ * Converts OpenTelemetry HrTime to WASI Datetime
+ */
 export function dateTimeToWasi(time: HrTime): Datetime {
   return {
     seconds: BigInt(time[0]),
