@@ -13,6 +13,7 @@ component = "spin-basic-otel"
 [component.spin-basic-otel]
 source = "dist/spin-basic-otel.wasm"
 exclude_files = ["**/node_modules"]
+key_value_stores = ["default"]
 [component.spin-basic-otel.build]
 command = ["npm install", "npm run build"]
 watch = ["src/**/*.ts"]
