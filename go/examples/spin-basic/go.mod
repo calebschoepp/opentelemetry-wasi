@@ -12,3 +12,7 @@ require (
 replace github.com/spinframework/spin-go-sdk/v3 => github.com/asteurer/spin-go-sdk/v3 v3.0.0-20251215051036-e1273e70063a
 
 replace github.com/spinframework/spin-go-sdk/v3/wit_component => github.com/asteurer/spin-go-sdk/v3/wit_component v0.0.0-20251215051036-e1273e70063a
+
+replace github.com/calebschoepp/opentelemetry_wasi => ../../
+
+replace github.com/calebschoepp/opentelemetry_wasi/wit_component => ../../wit_component
