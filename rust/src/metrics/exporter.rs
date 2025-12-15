@@ -41,13 +41,15 @@ pub struct WasiMetricExporterBuilder {
     export_on_drop: bool,
 }
 
-impl WasiMetricExporterBuilder {
-    pub fn new() -> Self {
+impl Default for WasiMetricExporterBuilder {
+    fn default() -> Self {
         Self {
             export_on_drop: true,
         }
     }
+}
 
+impl WasiMetricExporterBuilder {
     /// Configure the exporter to NOT automatically export when dropped.
     ///
     /// By default, the exporter will automatically export any collected metrics
@@ -98,7 +100,7 @@ impl Drop for WasiMetricExporter {
 impl WasiMetricExporter {
     /// Create a new builder for configuring a WasiMetricExporter.
     pub fn builder() -> WasiMetricExporterBuilder {
-        WasiMetricExporterBuilder::new()
+        WasiMetricExporterBuilder::default()
     }
 
     /// Exports metric data to a compatible host or component.
@@ -127,7 +129,7 @@ impl WasiMetricExporter {
             Ok(_) => Ok(()),
             Err(e) => {
                 otel_error!(name: "export_internal_error", msg = format!("Operation failed due to an internal error: {}", e));
-                return Err(OTelSdkError::InternalFailure(e));
+                Err(OTelSdkError::InternalFailure(e))
             }
         }
     }
