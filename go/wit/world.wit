@@ -1,0 +1,11 @@
+package wasi:otel@0.2.0-draft;
+
+world imports {
+    import types;
+    import tracing;
+    import metrics;
+}
+
+world http-trigger {
+    export wasi:http/incoming-handler@0.2.0;
+}

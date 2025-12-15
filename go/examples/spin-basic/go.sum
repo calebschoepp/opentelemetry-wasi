@@ -1,0 +1,6 @@
+github.com/asteurer/spin-go-sdk/v3 v3.0.0-20251215051036-e1273e70063a h1:AEPk5HZ0liF+QXEeFhdA5rCOxlpsz+c9IjjCrHzfNXw=
+github.com/asteurer/spin-go-sdk/v3 v3.0.0-20251215051036-e1273e70063a/go.mod h1:DayYyONro3Ftl4+/+9qetVJZFuUlTf5dJYK7U87PRIA=
+github.com/asteurer/spin-go-sdk/v3/wit_component v0.0.0-20251215051036-e1273e70063a h1:WlUyz31JsCXDZkFzpN/cpeNbuP3frKz+/DD0rHFVjOc=
+github.com/asteurer/spin-go-sdk/v3/wit_component v0.0.0-20251215051036-e1273e70063a/go.mod h1:IpqEvzxcKOeqF2H1MbV/eLnufgd1uoQW4fT1xu29iXQ=
+github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
