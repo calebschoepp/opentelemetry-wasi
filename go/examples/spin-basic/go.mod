@@ -1,4 +1,4 @@
-module github.com/spin_basic
+module github.com/calebschoepp/opentelemetry-wasi/examples/spin-basic
 
 go 1.25
 
