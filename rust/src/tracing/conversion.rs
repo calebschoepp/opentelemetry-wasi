@@ -9,11 +9,11 @@ impl From<opentelemetry_sdk::trace::SpanData> for SpanData {
             name: value.name.to_string(),
             start_time: value.start_time.into(),
             end_time: value.end_time.into(),
-            attributes: value.attributes.into_iter().map(Into::into).collect(),
+            attributes: value.attributes.into_iter().map(|e| (&e).into()).collect(),
             events: value.events.events.into_iter().map(Into::into).collect(),
             links: value.links.links.into_iter().map(Into::into).collect(),
             status: value.status.into(),
-            instrumentation_scope: value.instrumentation_scope.into(),
+            instrumentation_scope: (&value.instrumentation_scope).into(),
             dropped_attributes: value.dropped_attributes_count,
             dropped_events: value.events.dropped_count,
             dropped_links: value.links.dropped_count,
@@ -95,7 +95,7 @@ impl From<opentelemetry::trace::Event> for Event {
         Self {
             name: value.name.to_string(),
             time: value.timestamp.into(),
-            attributes: value.attributes.into_iter().map(Into::into).collect(),
+            attributes: value.attributes.into_iter().map(|e| (&e).into()).collect(),
         }
     }
 }
@@ -104,7 +104,7 @@ impl From<opentelemetry::trace::Link> for Link {
     fn from(value: opentelemetry::trace::Link) -> Self {
         Self {
             span_context: value.span_context.into(),
-            attributes: value.attributes.into_iter().map(Into::into).collect(),
+            attributes: value.attributes.into_iter().map(|e| (&e).into()).collect(),
         }
     }
 }

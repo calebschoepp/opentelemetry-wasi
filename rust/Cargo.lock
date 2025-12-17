@@ -472,12 +472,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "opentelemetry-appender-tracing"
+version = "0.31.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef6a1ac5ca3accf562b8c306fa8483c85f4390f768185ab775f242f7fe8fdcc2"
+dependencies = [
+ "opentelemetry",
+ "tracing",
+ "tracing-core",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "opentelemetry-wasi"
 version = "0.27.0"
 dependencies = [
  "anyhow",
+ "base64",
  "opentelemetry",
  "opentelemetry_sdk",
+ "serde",
+ "serde_json",
  "spin-sdk",
  "tracing",
  "tracing-opentelemetry",
@@ -674,6 +689,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
+ "serde_derive",
 ]
 
 [[package]]
@@ -835,6 +851,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "opentelemetry",
+ "opentelemetry-appender-tracing",
  "opentelemetry-wasi",
  "opentelemetry_sdk",
  "spin-sdk",

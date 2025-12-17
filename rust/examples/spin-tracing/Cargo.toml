@@ -17,4 +17,5 @@ opentelemetry-wasi = { path = "../../" }
 spin-sdk = { workspace = true }
 tracing = { workspace = true }
 tracing-opentelemetry = { workspace = true }
+opentelemetry-appender-tracing = { workspace = true }
 tracing-subscriber = { workspace = true }

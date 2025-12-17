@@ -1,21 +1,29 @@
-use opentelemetry::{global, Context};
-use opentelemetry_sdk::metrics::SdkMeterProvider;
-use opentelemetry_sdk::trace::SdkTracerProvider;
-use opentelemetry_sdk::Resource;
-use opentelemetry_wasi::{WasiMetricExporter, WasiPropagator};
-use spin_sdk::http::{IntoResponse, Request, Response};
-use spin_sdk::http_component;
-use spin_sdk::key_value::Store;
-
 use opentelemetry::{
+    global,
+    logs::{LogRecord, Logger, LoggerProvider, Severity},
     trace::{TraceContextExt, Tracer},
-    KeyValue,
+    Context, KeyValue,
+};
+use opentelemetry_sdk::{
+    logs::SdkLoggerProvider, metrics::SdkMeterProvider, trace::SdkTracerProvider, Resource,
+};
+use opentelemetry_wasi::{
+    TraceContextPropagator, WasiLogProcessor, WasiMetricExporter, WasiPropagator, WasiSpanProcessor,
+};
+use spin_sdk::{
+    http::{IntoResponse, Request, Response},
+    http_component,
+    key_value::Store,
 };
 
 #[http_component]
 fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
+    // ---------------
+    // --- Tracing ---
+    // ---------------
+
     // Set up a tracer using the WASI span processor.
-    let span_processor = opentelemetry_wasi::WasiSpanProcessor::new();
+    let span_processor = WasiSpanProcessor::new();
     let tracer_provider = SdkTracerProvider::builder()
         .with_span_processor(span_processor)
         .build();
@@ -23,7 +31,7 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
     let tracer = global::tracer("basic-spin");
 
     // Extract context from the Wasm host
-    let wasi_propagator = opentelemetry_wasi::TraceContextPropagator::new();
+    let wasi_propagator = TraceContextPropagator::new();
     let _context_guard = wasi_propagator.extract(&Context::current()).attach();
 
     // Create some spans and events
@@ -42,6 +50,10 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
             store.set("foo", "bar".as_bytes()).unwrap();
         });
     });
+
+    // ---------------
+    // --- Metrics ---
+    // ---------------
 
     // Set up a meter provider using the WASI metric exporter.
     // By default `WasiMetricExporter` will export metrics to the host once it is dropped.
@@ -75,6 +87,26 @@ fn handle_spin_basic(_req: Request) -> anyhow::Result<impl IntoResponse> {
 
     let gauge = meter.f64_gauge("spin-gauge").build();
     gauge.record(123.456, attrs);
+
+    // ------------
+    // --- Logs ---
+    // ------------
+
+    // Set up a LoggerProvider using the WASI log processor.
+    let log_resource = Resource::builder().with_service_name("spin-logs").build();
+    let log_processor = WasiLogProcessor::new(Some(log_resource.clone()));
+    let log_provider = SdkLoggerProvider::builder()
+        .with_resource(log_resource)
+        .with_log_processor(log_processor)
+        .build();
+    let logger = log_provider.logger("spin-logger");
+
+    // Create and emit a log.
+    let mut record = logger.create_log_record();
+    record.set_body("Metrics and traces and logs, oh my!".into());
+    record.set_severity_number(Severity::Info);
+    record.set_severity_text("info");
+    logger.emit(record);
 
     Ok(Response::builder()
         .status(200)

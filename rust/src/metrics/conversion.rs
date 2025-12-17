@@ -3,7 +3,7 @@ use crate::wit::wasi::otel::metrics::*;
 impl From<opentelemetry_sdk::metrics::data::ResourceMetrics> for ResourceMetrics {
     fn from(value: opentelemetry_sdk::metrics::data::ResourceMetrics) -> Self {
         Self {
-            resource: value.resource().to_owned().into(),
+            resource: value.resource().into(),
             scope_metrics: value.scope_metrics().map(Into::into).collect(),
         }
     }
@@ -14,15 +14,6 @@ impl From<&opentelemetry_sdk::metrics::data::ScopeMetrics> for ScopeMetrics {
         Self {
             scope: value.scope().into(),
             metrics: value.metrics().map(Into::into).collect(),
-        }
-    }
-}
-
-impl From<opentelemetry_sdk::resource::Resource> for Resource {
-    fn from(value: opentelemetry_sdk::resource::Resource) -> Self {
-        Self {
-            attributes: value.iter().map(Into::into).collect(),
-            schema_url: value.schema_url().map(|v| v.to_string()),
         }
     }
 }
@@ -59,10 +50,7 @@ macro_rules! metric_data_to_wasi {
                                 exemplars: dp.exemplars().into_iter().map(Into::into).collect(),
                             })
                             .collect(),
-                        start_time: match g.start_time() {
-                            Some(v) => Some(v.into()),
-                            None => None,
-                        },
+                        start_time: g.start_time().map(Into::into),
                         time: g.time().into(),
                     },
                 )
@@ -95,14 +83,8 @@ macro_rules! metric_data_to_wasi {
                                 count: dp.count(),
                                 bounds: dp.bounds().collect(),
                                 bucket_counts: dp.bucket_counts().collect(),
-                                min: match dp.min() {
-                                    Some(v) => Some(v.into()),
-                                    None => None,
-                                },
-                                max: match dp.max() {
-                                    Some(v) => Some(v.into()),
-                                    None => None,
-                                },
+                                min: dp.min().map(Into::into),
+                                max: dp.max().map(Into::into),
                                 sum: dp.sum().into(),
                                 exemplars: dp.exemplars().into_iter().map(Into::into).collect(),
                             })
@@ -126,14 +108,8 @@ macro_rules! metric_data_to_wasi {
                                         .map(Into::into)
                                         .collect(),
                                     count: dp.count() as u64,
-                                    min: match dp.min() {
-                                        Some(v) => Some(v.into()),
-                                        None => None,
-                                    },
-                                    max: match dp.max() {
-                                        Some(v) => Some(v.into()),
-                                        None => None,
-                                    },
+                                    min: dp.min().map(Into::into),
+                                    max: dp.max().map(Into::into),
                                     sum: dp.sum().into(),
                                     scale: dp.scale(),
                                     zero_count: dp.zero_count(),
