@@ -12,6 +12,10 @@ tracing = { workspace = true }
 tracing-opentelemetry = { workspace = true }
 tracing-subscriber = { workspace = true }
 wit-bindgen = "0.47.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+base64 = "0.22.1"
+
 
 [workspace]
 members = ["examples/*"]
@@ -19,8 +23,9 @@ members = ["examples/*"]
 [workspace.dependencies]
 anyhow = "1"
 opentelemetry = { version = "0.31.0" }
-opentelemetry_sdk = { version = "0.31.0", features = ["experimental_metrics_custom_reader"] }
+opentelemetry_sdk = { version = "0.31.0", features = ["experimental_metrics_custom_reader", "logs"] }
 spin-sdk = "5.1.1"
+opentelemetry-appender-tracing = "0.31.0"
 tracing = "0.1.41"
 tracing-opentelemetry = "0.32.0"
 tracing-subscriber = "0.3.20"

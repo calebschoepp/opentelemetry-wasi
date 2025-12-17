@@ -30,7 +30,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/asteurer/opentelemetry-wasi-integration-tests-base:latest
+      image: ghcr.io/calebschoepp/opentelemetry-wasi-integration-tests-base:latest
     steps:
       - uses: actions/checkout@v4
       - uses: extractions/setup-just@v3

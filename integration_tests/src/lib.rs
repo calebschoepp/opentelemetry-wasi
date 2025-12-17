@@ -19,24 +19,24 @@ mod tests {
     #[serial]
     async fn rust_spin_basic() {
         // Retrieve telemetry.
-        let (spans, metrics, _logs) = get_telemetry_from_spin_app("../rust/examples/spin-basic")
+        let (spans, metrics, logs) = get_telemetry_from_spin_app("../rust/examples/spin-basic")
             .await
             .expect("Failed to retrieve telemetry from Spin app");
 
         // Run tests.
-        basic_signal_validation("rust_spin_basic", Some(&spans), Some(&metrics), None);
+        basic_signal_validation("rust_spin_basic", Some(&spans), Some(&metrics), Some(&logs));
     }
 
     #[tokio::test]
     #[serial]
     async fn rust_spin_tracing() {
         // Retrieve telemetry.
-        let (spans, _metrics, _logs) = get_telemetry_from_spin_app("../rust/examples/spin-tracing")
+        let (spans, _metrics, logs) = get_telemetry_from_spin_app("../rust/examples/spin-tracing")
             .await
             .expect("Failed to retrieve telemetry from Spin app");
 
         // Run tests.
-        basic_signal_validation("rust_spin_tracing", Some(&spans), None, None);
+        basic_signal_validation("rust_spin_tracing", Some(&spans), None, Some(&logs));
     }
 
     /// Performs a basic validation on each telemetry signal's struct field.
@@ -85,8 +85,17 @@ mod tests {
         }
 
         if let Some(log_data) = logs {
-            // TODO
-            insta::assert_yaml_snapshot!(format!("{}_logs", prefix), log_data);
+            insta::assert_yaml_snapshot!(format!("{}_logs", prefix), log_data, {
+                "[].observed_time_unix_nano" => "[timestamp]",
+                "[].trace_id" => insta::dynamic_redaction(|value, _path| {
+                    assert2::let_assert!(Some(trace_id) = value.as_str());
+                    format!("[trace_id:len({})]", trace_id.len())
+                }),
+                "[].span_id" => insta::dynamic_redaction(|value, _path| {
+                    assert2::let_assert!(Some(span_id) = value.as_str());
+                    format!("[span_id:len({})]", span_id.len())
+                }),
+            });
         }
     }
 
