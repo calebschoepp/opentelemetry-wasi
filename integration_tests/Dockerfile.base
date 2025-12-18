@@ -28,4 +28,5 @@ RUN rustup target add wasm32-wasip1 wasm32-wasip2
 RUN apt update \
     && apt install -y --no-install-recommends \
         libssl-dev \
-        pkg-config
+        pkg-config \
+        nodejs
