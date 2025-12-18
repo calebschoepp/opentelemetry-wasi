@@ -14,6 +14,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: extractions/setup-just@v3
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v6
       - run: just lint
 
   format:
@@ -24,6 +25,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: extractions/setup-just@v3
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v6
       - run: just format
 
   test:
