@@ -243,423 +243,120 @@ pinner.Pin(utf85)
 *(*int32)(unsafe.Add(unsafe.Pointer(returnArea), (8+12*4))) = int32(((span).StartTime).Nanoseconds)
 *(*int64)(unsafe.Add(unsafe.Pointer(returnArea), (16+12*4))) = int64(((span).EndTime).Seconds)
 *(*int32)(unsafe.Add(unsafe.Pointer(returnArea), (24+12*4))) = int32(((span).EndTime).Nanoseconds)
-slice18 := (span).Attributes
-length20 := uint32(len(slice18))
-result19 := wit_runtime.Allocate(pinner, uintptr(length20 * (8+4*4)), 8)
-for index, element := range slice18 {
-        base := unsafe.Add(result19, index * (8+4*4))
+slice8 := (span).Attributes
+length10 := uint32(len(slice8))
+result9 := wit_runtime.Allocate(pinner, uintptr(length10 * (4*4)), 4)
+for index, element := range slice8 {
+        base := unsafe.Add(result9, index * (4*4))
         utf86 := unsafe.Pointer(unsafe.StringData((element).Key))
 pinner.Pin(utf86)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).Key)))
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf86)))
-
-switch (element).Value.Tag() {
-case wasi_otel_types.ValueString:
-        payload := (element).Value.String()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(0))
-utf87 := unsafe.Pointer(unsafe.StringData(payload))
+utf87 := unsafe.Pointer(unsafe.StringData((element).Value))
 pinner.Pin(utf87)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(utf87)))
-
-        
-
-case wasi_otel_types.ValueBool:
-        payload := (element).Value.Bool()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(1))
-var result8 int32
-if payload {
-        result8 = 1
-} else {
-        result8 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = int8(result8)
-
-        
-
-case wasi_otel_types.ValueF64:
-        payload := (element).Value.F64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(2))
-*(*float64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueS64:
-        payload := (element).Value.S64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(3))
-*(*int64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueStringArray:
-        payload := (element).Value.StringArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(4))
-slice10 := payload
-length12 := uint32(len(slice10))
-result11 := wit_runtime.Allocate(pinner, uintptr(length12 * (2*4)), 4)
-for index, element := range slice10 {
-        base := unsafe.Add(result11, index * (2*4))
-        utf89 := unsafe.Pointer(unsafe.StringData(element))
-pinner.Pin(utf89)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len(element)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf89)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len((element).Value)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf87)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length12)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result11)))
-
-        
-
-case wasi_otel_types.ValueBoolArray:
-        payload := (element).Value.BoolArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(5))
-slice14 := payload
-length16 := uint32(len(slice14))
-result15 := wit_runtime.Allocate(pinner, uintptr(length16 * 1), 1)
-for index, element := range slice14 {
-        base := unsafe.Add(result15, index * 1)
-        var result13 int32
-if element {
-        result13 = 1
-} else {
-        result13 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), 0)) = int8(result13)
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length16)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result15)))
-
-        
-
-case wasi_otel_types.ValueF64Array:
-        payload := (element).Value.F64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(6))
-data := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data)))
-
-        
-
-case wasi_otel_types.ValueS64Array:
-        payload := (element).Value.S64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(7))
-data17 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data17)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data17)))
-
-        
-
-default:
-        panic("unreachable")
-}
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+13*4))) = uint32(length20)
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+12*4))) = uint32(uintptr(uintptr(result19)))
-slice38 := (span).Events
-length40 := uint32(len(slice38))
-result39 := wit_runtime.Allocate(pinner, uintptr(length40 * (16+4*4)), 8)
-for index, element := range slice38 {
-        base := unsafe.Add(result39, index * (16+4*4))
-        utf821 := unsafe.Pointer(unsafe.StringData((element).Name))
-pinner.Pin(utf821)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+13*4))) = uint32(length10)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+12*4))) = uint32(uintptr(uintptr(result9)))
+slice17 := (span).Events
+length19 := uint32(len(slice17))
+result18 := wit_runtime.Allocate(pinner, uintptr(length19 * (16+4*4)), 8)
+for index, element := range slice17 {
+        base := unsafe.Add(result18, index * (16+4*4))
+        utf811 := unsafe.Pointer(unsafe.StringData((element).Name))
+pinner.Pin(utf811)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).Name)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf821)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf811)))
 *(*int64)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int64(((element).Time).Seconds)
 *(*int32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = int32(((element).Time).Nanoseconds)
-slice35 := (element).Attributes
-length37 := uint32(len(slice35))
-result36 := wit_runtime.Allocate(pinner, uintptr(length37 * (8+4*4)), 8)
-for index, element := range slice35 {
-        base := unsafe.Add(result36, index * (8+4*4))
-        utf822 := unsafe.Pointer(unsafe.StringData((element).Key))
-pinner.Pin(utf822)
+slice14 := (element).Attributes
+length16 := uint32(len(slice14))
+result15 := wit_runtime.Allocate(pinner, uintptr(length16 * (4*4)), 4)
+for index, element := range slice14 {
+        base := unsafe.Add(result15, index * (4*4))
+        utf812 := unsafe.Pointer(unsafe.StringData((element).Key))
+pinner.Pin(utf812)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).Key)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf822)))
-
-switch (element).Value.Tag() {
-case wasi_otel_types.ValueString:
-        payload := (element).Value.String()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(0))
-utf823 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf823)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(utf823)))
-
-        
-
-case wasi_otel_types.ValueBool:
-        payload := (element).Value.Bool()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(1))
-var result24 int32
-if payload {
-        result24 = 1
-} else {
-        result24 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = int8(result24)
-
-        
-
-case wasi_otel_types.ValueF64:
-        payload := (element).Value.F64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(2))
-*(*float64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueS64:
-        payload := (element).Value.S64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(3))
-*(*int64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueStringArray:
-        payload := (element).Value.StringArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(4))
-slice26 := payload
-length28 := uint32(len(slice26))
-result27 := wit_runtime.Allocate(pinner, uintptr(length28 * (2*4)), 4)
-for index, element := range slice26 {
-        base := unsafe.Add(result27, index * (2*4))
-        utf825 := unsafe.Pointer(unsafe.StringData(element))
-pinner.Pin(utf825)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len(element)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf825)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf812)))
+utf813 := unsafe.Pointer(unsafe.StringData((element).Value))
+pinner.Pin(utf813)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len((element).Value)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf813)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length28)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result27)))
-
-        
-
-case wasi_otel_types.ValueBoolArray:
-        payload := (element).Value.BoolArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(5))
-slice30 := payload
-length32 := uint32(len(slice30))
-result31 := wit_runtime.Allocate(pinner, uintptr(length32 * 1), 1)
-for index, element := range slice30 {
-        base := unsafe.Add(result31, index * 1)
-        var result29 int32
-if element {
-        result29 = 1
-} else {
-        result29 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), 0)) = int8(result29)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (16+3*4))) = uint32(length16)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (16+2*4))) = uint32(uintptr(uintptr(result15)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length32)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result31)))
-
-        
-
-case wasi_otel_types.ValueF64Array:
-        payload := (element).Value.F64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(6))
-data33 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data33)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data33)))
-
-        
-
-case wasi_otel_types.ValueS64Array:
-        payload := (element).Value.S64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(7))
-data34 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data34)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data34)))
-
-        
-
-default:
-        panic("unreachable")
-}
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (16+3*4))) = uint32(length37)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (16+2*4))) = uint32(uintptr(uintptr(result36)))
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+15*4))) = uint32(length40)
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+14*4))) = uint32(uintptr(uintptr(result39)))
-slice65 := (span).Links
-length67 := uint32(len(slice65))
-result66 := wit_runtime.Allocate(pinner, uintptr(length67 * (9*4)), 4)
-for index, element := range slice65 {
-        base := unsafe.Add(result66, index * (9*4))
-        utf841 := unsafe.Pointer(unsafe.StringData(((element).SpanContext).TraceId))
-pinner.Pin(utf841)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+15*4))) = uint32(length19)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+14*4))) = uint32(uintptr(uintptr(result18)))
+slice33 := (span).Links
+length35 := uint32(len(slice33))
+result34 := wit_runtime.Allocate(pinner, uintptr(length35 * (9*4)), 4)
+for index, element := range slice33 {
+        base := unsafe.Add(result34, index * (9*4))
+        utf820 := unsafe.Pointer(unsafe.StringData(((element).SpanContext).TraceId))
+pinner.Pin(utf820)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len(((element).SpanContext).TraceId)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf841)))
-utf842 := unsafe.Pointer(unsafe.StringData(((element).SpanContext).SpanId))
-pinner.Pin(utf842)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf820)))
+utf821 := unsafe.Pointer(unsafe.StringData(((element).SpanContext).SpanId))
+pinner.Pin(utf821)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len(((element).SpanContext).SpanId)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf842)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf821)))
 *(*int8)(unsafe.Add(unsafe.Pointer(base), (4*4))) = int8(int32(((element).SpanContext).TraceFlags))
-var result43 int32
+var result22 int32
 if ((element).SpanContext).IsRemote {
-        result43 = 1
+        result22 = 1
 } else {
-        result43 = 0
+        result22 = 0
 }
-*(*int8)(unsafe.Add(unsafe.Pointer(base), (1+4*4))) = int8(result43)
-slice46 := ((element).SpanContext).TraceState
-length48 := uint32(len(slice46))
-result47 := wit_runtime.Allocate(pinner, uintptr(length48 * (4*4)), 4)
-for index, element := range slice46 {
-        base := unsafe.Add(result47, index * (4*4))
-        utf844 := unsafe.Pointer(unsafe.StringData((element).F0))
-pinner.Pin(utf844)
+*(*int8)(unsafe.Add(unsafe.Pointer(base), (1+4*4))) = int8(result22)
+slice25 := ((element).SpanContext).TraceState
+length27 := uint32(len(slice25))
+result26 := wit_runtime.Allocate(pinner, uintptr(length27 * (4*4)), 4)
+for index, element := range slice25 {
+        base := unsafe.Add(result26, index * (4*4))
+        utf823 := unsafe.Pointer(unsafe.StringData((element).F0))
+pinner.Pin(utf823)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).F0)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf844)))
-utf845 := unsafe.Pointer(unsafe.StringData((element).F1))
-pinner.Pin(utf845)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf823)))
+utf824 := unsafe.Pointer(unsafe.StringData((element).F1))
+pinner.Pin(utf824)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len((element).F1)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf845)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf824)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (6*4))) = uint32(length48)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (5*4))) = uint32(uintptr(uintptr(result47)))
-slice62 := (element).Attributes
-length64 := uint32(len(slice62))
-result63 := wit_runtime.Allocate(pinner, uintptr(length64 * (8+4*4)), 8)
-for index, element := range slice62 {
-        base := unsafe.Add(result63, index * (8+4*4))
-        utf849 := unsafe.Pointer(unsafe.StringData((element).Key))
-pinner.Pin(utf849)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (6*4))) = uint32(length27)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (5*4))) = uint32(uintptr(uintptr(result26)))
+slice30 := (element).Attributes
+length32 := uint32(len(slice30))
+result31 := wit_runtime.Allocate(pinner, uintptr(length32 * (4*4)), 4)
+for index, element := range slice30 {
+        base := unsafe.Add(result31, index * (4*4))
+        utf828 := unsafe.Pointer(unsafe.StringData((element).Key))
+pinner.Pin(utf828)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).Key)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf849)))
-
-switch (element).Value.Tag() {
-case wasi_otel_types.ValueString:
-        payload := (element).Value.String()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(0))
-utf850 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf850)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(utf850)))
-
-        
-
-case wasi_otel_types.ValueBool:
-        payload := (element).Value.Bool()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(1))
-var result51 int32
-if payload {
-        result51 = 1
-} else {
-        result51 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = int8(result51)
-
-        
-
-case wasi_otel_types.ValueF64:
-        payload := (element).Value.F64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(2))
-*(*float64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueS64:
-        payload := (element).Value.S64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(3))
-*(*int64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueStringArray:
-        payload := (element).Value.StringArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(4))
-slice53 := payload
-length55 := uint32(len(slice53))
-result54 := wit_runtime.Allocate(pinner, uintptr(length55 * (2*4)), 4)
-for index, element := range slice53 {
-        base := unsafe.Add(result54, index * (2*4))
-        utf852 := unsafe.Pointer(unsafe.StringData(element))
-pinner.Pin(utf852)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len(element)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf852)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf828)))
+utf829 := unsafe.Pointer(unsafe.StringData((element).Value))
+pinner.Pin(utf829)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len((element).Value)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf829)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length55)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result54)))
-
-        
-
-case wasi_otel_types.ValueBoolArray:
-        payload := (element).Value.BoolArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(5))
-slice57 := payload
-length59 := uint32(len(slice57))
-result58 := wit_runtime.Allocate(pinner, uintptr(length59 * 1), 1)
-for index, element := range slice57 {
-        base := unsafe.Add(result58, index * 1)
-        var result56 int32
-if element {
-        result56 = 1
-} else {
-        result56 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), 0)) = int8(result56)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8*4))) = uint32(length32)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (7*4))) = uint32(uintptr(uintptr(result31)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length59)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result58)))
-
-        
-
-case wasi_otel_types.ValueF64Array:
-        payload := (element).Value.F64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(6))
-data60 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data60)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data60)))
-
-        
-
-case wasi_otel_types.ValueS64Array:
-        payload := (element).Value.S64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(7))
-data61 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data61)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data61)))
-
-        
-
-default:
-        panic("unreachable")
-}
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8*4))) = uint32(length64)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (7*4))) = uint32(uintptr(uintptr(result63)))
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+17*4))) = uint32(length67)
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+16*4))) = uint32(uintptr(uintptr(result66)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+17*4))) = uint32(length35)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+16*4))) = uint32(uintptr(uintptr(result34)))
 
 switch (span).Status.Tag() {
 case StatusUnset:
@@ -677,20 +374,20 @@ case StatusOk:
 case StatusError:
         payload := (span).Status.Error()
         *(*int8)(unsafe.Add(unsafe.Pointer(returnArea), (32+18*4))) = int8(int32(2))
-utf868 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf868)
+utf836 := unsafe.Pointer(unsafe.StringData(payload))
+pinner.Pin(utf836)
 *(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+20*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+19*4))) = uint32(uintptr(uintptr(utf868)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+19*4))) = uint32(uintptr(uintptr(utf836)))
 
         
 
 default:
         panic("unreachable")
 }
-utf869 := unsafe.Pointer(unsafe.StringData(((span).InstrumentationScope).Name))
-pinner.Pin(utf869)
+utf837 := unsafe.Pointer(unsafe.StringData(((span).InstrumentationScope).Name))
+pinner.Pin(utf837)
 *(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+22*4))) = uint32(uint32(len(((span).InstrumentationScope).Name)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+21*4))) = uint32(uintptr(uintptr(utf869)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+21*4))) = uint32(uintptr(uintptr(utf837)))
 
 switch ((span).InstrumentationScope).Version.Tag() {
 case wit_types.OptionNone:
@@ -700,10 +397,10 @@ case wit_types.OptionNone:
 case wit_types.OptionSome:
         payload := ((span).InstrumentationScope).Version.Some()
         *(*int8)(unsafe.Add(unsafe.Pointer(returnArea), (32+23*4))) = int8(int32(1))
-utf870 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf870)
+utf838 := unsafe.Pointer(unsafe.StringData(payload))
+pinner.Pin(utf838)
 *(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+25*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+24*4))) = uint32(uintptr(uintptr(utf870)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+24*4))) = uint32(uintptr(uintptr(utf838)))
 
         
 default:
@@ -718,134 +415,33 @@ case wit_types.OptionNone:
 case wit_types.OptionSome:
         payload := ((span).InstrumentationScope).SchemaUrl.Some()
         *(*int8)(unsafe.Add(unsafe.Pointer(returnArea), (32+26*4))) = int8(int32(1))
-utf871 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf871)
+utf839 := unsafe.Pointer(unsafe.StringData(payload))
+pinner.Pin(utf839)
 *(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+28*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+27*4))) = uint32(uintptr(uintptr(utf871)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+27*4))) = uint32(uintptr(uintptr(utf839)))
 
         
 default:
         panic("unreachable")
 }
-slice85 := ((span).InstrumentationScope).Attributes
-length87 := uint32(len(slice85))
-result86 := wit_runtime.Allocate(pinner, uintptr(length87 * (8+4*4)), 8)
-for index, element := range slice85 {
-        base := unsafe.Add(result86, index * (8+4*4))
-        utf872 := unsafe.Pointer(unsafe.StringData((element).Key))
-pinner.Pin(utf872)
+slice42 := ((span).InstrumentationScope).Attributes
+length44 := uint32(len(slice42))
+result43 := wit_runtime.Allocate(pinner, uintptr(length44 * (4*4)), 4)
+for index, element := range slice42 {
+        base := unsafe.Add(result43, index * (4*4))
+        utf840 := unsafe.Pointer(unsafe.StringData((element).Key))
+pinner.Pin(utf840)
 *(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len((element).Key)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf872)))
-
-switch (element).Value.Tag() {
-case wasi_otel_types.ValueString:
-        payload := (element).Value.String()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(0))
-utf873 := unsafe.Pointer(unsafe.StringData(payload))
-pinner.Pin(utf873)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(utf873)))
-
-        
-
-case wasi_otel_types.ValueBool:
-        payload := (element).Value.Bool()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(1))
-var result74 int32
-if payload {
-        result74 = 1
-} else {
-        result74 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = int8(result74)
-
-        
-
-case wasi_otel_types.ValueF64:
-        payload := (element).Value.F64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(2))
-*(*float64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueS64:
-        payload := (element).Value.S64()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(3))
-*(*int64)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = payload
-
-        
-
-case wasi_otel_types.ValueStringArray:
-        payload := (element).Value.StringArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(4))
-slice76 := payload
-length78 := uint32(len(slice76))
-result77 := wit_runtime.Allocate(pinner, uintptr(length78 * (2*4)), 4)
-for index, element := range slice76 {
-        base := unsafe.Add(result77, index * (2*4))
-        utf875 := unsafe.Pointer(unsafe.StringData(element))
-pinner.Pin(utf875)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 4)) = uint32(uint32(len(element)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf875)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), 0)) = uint32(uintptr(uintptr(utf840)))
+utf841 := unsafe.Pointer(unsafe.StringData((element).Value))
+pinner.Pin(utf841)
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (3*4))) = uint32(uint32(len((element).Value)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(base), (2*4))) = uint32(uintptr(uintptr(utf841)))
 
 }
 
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length78)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result77)))
-
-        
-
-case wasi_otel_types.ValueBoolArray:
-        payload := (element).Value.BoolArray()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(5))
-slice80 := payload
-length82 := uint32(len(slice80))
-result81 := wit_runtime.Allocate(pinner, uintptr(length82 * 1), 1)
-for index, element := range slice80 {
-        base := unsafe.Add(result81, index * 1)
-        var result79 int32
-if element {
-        result79 = 1
-} else {
-        result79 = 0
-}
-*(*int8)(unsafe.Add(unsafe.Pointer(base), 0)) = int8(result79)
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(length82)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(result81)))
-
-        
-
-case wasi_otel_types.ValueF64Array:
-        payload := (element).Value.F64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(6))
-data83 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data83)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data83)))
-
-        
-
-case wasi_otel_types.ValueS64Array:
-        payload := (element).Value.S64Array()
-        *(*int8)(unsafe.Add(unsafe.Pointer(base), (2*4))) = int8(int32(7))
-data84 := unsafe.Pointer(unsafe.SliceData(payload))
-pinner.Pin(data84)
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+3*4))) = uint32(uint32(len(payload)))
-*(*uint32)(unsafe.Add(unsafe.Pointer(base), (8+2*4))) = uint32(uintptr(uintptr(data84)))
-
-        
-
-default:
-        panic("unreachable")
-}
-
-}
-
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+30*4))) = uint32(length87)
-*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+29*4))) = uint32(uintptr(uintptr(result86)))
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+30*4))) = uint32(length44)
+*(*uint32)(unsafe.Add(unsafe.Pointer(returnArea), (32+29*4))) = uint32(uintptr(uintptr(result43)))
 *(*int32)(unsafe.Add(unsafe.Pointer(returnArea), (32+31*4))) = int32((span).DroppedAttributes)
 *(*int32)(unsafe.Add(unsafe.Pointer(returnArea), (36+31*4))) = int32((span).DroppedEvents)
 *(*int32)(unsafe.Add(unsafe.Pointer(returnArea), (40+31*4))) = int32((span).DroppedLinks)
