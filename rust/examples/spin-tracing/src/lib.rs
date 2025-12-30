@@ -27,8 +27,6 @@ fn handle_spin_tracing(_req: Request) -> anyhow::Result<impl IntoResponse> {
     let wasi_propagator = opentelemetry_wasi::TraceContextPropagator::new();
     let _guard = wasi_propagator.extract(&Context::current()).attach();
 
-    main_operation();
-
     // Set up a LoggerProvider using the WASI log processor.
     let log_resource = Resource::builder().with_service_name("spin-logs").build();
     let processor = opentelemetry_wasi::WasiLogProcessor::new(Some(log_resource.clone()));
