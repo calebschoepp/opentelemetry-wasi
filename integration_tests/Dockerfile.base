@@ -10,9 +10,9 @@ RUN apt update \
         pkg-config
 
 # Clone a version of Spin with WASI OTel
-RUN git clone --branch wasi-otel-logs https://github.com/asteurer/spin \
+RUN git clone --branch wasi-otel https://github.com/asteurer/spin \
     && cd spin \
-    && git checkout 622a628d11aba5c4234302a2e59f60c45280a2f6
+    && git checkout cc558b2ec0cb2cd0619c6a410325bd165f632f1e
 
 # Build Spin
 RUN cd spin \

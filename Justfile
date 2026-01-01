@@ -15,4 +15,4 @@ test:
 # TODO: Once wasi:otel is merged into Spin, this needs to be removed.
 build-integration-tests-base tag="latest":
     docker build -f integration_tests/Dockerfile.base \
-        -t "ghcr.io/calebschoepp/opentelemetry-wasi-integration-tests-base:{{tag}}" .
+        -t "ghcr.io/asteurer/opentelemetry-wasi-integration-tests-base:{{tag}}" .
