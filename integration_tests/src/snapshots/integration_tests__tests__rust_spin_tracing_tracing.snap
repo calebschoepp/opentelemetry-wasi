@@ -40,40 +40,6 @@ expression: span_data
   span_id: "[span_id:len(16)]"
   trace_state: ""
   parent_span_id: "[parent_span_id:len(16)]"
-  name: spin_key_value.open
-  kind: SPAN_KIND_CLIENT
-  start_time_unix_nano: "[timestamp]"
-  end_time_unix_nano: "[timestamp]"
-  attributes: "[attributes]"
-  dropped_attributes_count: 0
-  events: []
-  dropped_events_count: 0
-  links: []
-  dropped_links_count: 0
-  status:
-    message: ""
-    code: STATUS_CODE_UNSET
-- trace_id: "[trace_id:len(32)]"
-  span_id: "[span_id:len(16)]"
-  trace_state: ""
-  parent_span_id: "[parent_span_id:len(16)]"
-  name: spin_key_value.set
-  kind: SPAN_KIND_CLIENT
-  start_time_unix_nano: "[timestamp]"
-  end_time_unix_nano: "[timestamp]"
-  attributes: "[attributes]"
-  dropped_attributes_count: 0
-  events: []
-  dropped_events_count: 0
-  links: []
-  dropped_links_count: 0
-  status:
-    message: ""
-    code: STATUS_CODE_UNSET
-- trace_id: "[trace_id:len(32)]"
-  span_id: "[span_id:len(16)]"
-  trace_state: ""
-  parent_span_id: "[parent_span_id:len(16)]"
   name: execute_wasm_component spin-tracing
   kind: SPAN_KIND_INTERNAL
   start_time_unix_nano: "[timestamp]"
@@ -168,7 +134,7 @@ expression: span_data
       attributes:
         bar: "Some(AnyValue { value: Some(IntValue(1)) })"
         code.file.path: "Some(AnyValue { value: Some(StringValue(\"examples/spin-tracing/src/lib.rs\")) })"
-        code.line.number: "Some(AnyValue { value: Some(IntValue(70)) })"
+        code.line.number: "Some(AnyValue { value: Some(IntValue(68)) })"
         code.module.name: "Some(AnyValue { value: Some(StringValue(\"spin_tracing\")) })"
         level: "[value]"
         target: "[value]"
@@ -194,7 +160,7 @@ expression: span_data
       name: Main span event
       attributes:
         code.file.path: "Some(AnyValue { value: Some(StringValue(\"examples/spin-tracing/src/lib.rs\")) })"
-        code.line.number: "Some(AnyValue { value: Some(IntValue(64)) })"
+        code.line.number: "Some(AnyValue { value: Some(IntValue(62)) })"
         code.module.name: "Some(AnyValue { value: Some(StringValue(\"spin_tracing\")) })"
         foo: "Some(AnyValue { value: Some(StringValue(\"1\")) })"
         level: "[value]"
