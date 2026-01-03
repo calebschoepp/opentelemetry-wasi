@@ -27,7 +27,6 @@ RUN apt update \
 
 # Add dependencies for building Spin apps
 RUN rustup target add wasm32-wasip1 wasm32-wasip2
-RUN cargo install --git https://github.com/asteurer/componentize-go
 RUN curl -fsSL https://nodejs.org/dist/v24.12.0/node-v24.12.0-linux-x64.tar.xz -o node.tar.xz && \
     tar -xf node.tar.xz -C /usr/local --strip-components=1 && \
     rm node.tar.xz

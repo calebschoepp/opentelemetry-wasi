@@ -5,7 +5,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['**/dist/', '**/types/', '**/build/'],
+    ignores: ['**/dist/', '**/types/', '**/build/', 'jest.config.js'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,

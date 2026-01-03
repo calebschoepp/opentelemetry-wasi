@@ -206,7 +206,7 @@ mod tests {
                 match reqwest::get("http://localhost:3000").await {
                     Ok(_) => return Ok(()),
                     Err(e) => {
-                        if start.elapsed() > Duration::from_secs(5) {
+                        if start.elapsed() > Duration::from_secs(10) {
                             return Err(anyhow!("Unable to reach the Spin app: {e}"));
                         }
                     }

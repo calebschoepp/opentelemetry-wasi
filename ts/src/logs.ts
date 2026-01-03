@@ -3,7 +3,7 @@ import { onEmit as emitToWasi } from 'wasi:otel/logs@0.2.0-draft';
 import { LogRecord as WasiLogRecord } from 'wasi:otel/logs@0.2.0-draft';
 import { KeyValue as WasiKeyValue } from 'wasi:otel/types@0.2.0-draft';
 import { dateTimeToWasi, instrumentationScopeToWasi } from './types';
-import { AnyValueMap } from '@opentelemetry/api-logs';
+import { AnyValue, AnyValueMap } from '@opentelemetry/api-logs';
 
 export class WasiLogProcessor implements LogRecordProcessor {
   onEmit(logRecord: SdkLogRecord): void {
@@ -30,7 +30,7 @@ function logRecordToWasi(r: SdkLogRecord): WasiLogRecord {
       : undefined,
     severityText: r.severityText,
     severityNumber: r.severityNumber,
-    body: r.body ? JSON.stringify(r.body) : undefined,
+    body: r.body ? logAnyValueToWasi(r.body) : undefined,
     attributes: r.attributes ? logAttributesToWasi(r.attributes) : undefined,
     eventName: r.eventName,
     resource: {
@@ -50,7 +50,29 @@ function logRecordToWasi(r: SdkLogRecord): WasiLogRecord {
 function logAttributesToWasi(attrs: AnyValueMap): WasiKeyValue[] {
   const result: WasiKeyValue[] = [];
   for (const [k, v] of Object.entries(attrs)) {
-    result.push({ key: k, value: JSON.stringify(v) });
+    result.push({ key: k, value: logAnyValueToWasi(v) });
   }
   return result;
+}
+
+export function logAnyValueToWasi(v: AnyValue): string {
+  if (v instanceof Uint8Array) {
+    return JSON.stringify('{base64}:' + Buffer.from(v).toString('base64'));
+  } else if (v === null || v === undefined) {
+    return 'null';
+  } else if (typeof v === 'string') {
+    return JSON.stringify(v);
+  } else if (typeof v === 'number' || typeof v === 'boolean') {
+    return String(v);
+  } else if (Array.isArray(v)) {
+    const items = v.map((item) => logAnyValueToWasi(item)).join(',');
+    return `[${items}]`;
+  } else {
+    const pairs = Object.entries(v)
+      .map(
+        ([key, value]) => `${JSON.stringify(key)}:${logAnyValueToWasi(value)}`
+      )
+      .join(',');
+    return `{${pairs}}`;
+  }
 }

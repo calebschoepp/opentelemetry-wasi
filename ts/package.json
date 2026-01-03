@@ -10,7 +10,7 @@
   "scripts": {
     "build:types": "jco guest-types -o ./types ./wit",
     "build": "npm run build:types && tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build:types && jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -22,11 +22,14 @@
   "devDependencies": {
     "@bytecodealliance/jco": "^1.15.0",
     "@eslint/js": "^9.39.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.13.5",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.5.0",
+    "jest": "^30.2.0",
     "prettier": "^3.7.4",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.48.1"
   },
