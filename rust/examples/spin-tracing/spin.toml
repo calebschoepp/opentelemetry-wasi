@@ -1,19 +1,19 @@
 spin_manifest_version = 2
 
 [application]
-name = "spin-tracing"
+name = "rust-spin-tracing"
 version = "0.1.0"
 authors = ["Caleb Schoepp <caleb.schoepp@fermyon.com>"]
 description = "A basic Spin application that uses the opentelemetry-wasi crate along with the very pervasive tracing crate"
 
 [[trigger.http]]
 route = "/..."
-component = "spin-tracing"
+component = "rust-spin-tracing"
 
-[component.spin-tracing]
+[component.rust-spin-tracing]
 source = "../../target/wasm32-wasip1/release/spin_tracing.wasm"
 allowed_outbound_hosts = []
 key_value_stores = ["default"]
-[component.spin-tracing.build]
+[component.rust-spin-tracing.build]
 command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

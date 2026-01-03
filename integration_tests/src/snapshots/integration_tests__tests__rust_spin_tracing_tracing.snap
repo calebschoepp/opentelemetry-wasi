@@ -40,7 +40,7 @@ expression: span_data
   span_id: "[span_id:len(16)]"
   trace_state: ""
   parent_span_id: "[parent_span_id:len(16)]"
-  name: execute_wasm_component spin-tracing
+  name: execute_wasm_component rust-spin-tracing
   kind: SPAN_KIND_INTERNAL
   start_time_unix_nano: "[timestamp]"
   end_time_unix_nano: "[timestamp]"

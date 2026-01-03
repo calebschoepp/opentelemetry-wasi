@@ -39,6 +39,22 @@ mod tests {
         basic_signal_validation("rust_spin_tracing", Some(&spans), None, Some(&logs));
     }
 
+    #[tokio::test]
+    #[serial]
+    async fn typescript_spin_basic() {
+        let (spans, metrics, logs) = get_telemetry_from_spin_app("../ts/examples/spin-basic")
+            .await
+            .expect("Failed to retrieve telemetry from Spin app");
+
+        // Run tests.
+        basic_signal_validation(
+            "typescript_spin_basic",
+            Some(&spans),
+            Some(&metrics),
+            Some(&logs),
+        );
+    }
+
     /// Performs a basic validation on each telemetry signal's struct field.
     fn basic_signal_validation(
         prefix: &str,
@@ -190,7 +206,8 @@ mod tests {
                 match reqwest::get("http://localhost:3000").await {
                     Ok(_) => return Ok(()),
                     Err(e) => {
-                        if start.elapsed() > Duration::from_secs(5) {
+                        // TypeScript takes longer to initialize.
+                        if start.elapsed() > Duration::from_secs(15) {
                             return Err(anyhow!("Unable to reach the Spin app: {e}"));
                         }
                     }
