@@ -206,7 +206,8 @@ mod tests {
                 match reqwest::get("http://localhost:3000").await {
                     Ok(_) => return Ok(()),
                     Err(e) => {
-                        if start.elapsed() > Duration::from_secs(10) {
+                        // TypeScript takes longer to initialize.
+                        if start.elapsed() > Duration::from_secs(15) {
                             return Err(anyhow!("Unable to reach the Spin app: {e}"));
                         }
                     }
