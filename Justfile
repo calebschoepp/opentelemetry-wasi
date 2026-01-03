@@ -3,12 +3,18 @@ all: lint format test
 lint:
     cargo clippy --manifest-path rust/Cargo.toml --all-targets --all-features -- -D warnings
     cargo clippy --manifest-path integration_tests/Cargo.toml --all-targets --all-features -- -D warnings
+    npm --prefix ts install
+    npm --prefix ts run lint
 
 format:
     cargo fmt --manifest-path rust/Cargo.toml --all -- --check
     cargo fmt --manifest-path integration_tests/Cargo.toml --all -- --check
+    npm --prefix ts install
+    npm --prefix ts run format:check
 
 test:
+    npm --prefix ts install
+    npm --prefix ts run build
     cargo test --manifest-path rust/Cargo.toml
     cargo test --manifest-path integration_tests/Cargo.toml
 
