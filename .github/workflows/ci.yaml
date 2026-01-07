@@ -10,20 +10,28 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - uses: extractions/setup-just@v3
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - uses: extractions/setup-just@v3
       - run: just lint
 
   format:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - uses: extractions/setup-just@v3
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+      - uses: extractions/setup-just@v3
       - run: just format
 
   test:
@@ -32,7 +40,10 @@ jobs:
     container:
       image: ghcr.io/asteurer/opentelemetry-wasi-integration-tests-base:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: extractions/setup-just@v3
-      - uses: Swatinem/rust-cache@v2
+      - uses: bytecodealliance/actions/wasmtime/setup@v1 # For Go unit tests
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
       - run: just test

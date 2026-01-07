@@ -9,20 +9,18 @@ RUN apt update \
         libssl-dev \
         pkg-config
 
-# Clone a version of Spin with WASI OTel
-RUN git clone --branch wasi-otel https://github.com/asteurer/spin \
-    && cd spin \
-    && git checkout cc558b2ec0cb2cd0619c6a410325bd165f632f1e
-
-# Build Spin
-RUN cd spin \
-    && cargo build --release
+# Install a version of Spin with WASI OTel
+RUN cargo install \
+    --git https://github.com/asteurer/spin \
+    --rev cc558b2ec0cb2cd0619c6a410325bd165f632f1e \
+    spin-cli
 
 FROM rust:1.91.0-slim-bookworm
-COPY --from=stable-binary-provider /spin/target/release/spin /usr/local/bin
+COPY --from=stable-binary-provider /usr/local/cargo/bin/spin /usr/local/cargo/bin/spin
 
-# Add compilation targets for building Spin apps
+# Add dependencies for building Spin apps
 RUN rustup target add wasm32-wasip1 wasm32-wasip2
+RUN cargo install --git https://github.com/asteurer/componentize-go
 
 # Add integration test suite build dependencies
 RUN apt update \

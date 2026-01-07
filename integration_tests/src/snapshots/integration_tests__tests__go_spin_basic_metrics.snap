@@ -1,0 +1,105 @@
+---
+source: src/lib.rs
+expression: metric_data
+---
+- metrics:
+    - name: spin-counter
+      description: ""
+      unit: ""
+      data:
+        Sum:
+          data_points:
+            - attributes:
+                spinkey1: "Some(AnyValue { value: Some(StringValue(\"spinvalue1\")) })"
+                spinkey2: "Some(AnyValue { value: Some(StringValue(\"spinvalue2\")) })"
+              start_time_unix_nano: "[timestamp]"
+              time_unix_nano: "[timestamp]"
+              exemplars: []
+              flags: 0
+              value:
+                AsInt: 10
+          aggregation_temporality: 2
+          is_monotonic: true
+    - name: spin-up-down-counter
+      description: ""
+      unit: ""
+      data:
+        Sum:
+          data_points:
+            - attributes:
+                spinkey1: "Some(AnyValue { value: Some(StringValue(\"spinvalue1\")) })"
+                spinkey2: "Some(AnyValue { value: Some(StringValue(\"spinvalue2\")) })"
+              start_time_unix_nano: "[timestamp]"
+              time_unix_nano: "[timestamp]"
+              exemplars: []
+              flags: 0
+              value:
+                AsInt: -1
+          aggregation_temporality: 2
+          is_monotonic: false
+    - name: spin-histogram
+      description: ""
+      unit: ""
+      data:
+        Histogram:
+          data_points:
+            - attributes:
+                spinkey1: "Some(AnyValue { value: Some(StringValue(\"spinvalue1\")) })"
+                spinkey2: "Some(AnyValue { value: Some(StringValue(\"spinvalue2\")) })"
+              start_time_unix_nano: "[timestamp]"
+              time_unix_nano: "[timestamp]"
+              count: 2
+              sum: 24
+              bucket_counts:
+                - 0
+                - 0
+                - 1
+                - 1
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+                - 0
+              explicit_bounds:
+                - 0
+                - 5
+                - 10
+                - 25
+                - 50
+                - 75
+                - 100
+                - 250
+                - 500
+                - 750
+                - 1000
+                - 2500
+                - 5000
+                - 7500
+                - 10000
+              flags: 0
+              min: 9
+              max: 15
+              exemplars: []
+          aggregation_temporality: 2
+    - name: spin-gauge
+      description: ""
+      unit: ""
+      data:
+        Gauge:
+          data_points:
+            - attributes:
+                spinkey1: "Some(AnyValue { value: Some(StringValue(\"spinvalue1\")) })"
+                spinkey2: "Some(AnyValue { value: Some(StringValue(\"spinvalue2\")) })"
+              start_time_unix_nano: "[timestamp]"
+              time_unix_nano: "[timestamp]"
+              exemplars: []
+              flags: 0
+              value:
+                AsDouble: 123.456

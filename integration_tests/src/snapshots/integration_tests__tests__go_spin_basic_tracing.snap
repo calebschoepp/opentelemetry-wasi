@@ -1,0 +1,72 @@
+---
+source: src/lib.rs
+expression: span_data
+---
+- trace_id: "[trace_id:len(32)]"
+  span_id: "[span_id:len(16)]"
+  trace_state: ""
+  parent_span_id: "[parent_span_id:len(16)]"
+  name: spin_key_value.open
+  kind: SPAN_KIND_CLIENT
+  start_time_unix_nano: "[timestamp]"
+  end_time_unix_nano: "[timestamp]"
+  attributes: "[attributes]"
+  dropped_attributes_count: 0
+  events: []
+  dropped_events_count: 0
+  links: []
+  dropped_links_count: 0
+  status:
+    message: ""
+    code: STATUS_CODE_UNSET
+- trace_id: "[trace_id:len(32)]"
+  span_id: "[span_id:len(16)]"
+  trace_state: ""
+  parent_span_id: "[parent_span_id:len(16)]"
+  name: spin_key_value.set
+  kind: SPAN_KIND_CLIENT
+  start_time_unix_nano: "[timestamp]"
+  end_time_unix_nano: "[timestamp]"
+  attributes: "[attributes]"
+  dropped_attributes_count: 0
+  events: []
+  dropped_events_count: 0
+  links: []
+  dropped_links_count: 0
+  status:
+    message: ""
+    code: STATUS_CODE_UNSET
+- trace_id: "[trace_id:len(32)]"
+  span_id: "[span_id:len(16)]"
+  trace_state: ""
+  parent_span_id: "[parent_span_id:len(16)]"
+  name: child-operation
+  kind: SPAN_KIND_INTERNAL
+  start_time_unix_nano: "[timestamp]"
+  end_time_unix_nano: "[timestamp]"
+  attributes: "[attributes]"
+  dropped_attributes_count: 0
+  events: []
+  dropped_events_count: 0
+  links: []
+  dropped_links_count: 0
+  status:
+    message: ""
+    code: STATUS_CODE_OK
+- trace_id: "[trace_id:len(32)]"
+  span_id: "[span_id:len(16)]"
+  trace_state: ""
+  parent_span_id: "[parent_span_id:len(16)]"
+  name: main-operation
+  kind: SPAN_KIND_INTERNAL
+  start_time_unix_nano: "[timestamp]"
+  end_time_unix_nano: "[timestamp]"
+  attributes: "[attributes]"
+  dropped_attributes_count: 0
+  events: []
+  dropped_events_count: 0
+  links: []
+  dropped_links_count: 0
+  status:
+    message: ""
+    code: STATUS_CODE_UNSET
