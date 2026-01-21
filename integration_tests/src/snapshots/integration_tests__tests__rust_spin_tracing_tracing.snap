@@ -1,6 +1,6 @@
 ---
 source: src/lib.rs
-expression: span_data
+expression: spans
 ---
 - trace_id: "[trace_id:len(32)]"
   span_id: "[span_id:len(16)]"
