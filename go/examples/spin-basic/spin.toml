@@ -1,0 +1,20 @@
+#:schema https://schemas.spinframework.dev/spin/manifest-v2/latest.json
+
+spin_manifest_version = 2
+
+[application]
+name = "go-spin-basic"
+version = "0.1.0"
+authors = ["Andrew Steurer <94206073+asteurer@users.noreply.github.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "go-spin-basic"
+
+[component.go-spin-basic]
+source = "main.wasm"
+key_value_stores = ["default"]
+[component.go-spin-basic.build]
+command = "componentize-go -w http-trigger componentize"
+watch = ["**/*.go", "go.mod"]
