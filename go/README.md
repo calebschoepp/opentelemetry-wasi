@@ -2,7 +2,7 @@
 ## Usage
 ### Prerequisites
 - [**go**](https://go.dev/dl/) - v1.25+
-- [**componentize-go**](https://github.com/asteurer/componentize-go) - Latest version
+- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - Latest version
 - [**Rust toolchain**](https://rust-lang.org/) - Latest version
 - **Spin** - Installation instructions below:
     ```sh
@@ -31,7 +31,7 @@ curl localhost:3000
 Whenever WIT files are changed/added to the `../wit` directory, the bindings  in `./wit_component` need to be regenerated.
 
 ### Prerequisites
-- [**componentize-go**](https://github.com/asteurer/componentize-go) - Latest version
+- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - Latest version
 
 ### Run
 ```sh
