@@ -61,7 +61,8 @@ impl<'a> Serialize for AnyValueWrapper<'a> {
             opentelemetry::logs::AnyValue::Bytes(bytes) => {
                 // This is a workaround for JSON not having a way to differentiate between an array of bytes and an array of integers.
                 let encoded = base64::engine::general_purpose::STANDARD.encode(bytes.as_ref());
-                serializer.serialize_str(&format!("{{base64}}:{}", encoded))
+                serializer
+                    .serialize_str(&format!("data:application/octet-stream;base64,{}", encoded))
             }
             opentelemetry::logs::AnyValue::ListAny(list) => {
                 serialize_seq!(list, serializer, |v| &AnyValueWrapper(v))
@@ -129,7 +130,7 @@ mod tests {
             "key2": 123.456,
             "key3": 41,
             //'Hello, world!' encoded to base64
-            "key4": "{base64}:SGVsbG8sIHdvcmxkIQ==",
+            "key4": "data:application/octet-stream;base64,SGVsbG8sIHdvcmxkIQ==",
             "key5": "This is a string",
             "key6": [1, 2, 3],
             "key7": {

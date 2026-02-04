@@ -29,7 +29,7 @@ describe('logAnyValueToWasi', () => {
       key2: 123.456,
       key3: 41,
       // 'Hello, world!' encoded to base64
-      key4: '{base64}:SGVsbG8sIHdvcmxkIQ==',
+      key4: 'data:application/octet-stream;base64,SGVsbG8sIHdvcmxkIQ==',
       key5: 'This is a string',
       key6: [1, 2, 3],
       key7: {

@@ -79,8 +79,8 @@ jobs:
       # TODO: This needs to be updated once wasi-otel is merged into big Spin.
       - name: Setup Spin
         run: |
-          curl -LO https://github.com/asteurer/spin/releases/download/v0.1.0-otel/spin-linux-amd64
-          echo "9b2bbcc98ddf2faeb31a8feda3672df0562052150abc96acf5351cc7d3b51f9a  spin-linux-amd64" | sha256sum --check
+          curl -LO https://github.com/asteurer/spin/releases/download/v0.2.0-otel/spin-linux-amd64
+          echo "94e31a56502026f83c12a843cf4aa7f3b5bf1d5a97fd18348fe78ab7f2ba4548  spin-linux-amd64" | sha256sum --check
           chmod +x spin-linux-amd64
           mkdir -p $HOME/.local/bin
           mv spin-linux-amd64 $HOME/.local/bin/spin

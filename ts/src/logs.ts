@@ -57,7 +57,10 @@ function logAttributesToWasi(attrs: AnyValueMap): WasiKeyValue[] {
 
 export function logAnyValueToWasi(v: AnyValue): string {
   if (v instanceof Uint8Array) {
-    return JSON.stringify('{base64}:' + Buffer.from(v).toString('base64'));
+    return JSON.stringify(
+      'data:application/octet-stream;base64,' +
+        Buffer.from(v).toString('base64')
+    );
   } else if (v === null || v === undefined) {
     return 'null';
   } else if (typeof v === 'string') {
