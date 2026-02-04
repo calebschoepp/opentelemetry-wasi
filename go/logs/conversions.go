@@ -125,7 +125,7 @@ func OtelLogValueToJson(v logApi.Value) string {
 		}
 		return string(bytes)
 	case logApi.KindBytes:
-		bytes, err := json.Marshal(fmt.Sprintf("{base64}:%s", base64.StdEncoding.EncodeToString(v.AsBytes())))
+		bytes, err := json.Marshal(fmt.Sprintf("data:application/octet-stream;base64,%s", base64.StdEncoding.EncodeToString(v.AsBytes())))
 		if err != nil {
 			panic(err)
 		}

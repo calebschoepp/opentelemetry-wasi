@@ -41,7 +41,7 @@ func TestOtelLogValueToJson(t *testing.T) {
 		"key2": 123.456,
 		"key3": float64(41), // JSON numbers are float64
 		// 'Hello, world!' encoded to base64
-		"key4": "{base64}:SGVsbG8sIHdvcmxkIQ==",
+		"key4": "data:application/octet-stream;base64,SGVsbG8sIHdvcmxkIQ==",
 		"key5": "This is a string",
 		"key6": []any{float64(1), float64(2), float64(3)},
 		"key7": map[string]any{
