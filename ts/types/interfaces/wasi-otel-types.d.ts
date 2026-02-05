@@ -1,4 +1,4 @@
-declare module 'wasi:otel/types@0.2.0-draft' {
+declare module 'wasi:otel/types@0.2.0-rc.2' {
   /**
    * The key part of attribute `key-value` pairs.
    */

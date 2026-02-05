@@ -1,6 +1,6 @@
 /// <reference path="./wasi-clocks-wall-clock.d.ts" />
 /// <reference path="./wasi-otel-types.d.ts" />
-declare module 'wasi:otel/tracing@0.2.0-draft' {
+declare module 'wasi:otel/tracing@0.2.0-rc.2' {
   /**
    * Called when a span is started.
    */
@@ -14,8 +14,8 @@ declare module 'wasi:otel/tracing@0.2.0-draft' {
    */
   export function outerSpanContext(): SpanContext;
   export type Datetime = import('wasi:clocks/wall-clock@0.2.0').Datetime;
-  export type KeyValue = import('wasi:otel/types@0.2.0-draft').KeyValue;
-  export type InstrumentationScope = import('wasi:otel/types@0.2.0-draft').InstrumentationScope;
+  export type KeyValue = import('wasi:otel/types@0.2.0-rc.2').KeyValue;
+  export type InstrumentationScope = import('wasi:otel/types@0.2.0-rc.2').InstrumentationScope;
   /**
    * The trace that this `span-context` belongs to.
    * 

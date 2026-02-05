@@ -2,7 +2,7 @@
 /// <reference path="./wasi-clocks-wall-clock.d.ts" />
 /// <reference path="./wasi-otel-tracing.d.ts" />
 /// <reference path="./wasi-otel-types.d.ts" />
-declare module 'wasi:otel/metrics@0.2.0-draft' {
+declare module 'wasi:otel/metrics@0.2.0-rc.2' {
   /**
    * Exports a resource's metric data.
    */
@@ -10,11 +10,11 @@ declare module 'wasi:otel/metrics@0.2.0-draft' {
   function _export(metrics: ResourceMetrics): void;
   export type Datetime = import('wasi:clocks/wall-clock@0.2.0').Datetime;
   export type Duration = import('wasi:clocks/monotonic-clock@0.2.0').Duration;
-  export type KeyValue = import('wasi:otel/types@0.2.0-draft').KeyValue;
-  export type InstrumentationScope = import('wasi:otel/types@0.2.0-draft').InstrumentationScope;
-  export type Resource = import('wasi:otel/types@0.2.0-draft').Resource;
-  export type SpanId = import('wasi:otel/tracing@0.2.0-draft').SpanId;
-  export type TraceId = import('wasi:otel/tracing@0.2.0-draft').TraceId;
+  export type KeyValue = import('wasi:otel/types@0.2.0-rc.2').KeyValue;
+  export type InstrumentationScope = import('wasi:otel/types@0.2.0-rc.2').InstrumentationScope;
+  export type Resource = import('wasi:otel/types@0.2.0-rc.2').Resource;
+  export type SpanId = import('wasi:otel/tracing@0.2.0-rc.2').SpanId;
+  export type TraceId = import('wasi:otel/tracing@0.2.0-rc.2').TraceId;
   /**
    * An error resulting from `export` being called.
    */

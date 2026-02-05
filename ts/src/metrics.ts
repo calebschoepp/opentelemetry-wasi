@@ -22,7 +22,7 @@ import {
   ExponentialHistogramDataPoint as WasiExponentialHistogramDataPoint,
   Temporality as WasiTemporality,
   MetricNumber as WasiMetricNumber,
-} from 'wasi:otel/metrics@0.2.0-draft';
+} from 'wasi:otel/metrics@0.2.0-rc.2';
 import { diag, ValueType, HrTime } from '@opentelemetry/api';
 import { dateTimeToWasi, attributesToWasi } from './types';
 

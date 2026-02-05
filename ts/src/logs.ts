@@ -1,7 +1,7 @@
 import { LogRecordProcessor, SdkLogRecord } from '@opentelemetry/sdk-logs';
-import { onEmit as emitToWasi } from 'wasi:otel/logs@0.2.0-draft';
-import { LogRecord as WasiLogRecord } from 'wasi:otel/logs@0.2.0-draft';
-import { KeyValue as WasiKeyValue } from 'wasi:otel/types@0.2.0-draft';
+import { onEmit as emitToWasi } from 'wasi:otel/logs@0.2.0-rc.2';
+import { LogRecord as WasiLogRecord } from 'wasi:otel/logs@0.2.0-rc.2';
+import { KeyValue as WasiKeyValue } from 'wasi:otel/types@0.2.0-rc.2';
 import { dateTimeToWasi, instrumentationScopeToWasi } from './types';
 import { AnyValue, AnyValueMap } from '@opentelemetry/api-logs';
 
