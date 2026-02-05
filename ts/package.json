@@ -49,7 +49,7 @@
     "witDependencies": [
       {
         "witPath": "./wit",
-        "package": "wasi:otel@0.2.0-draft",
+        "package": "wasi:otel@0.2.0-rc.2",
         "world": "imports"
       }
     ]

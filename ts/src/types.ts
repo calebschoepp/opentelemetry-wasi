@@ -1,9 +1,9 @@
 import {
   Datetime as WasiDatetime,
   InstrumentationScope as WasiInstrumentationScope,
-} from 'wasi:otel/tracing@0.2.0-draft';
+} from 'wasi:otel/tracing@0.2.0-rc.2';
 import { Attributes, AttributeValue, HrTime } from '@opentelemetry/api';
-import { KeyValue, Value } from 'wasi:otel/types@0.2.0-draft';
+import { KeyValue, Value } from 'wasi:otel/types@0.2.0-rc.2';
 import { InstrumentationScope } from '@opentelemetry/core';
 
 /**

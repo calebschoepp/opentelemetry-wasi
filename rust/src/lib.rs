@@ -15,7 +15,7 @@ mod wit {
     #![allow(missing_docs)]
     #![allow(clippy::missing_safety_doc)]
     wit_bindgen::generate!({
-        world: "wasi:otel/imports@0.2.0-draft",
+        world: "wasi:otel/imports@0.2.0-rc.2",
         path: "../wit",
         generate_all,
     });

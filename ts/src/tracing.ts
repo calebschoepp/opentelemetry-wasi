@@ -7,7 +7,7 @@ import {
   TraceFlags as WasiTraceFlags,
   SpanData as WasiSpanData,
   SpanKind as WasiSpanKind,
-} from 'wasi:otel/tracing@0.2.0-draft';
+} from 'wasi:otel/tracing@0.2.0-rc.2';
 import {
   ReadableSpan,
   Span,
