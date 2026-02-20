@@ -3,7 +3,7 @@
 // This code was generated from the following packages:
 //     wasi:io@0.2.0
 //     wasi:clocks@0.2.0
-//     wasi:otel@0.2.0-draft
+//     wasi:otel@0.2.0-rc.2
 
 package wasi_otel_logs
 
@@ -54,7 +54,7 @@ type LogRecord struct {
 	TraceFlags wit_types.Option[wasi_otel_tracing.TraceFlags]
 }
 
-//go:wasmimport wasi:otel/logs@0.2.0-draft on-emit
+//go:wasmimport wasi:otel/logs@0.2.0-rc.2 on-emit
 func wasm_import_on_emit(arg0 uintptr)
 
 func OnEmit(data LogRecord) {

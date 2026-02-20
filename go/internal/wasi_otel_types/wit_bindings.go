@@ -3,7 +3,7 @@
 // This code was generated from the following packages:
 //     wasi:io@0.2.0
 //     wasi:clocks@0.2.0
-//     wasi:otel@0.2.0-draft
+//     wasi:otel@0.2.0-rc.2
 
 package wasi_otel_types
 
@@ -18,6 +18,10 @@ type Key = string
 //
 // This corresponds with the `AnyValue` type defined in the [attribute spec](https://opentelemetry.io/docs/specs/otel/common/#anyvalue).
 // Because WIT doesn't support recursive types, the data needs to be serialized. JSON is used as the encoding format.
+//
+// Byte arrays require special encoding since JSON cannot distinguish them from number arrays.
+// They are base64-encoded with a prefix that follows the Data URI RFC 2397 convention:
+// `data:application/octet-stream;base64,<BASE64_ENCODED_BYTES>`
 type Value = string
 
 // A key-value pair describing an attribute.

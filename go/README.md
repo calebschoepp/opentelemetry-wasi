@@ -1,16 +1,16 @@
 # OpenTelemetry WASI for Go
+
 ## Usage
+
 ### Prerequisites
+
 - [**go**](https://go.dev/dl/) - v1.25+
-- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - Latest version
+- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - v0.2.0
 - [**Rust toolchain**](https://rust-lang.org/) - Latest version
-- **Spin** - Installation instructions below:
-    ```sh
-    # Spin WebAssembly Runtime
-    cargo install --git https://github.com/asteurer/spin --rev cc558b2ec0cb2cd0619c6a410325bd165f632f1e spin-cli
-    ```
+- [**Spin**](https://github.com/spinframework/spin) - v3.6.1
 
 ### Run an Example Application
+
 ```sh
 # Setup OTel collector and dashboards
 spin plugin update
@@ -28,12 +28,15 @@ curl localhost:3000
 ```
 
 ## Generating the WIT bindings
+
 Whenever WIT files are changed/added to the `../wit` directory, the bindings  in `./wit_component` need to be regenerated.
 
 ### Prerequisites
-- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - Latest version
+
+- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - v0.2.0
 
 ### Run
+
 ```sh
-componentize-go -w imports -d ../wit bindings --format -o wit_component --mod-name github.com/calebschoepp/opentelemetry-wasi/wit_component
+componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/internal --format
 ```

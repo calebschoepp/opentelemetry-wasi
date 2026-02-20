@@ -3,7 +3,7 @@
 // This code was generated from the following packages:
 //     wasi:io@0.2.0
 //     wasi:clocks@0.2.0
-//     wasi:otel@0.2.0-draft
+//     wasi:otel@0.2.0-rc.2
 
 package wasi_otel_metrics
 
@@ -430,7 +430,7 @@ type ResourceMetrics struct {
 	ScopeMetrics []ScopeMetrics
 }
 
-//go:wasmimport wasi:otel/metrics@0.2.0-draft export
+//go:wasmimport wasi:otel/metrics@0.2.0-rc.2 export
 func wasm_import_export(arg0 uintptr, arg1 uint32, arg2 int32, arg3 uintptr, arg4 uint32, arg5 uintptr, arg6 uint32, arg7 uintptr)
 
 func Export(metrics ResourceMetrics) wit_types.Result[wit_types.Unit, string] {

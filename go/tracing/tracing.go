@@ -14,25 +14,28 @@ type WasiSpanProcessor struct {
 
 func NewWasiSpanProcessor() WasiSpanProcessor {
 	return WasiSpanProcessor{
-		SpanProcessor: trace.NewSimpleSpanProcessor(newWasiSpanExporter()),
+		SpanProcessor: newWasiSpanExporter(),
 	}
-}
-
-func (w WasiSpanProcessor) OnStart(_parent context.Context, span trace.ReadWriteSpan) {
-	wasiTrace.OnStart(toWasiSpanContext(span.SpanContext()))
-}
-
-func (w WasiSpanProcessor) OnEnd(s trace.ReadOnlySpan) {
-	wasiTrace.OnEnd(toWasiSpanData(s))
 }
 
 type wasiSpanExporter struct {
 	trace.SpanExporter
 }
 
-// A placeholder struct to satisfy the interface
 func newWasiSpanExporter() *wasiSpanExporter {
 	return &wasiSpanExporter{}
+}
+
+func (w *wasiSpanExporter) OnStart(_parent context.Context, span trace.ReadWriteSpan) {
+	wasiTrace.OnStart(toWasiSpanContext(span.SpanContext()))
+}
+
+func (w *wasiSpanExporter) OnEnd(s trace.ReadOnlySpan) {
+	wasiTrace.OnEnd(toWasiSpanData(s))
+}
+
+func (w *wasiSpanExporter) ForceFlush(ctx context.Context) error {
+	return nil
 }
 
 type TraceContextPropagator struct{}

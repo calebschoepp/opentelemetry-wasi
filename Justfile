@@ -9,7 +9,7 @@ lint:
     @npm --prefix ts run lint
 
     # Lint: Go SDK
-    @cd go && GOOS=wasip1 GOARCH=wasm golangci-lint run ./...
+    @cd go && GOOS=wasip1 GOARCH=wasm golangci-lint run ./logs/... ./metrics/... ./tracing/... ./types/...
 
     # Lint: Integration Tests
     @cargo clippy --manifest-path integration_tests/Cargo.toml --all-targets --all-features -- -D warnings

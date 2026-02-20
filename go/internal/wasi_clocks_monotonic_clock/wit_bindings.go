@@ -3,7 +3,7 @@
 // This code was generated from the following packages:
 //     wasi:io@0.2.0
 //     wasi:clocks@0.2.0
-//     wasi:otel@0.2.0-draft
+//     wasi:otel@0.2.0-rc.2
 
 package wasi_clocks_monotonic_clock
 

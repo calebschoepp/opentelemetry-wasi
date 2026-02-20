@@ -290,7 +290,7 @@ mod tests {
             let child = Command::new("spin")
                 .env("OTEL_EXPORTER_OTLP_ENDPOINT", self.collector_endpoint)
                 .env("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc")
-                .args(["up", "-f", self.path])
+                .args(["up", "--experimental-wasi-otel", "-f", self.path])
                 .spawn()?;
 
             self.process = Some(child);

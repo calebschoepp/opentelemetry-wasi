@@ -13,7 +13,7 @@ type WasiLogProcessor struct {
 
 func NewWasiLogProcessor() WasiLogProcessor {
 	return WasiLogProcessor{
-		Processor: log.NewSimpleProcessor(newWasiLogExporter()),
+		Processor: newWasiLogExporter(),
 	}
 }
 
@@ -25,11 +25,12 @@ func newWasiLogExporter() *wasiLogExporter {
 	return &wasiLogExporter{}
 }
 
-func (w *wasiLogExporter) Export(ctx context.Context, records []log.Record) error {
-	for _, record := range records {
-		wasiLogs.OnEmit(toWasiLogRecord(record))
-	}
+func (w *wasiLogExporter) Enabled(ctx context.Context, params log.EnabledParameters) bool {
+	return true
+}
 
+func (w *wasiLogExporter) OnEmit(ctx context.Context, record *log.Record) error {
+	wasiLogs.OnEmit(toWasiLogRecord(*record))
 	return nil
 }
 

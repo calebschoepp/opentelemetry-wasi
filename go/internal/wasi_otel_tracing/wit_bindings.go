@@ -3,7 +3,7 @@
 // This code was generated from the following packages:
 //     wasi:io@0.2.0
 //     wasi:clocks@0.2.0
-//     wasi:otel@0.2.0-draft
+//     wasi:otel@0.2.0-rc.2
 
 package wasi_otel_tracing
 
@@ -159,7 +159,7 @@ type SpanData struct {
 	DroppedLinks uint32
 }
 
-//go:wasmimport wasi:otel/tracing@0.2.0-draft on-start
+//go:wasmimport wasi:otel/tracing@0.2.0-rc.2 on-start
 func wasm_import_on_start(arg0 uintptr, arg1 uint32, arg2 uintptr, arg3 uint32, arg4 int32, arg5 int32, arg6 uintptr, arg7 uint32)
 
 func OnStart(context SpanContext) {
@@ -196,7 +196,7 @@ func OnStart(context SpanContext) {
 
 }
 
-//go:wasmimport wasi:otel/tracing@0.2.0-draft on-end
+//go:wasmimport wasi:otel/tracing@0.2.0-rc.2 on-end
 func wasm_import_on_end(arg0 uintptr)
 
 func OnEnd(span SpanData) {
@@ -447,7 +447,7 @@ func OnEnd(span SpanData) {
 
 }
 
-//go:wasmimport wasi:otel/tracing@0.2.0-draft outer-span-context
+//go:wasmimport wasi:otel/tracing@0.2.0-rc.2 outer-span-context
 func wasm_import_outer_span_context(arg0 uintptr)
 
 func OuterSpanContext() SpanContext {
