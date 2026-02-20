@@ -114,6 +114,37 @@ mod tests {
         );
     }
 
+    #[tokio::test]
+    #[serial]
+    async fn go_spin_basic() {
+        // Retrieve telemetry.
+        let (spans, metrics, logs) = get_telemetry_from_spin_app("../go/examples/spin-basic")
+            .await
+            .expect("Failed to retrieve telemetry from Spin app");
+
+        // Run tests.
+        basic_signal_validation("go_spin_basic", Some(&spans), Some(&metrics), Some(&logs));
+        span_paternity_test(
+            &spans,
+            SpanTree::new(
+                "GET /...",
+                vec![SpanTree::new(
+                    "execute_wasm_component go-spin-basic",
+                    vec![SpanTree::new(
+                        "main-operation",
+                        vec![SpanTree::new(
+                            "child-operation",
+                            vec![
+                                SpanTree::leaf("spin_key_value.open"),
+                                SpanTree::leaf("spin_key_value.set"),
+                            ],
+                        )],
+                    )],
+                )],
+            ),
+        );
+    }
+
     /// Performs a basic validation on each telemetry signal's struct field.
     fn basic_signal_validation(
         prefix: &str,
@@ -196,7 +227,7 @@ mod tests {
         let timeout = Duration::from_secs(5);
         let collector_min = usize::MAX;
 
-        // Retrieve telemetry data.
+        // Retrieve telemetry data
         let spans = collector.exported_spans(collector_min, timeout).await;
         let metrics = collector.exported_metrics(collector_min, timeout).await;
         let logs = collector.exported_logs(collector_min, timeout).await;
@@ -259,7 +290,7 @@ mod tests {
             let child = Command::new("spin")
                 .env("OTEL_EXPORTER_OTLP_ENDPOINT", self.collector_endpoint)
                 .env("OTEL_EXPORTER_OTLP_PROTOCOL", "grpc")
-                .args(["up", "-f", self.path])
+                .args(["up", "--experimental-wasi-otel", "-f", self.path])
                 .spawn()?;
 
             self.process = Some(child);
