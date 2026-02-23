@@ -1,0 +1,13 @@
+---
+source: src/lib.rs
+expression: log_data
+---
+- trace_id: "[trace_id:len(32)]"
+  span_id: "[span_id:len(16)]"
+  observed_time_unix_nano: "[timestamp]"
+  severity_number: 9
+  severity_text: ""
+  body: "AnyValue { value: Some(StringValue(\"Hello from Go!\")) }"
+  attributes: {}
+  dropped_attributes_count: 0
+  flags: 0

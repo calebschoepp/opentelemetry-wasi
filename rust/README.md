@@ -4,25 +4,31 @@ Enables using OpenTelemetry within Rust WebAssembly components backed by [WASI O
 
 ## Usage
 
-Build a version of [Spin](https://github.com/spinframework/spin) from this [branch](https://github.com/asteurer/spin/tree/wasi-otel) and install the relevant plugins:
+### Prerequisites
+
+- [**Rust toolchain**](https://rust-lang.org/) - Latest version
+- [**Spin**](https://github.com/spinframework/spin) - v3.6.1
+
+### Run an Example Application
+
 ```sh
-git clone --branch wasi-otel --depth 1 https://github.com/asteurer/spin
-cd spin
-cargo install --path .
+# Setup OTel collector and dashboards
 spin plugin update
 spin plugin install otel
-```
-
-Then, run the example of your choosing:
-```sh
-cd examples/spin-basic
-spin build
 spin otel setup
-spin otel up
-# In a different terminal...
+spin otel open jaeger # Dashboard for Traces
+spin otel open grafana # Dashboard for Metrics and Logs
+
+# Run the application
+cd examples/spin-basic
+spin otel up -- --build
+
+# Invoke the application (in a different terminal)
 curl localhost:3000
 ```
 
 ## Notes about Metrics
+
 ### Observable (Async) Instruments
+
 Async instruments (observable counters, gauges, etc.) collect metric data that must be manually exported to the host. While typical applications use periodic exporters to handle this automatically, Rust WebAssembly applications don't yet support periodic exporters. To address this, this SDK provides a manual reader that will be explicitly called to export the metric data at one or more points during the life of the guest application.
