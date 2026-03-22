@@ -3,6 +3,7 @@ package tracing
 import (
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/bytecodealliance/wit-bindgen/wit_types"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
@@ -89,7 +90,9 @@ func toWasiSpanKind(sk traceApi.SpanKind) wasi_otel_tracing.SpanKind {
 }
 
 func toOtelSpanContext(ctx wasi_otel_tracing.SpanContext) traceApi.SpanContext {
-	tid, err := hex.DecodeString(ctx.TraceId)
+	traceIdHex := fmt.Sprintf("%032s", ctx.TraceId)
+	traceIdHex = strings.ReplaceAll(traceIdHex, " ", "0")
+	tid, err := hex.DecodeString(traceIdHex)
 	if err != nil {
 		panic(fmt.Sprintf("invalid trace ID: %v", err))
 	}
@@ -97,7 +100,9 @@ func toOtelSpanContext(ctx wasi_otel_tracing.SpanContext) traceApi.SpanContext {
 		panic(fmt.Sprintf("trace ID must be 16 bytes, got %d", len(tid)))
 	}
 
-	sid, err := hex.DecodeString(ctx.SpanId)
+	spanIdHex := fmt.Sprintf("%016s", ctx.SpanId)
+	spanIdHex = strings.ReplaceAll(spanIdHex, " ", "0")
+	sid, err := hex.DecodeString(spanIdHex)
 	if err != nil {
 		panic(fmt.Sprintf("invalid span ID: %v", err))
 	}

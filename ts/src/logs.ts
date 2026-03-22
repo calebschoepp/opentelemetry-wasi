@@ -4,6 +4,7 @@ import { LogRecord as WasiLogRecord } from 'wasi:otel/logs@0.2.0-rc.2';
 import { KeyValue as WasiKeyValue } from 'wasi:otel/types@0.2.0-rc.2';
 import { dateTimeToWasi, instrumentationScopeToWasi } from './types';
 import { AnyValue, AnyValueMap } from '@opentelemetry/api-logs';
+import { TraceFlags } from '@opentelemetry/api';
 
 export class WasiLogProcessor implements LogRecordProcessor {
   onEmit(logRecord: SdkLogRecord): void {
@@ -38,9 +39,9 @@ function logRecordToWasi(r: SdkLogRecord): WasiLogRecord {
       schemaUrl: r.resource.schemaUrl,
     },
     instrumentationScope: instrumentationScopeToWasi(r.instrumentationScope),
-    traceId: undefined,
-    spanId: undefined,
-    traceFlags: undefined,
+    traceId: r.spanContext?.traceId,
+    spanId: r.spanContext?.spanId,
+    traceFlags: r.spanContext ? { sampled: !!(r.spanContext.traceFlags & TraceFlags.SAMPLED) } : undefined,
   };
 }
 
