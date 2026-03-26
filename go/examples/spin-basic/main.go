@@ -25,16 +25,6 @@ func init() {
 		ctx := context.Background()
 
 		/*
-			### LOGS ###
-		*/
-		loggerProvider := log.NewLoggerProvider(log.WithProcessor(wasiLogs.NewWasiLogProcessor()))
-		logger := loggerProvider.Logger("spin-logs")
-		logRecord := logApi.Record{}
-		logRecord.SetBody(logApi.StringValue("Hello from Go!"))
-		logRecord.SetSeverity(logApi.SeverityInfo)
-		logger.Emit(ctx, logRecord)
-
-		/*
 			### METRICS ###
 		*/
 		exporter := wasiMetrics.NewWasiMetricExporter()
@@ -111,6 +101,16 @@ func init() {
 
 			childSpan.SetStatus(codes.Ok, "success")
 		}()
+
+		/*
+			### LOGS ###
+		*/
+		loggerProvider := log.NewLoggerProvider(log.WithProcessor(wasiLogs.NewWasiLogProcessor()))
+		logger := loggerProvider.Logger("spin-logs")
+		logRecord := logApi.Record{}
+		logRecord.SetBody(logApi.StringValue("Hello from Go!"))
+		logRecord.SetSeverity(logApi.SeverityInfo)
+		logger.Emit(hostCtx, logRecord) // To have the log associated with the trace, we pass the host context
 
 		w.Header().Set("Content-Type", "text/plain")
 		fmt.Fprintln(w, "Hello World!")

@@ -36,6 +36,8 @@ const provider = new BasicTracerProvider({
 
 const router = AutoRouter();
 router.get('/', async () => {
+  const hostContext = propagator.extract(context.active());
+
   /*
     ### METRICS ###
   */
@@ -64,16 +66,16 @@ router.get('/', async () => {
 
   const logger = logs.getLogger('spin-logs');
   logger.emit({
-    severityNumber: SeverityNumber.INFO,
-    severityText: 'INFO',
-    body: 'Hello from TypeScript!',
-    attributes: attrs,
-  });
+      severityNumber: SeverityNumber.INFO,
+      severityText: 'INFO',
+      body: 'Hello from TypeScript!',
+      attributes: attrs,
+      context: hostContext, // To have the log associated with the trace, we pass the host context
+    });
 
   /*
     ### TRACING ###
   */
-  const hostContext = propagator.extract(context.active());
   const tracer = provider.getTracer('basic-spin');
   return tracer.startActiveSpan(
     'main-operation',
