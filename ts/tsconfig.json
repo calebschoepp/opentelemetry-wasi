@@ -9,6 +9,6 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "types/**/*"],
+  "include": ["src/**/*", "types/**/*", "__mocks__/**/*"],
   "exclude": ["node_modules", "dist", "examples"]
 }

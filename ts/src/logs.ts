@@ -25,14 +25,12 @@ export class WasiLogProcessor implements LogRecordProcessor {
  */
 function logRecordToWasi(r: SdkLogRecord): WasiLogRecord {
   return {
-    timestamp: r.hrTime ? dateTimeToWasi(r.hrTime) : undefined,
-    observedTimestamp: r.hrTimeObserved
-      ? dateTimeToWasi(r.hrTimeObserved)
-      : undefined,
+    timestamp: dateTimeToWasi(r.hrTime),
+    observedTimestamp: dateTimeToWasi(r.hrTimeObserved),
     severityText: r.severityText,
     severityNumber: r.severityNumber,
     body: r.body ? logAnyValueToWasi(r.body) : undefined,
-    attributes: r.attributes ? logAttributesToWasi(r.attributes) : undefined,
+    attributes: logAttributesToWasi(r.attributes),
     eventName: r.eventName,
     resource: {
       attributes: logAttributesToWasi(r.resource.attributes),
@@ -41,7 +39,9 @@ function logRecordToWasi(r: SdkLogRecord): WasiLogRecord {
     instrumentationScope: instrumentationScopeToWasi(r.instrumentationScope),
     traceId: r.spanContext?.traceId,
     spanId: r.spanContext?.spanId,
-    traceFlags: r.spanContext ? { sampled: !!(r.spanContext.traceFlags & TraceFlags.SAMPLED) } : undefined,
+    traceFlags: r.spanContext
+      ? { sampled: !!(r.spanContext.traceFlags & TraceFlags.SAMPLED) }
+      : undefined,
   };
 }
 
