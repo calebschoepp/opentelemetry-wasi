@@ -127,17 +127,12 @@ jobs:
           version: "40.0.1"
 
       - name: Setup componentize-go
-        run: |
-          curl -LO https://github.com/bytecodealliance/componentize-go/releases/download/v0.2.0/componentize-go-linux-amd64.tar.gz
-          echo "27fc32998f023a88a6a1f44524631a705163f23ce2a02fc14987726897360027  componentize-go-linux-amd64.tar.gz" | sha256sum --check
-          tar -xf componentize-go-linux-amd64.tar.gz
-          chmod +x componentize-go
-          mkdir -p $HOME/.local/bin
-          mv componentize-go $HOME/.local/bin/componentize-go
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        uses: bytecodealliance/componentize-go/.github/actions/setup-componentize-go@main
+        with:
+          version: 'v0.2.0'
 
       - name: Setup Spin
-        uses: spinframework/actions/spin/setup@v1
+        uses: fermyon/actions/spin/setup@v1
         with:
           version: "v3.6.1"
 
