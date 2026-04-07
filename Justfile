@@ -16,6 +16,8 @@ lint:
 
     # Lint: TypeScript SDK
     @npm --prefix ts install
+    @npm --prefix ts run build
+    @npm --prefix ts/examples/spin-basic install
     @npm --prefix ts run lint
 
     # Lint: Go SDK
