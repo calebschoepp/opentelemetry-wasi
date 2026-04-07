@@ -21,7 +21,7 @@ describe('logAnyValueToWasi', () => {
     const result: Record<string, AnyValue> = {};
     for (const [key, value] of Object.entries(testMap)) {
       const serialized = logAnyValueToWasi(value);
-      result[key] = JSON.parse(serialized);
+      result[key] = JSON.parse(serialized) as AnyValue;
     }
 
     const expected = {

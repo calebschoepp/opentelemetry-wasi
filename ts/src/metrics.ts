@@ -269,13 +269,9 @@ function numberToWasi(
  * @returns An object containing the start and end times.
  */
 function getTimeRange(dataPoints: { startTime: HrTime; endTime: HrTime }[]) {
-  const defaultTime = dateTimeToWasi([0, 0]); // TODO: I wonder if there's a better way to handle this
+  const defaultTime: HrTime = [0, 0];
   return {
-    startTime: dataPoints[0]?.startTime
-      ? dateTimeToWasi(dataPoints[0].startTime)
-      : defaultTime,
-    time: dataPoints[0]?.endTime
-      ? dateTimeToWasi(dataPoints[0].endTime)
-      : defaultTime,
+    startTime: dateTimeToWasi(dataPoints[0]?.startTime ?? defaultTime),
+    time: dateTimeToWasi(dataPoints[0]?.endTime ?? defaultTime),
   };
 }

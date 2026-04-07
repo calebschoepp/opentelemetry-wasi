@@ -20,6 +20,7 @@ import {
   SpanContext,
   TraceFlags,
   TraceState,
+  SpanStatusCode,
 } from '@opentelemetry/api';
 import {
   dateTimeToWasi,
@@ -28,7 +29,6 @@ import {
 } from './types';
 
 export class WasiTraceContextPropagator {
-  constructor() {}
   /**
    * Retrieves trace context from a WASI host and combines it with the current trace context.
    * @param cx The current trace context.
@@ -149,9 +149,9 @@ export function spanDataToWasi(span: ReadableSpan): WasiSpanData {
       attributes: attributesToWasi(link.attributes),
     })),
     status:
-      span.status.code === 0
+      span.status.code === SpanStatusCode.UNSET
         ? { tag: 'unset' }
-        : span.status.code === 1
+        : span.status.code === SpanStatusCode.OK
           ? { tag: 'ok' }
           : { tag: 'error', val: span.status.message || '' },
     instrumentationScope: instrumentationScopeToWasi(span.instrumentationScope),

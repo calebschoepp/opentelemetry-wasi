@@ -8,11 +8,22 @@ export default [
     ignores: ['**/dist/', '**/types/', '**/build/', 'jest.config.js'],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.strictTypeChecked,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
+    files: ['**/*.js', '**/*.mjs'],
+    ...tseslint.configs.disableTypeChecked,
+  },
   eslintConfigPrettier,
   {
     rules: {
-      // Ignore variables and arguments prefixed with '_'.
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
