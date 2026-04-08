@@ -17,12 +17,18 @@ import (
 	metricApi "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
 )
 
 func init() {
 	spinhttp.Handle(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.Background()
+
+		res, _ := resource.New(ctx,
+			resource.WithAttributes(semconv.ServiceName("spin")),
+		)
 
 		/*
 			### METRICS ###
@@ -30,7 +36,7 @@ func init() {
 		exporter := wasiMetrics.NewWasiMetricExporter()
 		defer exporter.Export(ctx) // Export metrics to the host
 
-		meterProvider := metric.NewMeterProvider(metric.WithReader(exporter))
+		meterProvider := metric.NewMeterProvider(metric.WithReader(exporter), metric.WithResource(res))
 		meter := meterProvider.Meter("spin-metrics")
 
 		attrs := metricApi.WithAttributes(
@@ -70,7 +76,7 @@ func init() {
 		/*
 			### TRACING ###
 		*/
-		tracerProvider := trace.NewTracerProvider(trace.WithSpanProcessor(wasiTracing.NewWasiSpanProcessor()))
+		tracerProvider := trace.NewTracerProvider(trace.WithSpanProcessor(wasiTracing.NewWasiSpanProcessor()), trace.WithResource(res))
 		propagator := wasiTracing.NewTraceContextPropagator()
 		hostCtx := propagator.Extract(ctx)
 		otel.SetTracerProvider(tracerProvider)
@@ -105,7 +111,7 @@ func init() {
 		/*
 			### LOGS ###
 		*/
-		loggerProvider := log.NewLoggerProvider(log.WithProcessor(wasiLogs.NewWasiLogProcessor()))
+		loggerProvider := log.NewLoggerProvider(log.WithProcessor(wasiLogs.NewWasiLogProcessor()), log.WithResource(res))
 		logger := loggerProvider.Logger("spin-logs")
 		logRecord := logApi.Record{}
 		logRecord.SetBody(logApi.StringValue("Hello from Go!"))

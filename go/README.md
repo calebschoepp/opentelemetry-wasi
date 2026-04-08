@@ -33,10 +33,10 @@ Whenever WIT files are changed/added to the `../wit` directory, the bindings  in
 
 ### Prerequisites
 
-- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - v0.2.0
+- [**go**](https://go.dev/dl/) - v1.25+
 
 ### Run
 
 ```sh
-componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/internal --format
+go tool componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/internal --format
 ```

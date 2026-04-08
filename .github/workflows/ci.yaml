@@ -121,16 +121,6 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Setup Wasmtime (for Go unit tests)
-        uses: bytecodealliance/actions/wasmtime/setup@v1
-        with:
-          version: "40.0.1"
-
-      - name: Setup componentize-go
-        uses: bytecodealliance/componentize-go/.github/actions/setup-componentize-go@main
-        with:
-          version: 'v0.2.0'
-
       - name: Setup Spin
         uses: fermyon/actions/spin/setup@v1
         with:

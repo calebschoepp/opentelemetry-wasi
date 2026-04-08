@@ -5,48 +5,48 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/bytecodealliance/wit-bindgen/wit_types"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_logs"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
 	"github.com/calebschoepp/opentelemetry-wasi/types"
+	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	logApi "go.opentelemetry.io/otel/log"
 	"go.opentelemetry.io/otel/sdk/log"
 )
 
 func toWasiLogRecord(r log.Record) wasi_otel_logs.LogRecord {
-	var ts wit_types.Option[wasi_otel_logs.Datetime]
+	var ts witTypes.Option[wasi_otel_logs.Datetime]
 	if r.Timestamp().IsZero() {
-		ts = wit_types.None[wasi_clocks_wall_clock.Datetime]()
+		ts = witTypes.None[wasi_clocks_wall_clock.Datetime]()
 	} else {
-		ts = wit_types.Some(types.ToWasiTime(r.Timestamp()))
+		ts = witTypes.Some(types.ToWasiTime(r.Timestamp()))
 	}
 
-	var ots wit_types.Option[wasi_otel_logs.Datetime]
+	var ots witTypes.Option[wasi_otel_logs.Datetime]
 	if r.ObservedTimestamp().IsZero() {
-		ots = wit_types.None[wasi_clocks_wall_clock.Datetime]()
+		ots = witTypes.None[wasi_clocks_wall_clock.Datetime]()
 	} else {
-		ots = wit_types.Some(types.ToWasiTime(r.ObservedTimestamp()))
+		ots = witTypes.Some(types.ToWasiTime(r.ObservedTimestamp()))
 	}
 
-	var sn wit_types.Option[uint8]
+	var sn witTypes.Option[uint8]
 	if r.Severity() == logApi.SeverityUndefined {
-		sn = wit_types.None[uint8]()
+		sn = witTypes.None[uint8]()
 	} else {
-		sn = wit_types.Some(uint8(r.Severity()))
+		sn = witTypes.Some(uint8(r.Severity()))
 	}
 
-	var st wit_types.Option[string]
+	var st witTypes.Option[string]
 	if r.SeverityText() == "" {
-		st = wit_types.None[string]()
+		st = witTypes.None[string]()
 	} else {
-		st = wit_types.Some(r.SeverityText())
+		st = witTypes.Some(r.SeverityText())
 	}
 
-	var attrs wit_types.Option[[]wasi_otel_types.KeyValue]
+	var attrs witTypes.Option[[]wasi_otel_types.KeyValue]
 	if r.AttributesLen() == 0 {
-		attrs = wit_types.None[[]wasi_otel_types.KeyValue]()
+		attrs = witTypes.None[[]wasi_otel_types.KeyValue]()
 	} else {
 		attrList := make([]wasi_otel_types.KeyValue, 0)
 		r.WalkAttributes(func(attr logApi.KeyValue) bool {
@@ -58,28 +58,28 @@ func toWasiLogRecord(r log.Record) wasi_otel_logs.LogRecord {
 			return true
 		})
 
-		attrs = wit_types.Some(attrList)
+		attrs = witTypes.Some(attrList)
 	}
 
-	var res wit_types.Option[wasi_otel_types.Resource]
+	var res witTypes.Option[wasi_otel_types.Resource]
 	if r.Resource() == nil {
-		res = wit_types.None[wasi_otel_logs.Resource]()
+		res = witTypes.None[wasi_otel_logs.Resource]()
 	} else {
-		res = wit_types.Some(types.ToWasiResource(*r.Resource()))
+		res = witTypes.Some(types.ToWasiResource(*r.Resource()))
 	}
 
-	var is wit_types.Option[wasi_otel_types.InstrumentationScope]
+	var is witTypes.Option[wasi_otel_types.InstrumentationScope]
 	if r.InstrumentationScope().Name == "" {
-		is = wit_types.None[wasi_otel_logs.InstrumentationScope]()
+		is = witTypes.None[wasi_otel_logs.InstrumentationScope]()
 	} else {
-		is = wit_types.Some(types.ToWasiInstrumentationScope(r.InstrumentationScope()))
+		is = witTypes.Some(types.ToWasiInstrumentationScope(r.InstrumentationScope()))
 	}
 
-	var tf wit_types.Option[wasi_otel_tracing.TraceFlags]
+	var tf witTypes.Option[wasi_otel_tracing.TraceFlags]
 	if !r.TraceFlags().IsSampled() {
-		tf = wit_types.None[wasi_otel_tracing.TraceFlags]()
+		tf = witTypes.None[wasi_otel_tracing.TraceFlags]()
 	} else {
-		tf = wit_types.Some(wasi_otel_tracing.TraceFlagsSampled)
+		tf = witTypes.Some(wasi_otel_tracing.TraceFlagsSampled)
 	}
 
 	return wasi_otel_logs.LogRecord{
