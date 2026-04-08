@@ -3,11 +3,11 @@ package metrics
 import (
 	"time"
 
-	"github.com/bytecodealliance/wit-bindgen/wit_types"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_metrics"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
 	"github.com/calebschoepp/opentelemetry-wasi/types"
+	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )
 
@@ -53,12 +53,12 @@ func toWasiMetrics(metrics []metricdata.Metrics) []wasi_otel_metrics.Metric {
 func toWasiMetricData(data metricdata.Aggregation) wasi_otel_metrics.MetricData {
 	switch v := data.(type) {
 	case metricdata.Gauge[int64]:
-		var startOpt wit_types.Option[wasi_clocks_wall_clock.Datetime]
+		var startOpt witTypes.Option[wasi_clocks_wall_clock.Datetime]
 		start, timeVal := extractTimestamps(v.DataPoints)
 		if start == nil {
-			startOpt = wit_types.None[wasi_clocks_wall_clock.Datetime]()
+			startOpt = witTypes.None[wasi_clocks_wall_clock.Datetime]()
 		} else {
-			startOpt = wit_types.Some(*start)
+			startOpt = witTypes.Some(*start)
 		}
 
 		return wasi_otel_metrics.MakeMetricDataS64Gauge(wasi_otel_metrics.Gauge{
@@ -67,12 +67,12 @@ func toWasiMetricData(data metricdata.Aggregation) wasi_otel_metrics.MetricData 
 			Time:       timeVal,
 		})
 	case metricdata.Gauge[float64]:
-		var startOpt wit_types.Option[wasi_clocks_wall_clock.Datetime]
+		var startOpt witTypes.Option[wasi_clocks_wall_clock.Datetime]
 		start, timeVal := extractTimestamps(v.DataPoints)
 		if start == nil {
-			startOpt = wit_types.None[wasi_clocks_wall_clock.Datetime]()
+			startOpt = witTypes.None[wasi_clocks_wall_clock.Datetime]()
 		} else {
-			startOpt = wit_types.Some(*start)
+			startOpt = witTypes.Some(*start)
 		}
 		return wasi_otel_metrics.MakeMetricDataF64Gauge(wasi_otel_metrics.Gauge{
 			DataPoints: toWasiGaugeDataPoint(v.DataPoints),
@@ -207,12 +207,12 @@ func toWasiExponentialHistogram[T float64 | int64](dataPoints []metricdata.Expon
 	return result
 }
 
-func toWasiOptMetricNumber[T float64 | int64](n metricdata.Extrema[T]) wit_types.Option[wasi_otel_metrics.MetricNumber] {
+func toWasiOptMetricNumber[T float64 | int64](n metricdata.Extrema[T]) witTypes.Option[wasi_otel_metrics.MetricNumber] {
 	num, exists := n.Value()
 	if exists {
-		return wit_types.Some(toWasiMetricNumber(num))
+		return witTypes.Some(toWasiMetricNumber(num))
 	} else {
-		return wit_types.None[wasi_otel_metrics.MetricNumber]()
+		return witTypes.None[wasi_otel_metrics.MetricNumber]()
 	}
 }
 

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytecodealliance/wit-bindgen/wit_types"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
 	"github.com/calebschoepp/opentelemetry-wasi/types"
+	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/trace"
 	traceApi "go.opentelemetry.io/otel/trace"
@@ -129,9 +129,9 @@ func toOtelSpanContext(ctx wasi_otel_tracing.SpanContext) traceApi.SpanContext {
 }
 
 func toWasiSpanContext(s traceApi.SpanContext) wasi_otel_tracing.SpanContext {
-	traceState := make([]wit_types.Tuple2[string, string], s.TraceState().Len())
+	traceState := make([]witTypes.Tuple2[string, string], s.TraceState().Len())
 	s.TraceState().Walk(func(key, value string) bool {
-		traceState = append(traceState, wit_types.Tuple2[string, string]{
+		traceState = append(traceState, witTypes.Tuple2[string, string]{
 			F0: key,
 			F1: value,
 		})

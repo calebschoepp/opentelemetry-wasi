@@ -16,5 +16,5 @@ component = "go-spin-basic"
 source = "main.wasm"
 key_value_stores = ["default"]
 [component.go-spin-basic.build]
-command = "componentize-go -w http-trigger componentize"
+command = "go tool componentize-go build"
 watch = ["**/*.go", "go.mod"]

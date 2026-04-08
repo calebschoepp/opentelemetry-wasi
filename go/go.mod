@@ -2,11 +2,9 @@ module github.com/calebschoepp/opentelemetry-wasi
 
 go 1.25.5
 
-replace github.com/bytecodealliance/wit-bindgen => github.com/bytecodealliance/wit-bindgen/crates/go/src/package v0.51.0
-
 require (
-	github.com/bytecodealliance/wit-bindgen v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.11.1
+	go.bytecodealliance.org/pkg v0.2.1
 	go.opentelemetry.io/otel v1.39.0
 	go.opentelemetry.io/otel/log v0.14.0
 	go.opentelemetry.io/otel/sdk v1.39.0
@@ -16,10 +14,13 @@ require (
 )
 
 require (
+	github.com/apparentlymart/go-userdirs v0.0.0-20200915174352-b0c018a67c13 // indirect
+	github.com/bytecodealliance/componentize-go v0.3.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/gofrs/flock v0.13.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
@@ -27,3 +28,5 @@ require (
 	golang.org/x/sys v0.39.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+tool github.com/bytecodealliance/componentize-go

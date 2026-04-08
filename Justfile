@@ -5,7 +5,7 @@ vet:
     cargo vet --manifest-path rust/Cargo.toml
 
     # Vet: Go SDK
-    cd go && GOOS=wasip1 GOARCH=wasm go vet ./logs/... ./metrics/... ./tracing/... ./types/...
+    cd go && go vet -unsafeptr=false -composites=false ./...
 
     # Vet: TypeScript SDK
     # This is handled in the lint step
@@ -54,9 +54,7 @@ test:
     @npm --prefix ts test
 
     # Test: Go SDK
-    @cd go \
-        && GOOS=wasip1 GOARCH=wasm go test -ldflags=-checklinkname=0 -c -o logs_test.wasm ./logs \
-        && wasmtime run logs_test.wasm
+    @cd go && go test ./...
 
     # Test: Integration tests
     # TODO: Until this issue is taken care of, these will continue to fail: https://github.com/calebschoepp/opentelemetry-wasi/issues/45

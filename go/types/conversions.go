@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/bytecodealliance/wit-bindgen/wit_types"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
+	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -65,12 +65,12 @@ func otelValueToJson(v attribute.Value) string {
 	}
 }
 
-func ToWasiOptStr(s string) wit_types.Option[string] {
+func ToWasiOptStr(s string) witTypes.Option[string] {
 	if s == "" {
-		return wit_types.None[string]()
+		return witTypes.None[string]()
 	}
 
-	return wit_types.Some(s)
+	return witTypes.Some(s)
 }
 
 func ToWasiInstrumentationScope(s instrumentation.Scope) wasi_otel_types.InstrumentationScope {
