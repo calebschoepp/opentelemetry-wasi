@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"encoding/hex"
 	"time"
 
 	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
@@ -245,8 +246,8 @@ func toWasiExemplar[T float64 | int64](exemplars []metricdata.Exemplar[T]) []was
 			FilteredAttributes: types.ToWasiAttributes(e.FilteredAttributes),
 			Time:               types.ToWasiTime(e.Time),
 			Value:              toWasiMetricNumber(e.Value),
-			SpanId:             string(e.SpanID),
-			TraceId:            string(e.TraceID),
+			SpanId:             hex.EncodeToString(e.SpanID),
+			TraceId:            hex.EncodeToString(e.TraceID),
 		}
 	}
 
