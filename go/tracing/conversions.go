@@ -119,10 +119,18 @@ func toOtelSpanContext(ctx wasi_otel_tracing.SpanContext) traceApi.SpanContext {
 		traceState = ts
 	}
 
+	var traceFlags traceApi.TraceFlags
+	switch ctx.TraceFlags {
+	case wasi_otel_tracing.TraceFlagsSampled:
+		traceFlags = traceApi.FlagsSampled
+	default:
+		// traceFlags is empty, which means FlagsNotSampled
+	}
+
 	return traceApi.NewSpanContext(traceApi.SpanContextConfig{
 		TraceID:    [16]byte(tid),
 		SpanID:     [8]byte(sid),
-		TraceFlags: traceApi.FlagsSampled,
+		TraceFlags: traceFlags,
 		TraceState: traceState,
 		Remote:     ctx.IsRemote,
 	})
@@ -138,10 +146,18 @@ func toWasiSpanContext(s traceApi.SpanContext) wasi_otel_tracing.SpanContext {
 		return true
 	})
 
+	var traceFlags wasi_otel_tracing.TraceFlags
+	switch s.TraceFlags() {
+	case traceApi.FlagsSampled:
+		traceFlags = wasi_otel_tracing.TraceFlagsSampled
+	default:
+		// traceFlags is empty, which means FlagsNotSampled
+	}
+
 	return wasi_otel_tracing.SpanContext{
 		TraceId:    s.TraceID().String(),
 		SpanId:     s.SpanID().String(),
-		TraceFlags: wasi_otel_tracing.TraceFlagsSampled,
+		TraceFlags: traceFlags,
 		IsRemote:   s.IsRemote(),
 		TraceState: traceState,
 	}
