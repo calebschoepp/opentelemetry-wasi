@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
-	"github.com/calebschoepp/opentelemetry-wasi/types"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_tracing"
+	"github.com/calebschoepp/opentelemetry-wasi/go/types"
 	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/trace"

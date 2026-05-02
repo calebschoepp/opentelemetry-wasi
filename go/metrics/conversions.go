@@ -4,10 +4,10 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_metrics"
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
-	"github.com/calebschoepp/opentelemetry-wasi/types"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_clocks_wall_clock"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_metrics"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_types"
+	"github.com/calebschoepp/opentelemetry-wasi/go/types"
 	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )

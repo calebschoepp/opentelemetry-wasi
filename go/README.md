@@ -4,10 +4,8 @@
 
 ### Prerequisites
 
-- [**go**](https://go.dev/dl/) - v1.25+
-- [**componentize-go**](https://github.com/bytecodealliance/componentize-go) - v0.2.0
-- [**Rust toolchain**](https://rust-lang.org/) - Latest version
-- [**Spin**](https://github.com/spinframework/spin) - v3.6.1
+- [**go**](https://go.dev/dl/) - v1.25
+- [**Spin**](https://github.com/spinframework/spin) - v4.0.0
 
 ### Run an Example Application
 
@@ -33,10 +31,10 @@ Whenever WIT files are changed/added to the `../wit` directory, the bindings  in
 
 ### Prerequisites
 
-- [**go**](https://go.dev/dl/) - v1.25+
+- [**go**](https://go.dev/dl/) - v1.25
 
 ### Run
 
 ```sh
-go tool componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/internal --format
+go tool componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/go/internal --format
 ```

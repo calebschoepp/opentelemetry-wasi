@@ -8,7 +8,7 @@
 package wasi_clocks_monotonic_clock
 
 import (
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_io_poll"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_io_poll"
 )
 
 type Pollable = wasi_io_poll.Pollable

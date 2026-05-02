@@ -3,7 +3,7 @@ package metrics
 import (
 	"context"
 
-	wasiMetrics "github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_metrics"
+	wasiMetrics "github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_metrics"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"

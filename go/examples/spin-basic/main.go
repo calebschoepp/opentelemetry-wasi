@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	wasiLogs "github.com/calebschoepp/opentelemetry-wasi/logs"
-	wasiMetrics "github.com/calebschoepp/opentelemetry-wasi/metrics"
-	wasiTracing "github.com/calebschoepp/opentelemetry-wasi/tracing"
+	wasiLogs "github.com/calebschoepp/opentelemetry-wasi/go/logs"
+	wasiMetrics "github.com/calebschoepp/opentelemetry-wasi/go/metrics"
+	wasiTracing "github.com/calebschoepp/opentelemetry-wasi/go/tracing"
 	spinhttp "github.com/spinframework/spin-go-sdk/v3/http"
 	"github.com/spinframework/spin-go-sdk/v3/kv"
 	"go.opentelemetry.io/otel"

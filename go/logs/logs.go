@@ -3,7 +3,7 @@ package logs
 import (
 	"context"
 
-	wasiLogs "github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_logs"
+	wasiLogs "github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_logs"
 	"go.opentelemetry.io/otel/sdk/log"
 )
 

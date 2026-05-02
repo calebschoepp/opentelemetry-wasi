@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/calebschoepp/opentelemetry-wasi/logs"
+	"github.com/calebschoepp/opentelemetry-wasi/go/logs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	logApi "go.opentelemetry.io/otel/log"
