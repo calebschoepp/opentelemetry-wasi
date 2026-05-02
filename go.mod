@@ -15,7 +15,7 @@ require (
 
 require (
 	github.com/apparentlymart/go-userdirs v0.0.0-20200915174352-b0c018a67c13 // indirect
-	github.com/bytecodealliance/componentize-go v0.3.1 // indirect
+	github.com/bytecodealliance/componentize-go v0.3.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect

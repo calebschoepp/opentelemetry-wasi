@@ -8,9 +8,9 @@
 package wasi_otel_logs
 
 import (
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_clocks_wall_clock"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_tracing"
+	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_types"
 	witRuntime "go.bytecodealliance.org/pkg/wit/runtime"
 	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"runtime"

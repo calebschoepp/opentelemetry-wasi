@@ -3,7 +3,7 @@ package tracing
 import (
 	"context"
 
-	wasiTrace "github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_tracing"
+	wasiTrace "github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_tracing"
 	"go.opentelemetry.io/otel/sdk/trace"
 	traceApi "go.opentelemetry.io/otel/trace"
 )

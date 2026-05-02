@@ -1,9 +1,9 @@
-module github.com/calebschoepp/opentelemetry-wasi/examples/spin-basic
+module github.com/calebschoepp/opentelemetry-wasi/go/examples/spin-basic
 
 go 1.25.5
 
 require (
-	github.com/calebschoepp/opentelemetry-wasi v0.0.0-00010101000000-000000000000
+	github.com/calebschoepp/opentelemetry-wasi v0.0.0
 	github.com/spinframework/spin-go-sdk/v3 v3.0.0-20260407161511-f2bf8873711b
 	go.opentelemetry.io/otel v1.39.0
 	go.opentelemetry.io/otel/log v0.14.0
@@ -15,7 +15,7 @@ require (
 
 require (
 	github.com/apparentlymart/go-userdirs v0.0.0-20200915174352-b0c018a67c13 // indirect
-	github.com/bytecodealliance/componentize-go v0.3.1 // indirect
+	github.com/bytecodealliance/componentize-go v0.3.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -27,6 +27,6 @@ require (
 	golang.org/x/sys v0.39.0 // indirect
 )
 
-replace github.com/calebschoepp/opentelemetry-wasi => ../../
+replace github.com/calebschoepp/opentelemetry-wasi => ../../../
 
 tool github.com/bytecodealliance/componentize-go
