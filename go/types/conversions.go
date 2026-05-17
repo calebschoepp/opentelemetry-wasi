@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_clocks_wall_clock"
-	"github.com/calebschoepp/opentelemetry-wasi/internal/wasi_otel_types"
+	"github.com/bytecodealliance/opentelemetry-wasi/go/internal/wasi_clocks_wall_clock"
+	"github.com/bytecodealliance/opentelemetry-wasi/go/internal/wasi_otel_types"
 	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
