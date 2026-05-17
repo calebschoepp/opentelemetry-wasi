@@ -1,6 +1,6 @@
 # OpenTelemetry WASI for TypeScript
 
-Enables using OpenTelemetry within TypeScript WebAssembly components backed by [WASI OTel](https://github.com/calebschoepp/wasi-otel).
+Enables using OpenTelemetry within TypeScript WebAssembly components backed by [WASI OTel](https://github.com/WebAssembly/wasi-otel).
 
 ## Usage
 

@@ -36,5 +36,5 @@ Whenever WIT files are changed/added to the `../wit` directory, the bindings  in
 ### Run
 
 ```sh
-go tool componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/calebschoepp/opentelemetry-wasi/go/internal --format
+go tool componentize-go -w imports -d ../wit bindings -o internal --pkg-name github.com/bytecodealliance/opentelemetry-wasi/go/internal --format
 ```

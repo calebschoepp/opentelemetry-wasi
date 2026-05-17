@@ -57,5 +57,5 @@ test:
     @cd go && go test ./...
 
     # Test: Integration tests
-    # TODO: Until this issue is taken care of, these will continue to fail: https://github.com/calebschoepp/opentelemetry-wasi/issues/45
+    # TODO: Until this issue is taken care of, these will continue to fail: https://github.com/bytecodealliance/opentelemetry-wasi/issues/45
     # @cargo test --manifest-path integration_tests/Cargo.toml

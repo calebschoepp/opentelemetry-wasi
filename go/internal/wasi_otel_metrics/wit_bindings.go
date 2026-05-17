@@ -8,8 +8,8 @@
 package wasi_otel_metrics
 
 import (
-	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_clocks_wall_clock"
-	"github.com/calebschoepp/opentelemetry-wasi/go/internal/wasi_otel_types"
+	"github.com/bytecodealliance/opentelemetry-wasi/go/internal/wasi_clocks_wall_clock"
+	"github.com/bytecodealliance/opentelemetry-wasi/go/internal/wasi_otel_types"
 	witRuntime "go.bytecodealliance.org/pkg/wit/runtime"
 	witTypes "go.bytecodealliance.org/pkg/wit/types"
 	"runtime"

@@ -1,6 +1,6 @@
 # OpenTelemetry WASI for Rust
 
-Enables using OpenTelemetry within Rust WebAssembly components backed by [WASI OTel](https://github.com/calebschoepp/wasi-otel).
+Enables using OpenTelemetry within Rust WebAssembly components backed by [WASI OTel](https://github.com/WebAssembly/wasi-otel).
 
 ## Usage
 

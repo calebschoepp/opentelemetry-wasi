@@ -1,4 +1,4 @@
-module github.com/calebschoepp/opentelemetry-wasi
+module github.com/bytecodealliance/opentelemetry-wasi
 
 go 1.25.5
 
